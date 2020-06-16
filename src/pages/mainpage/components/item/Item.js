@@ -1,35 +1,11 @@
 import React, { Component } from "react";
-import {
-  Divider,
-  Button,
-  Row,
-  Col,
-  Drawer,
-  Table,
-  Spin,
-  Layout,
-  Input,
-  Breadcrumb,
-} from "antd";
+import { Divider, Row, Col, Spin, Layout, Breadcrumb } from "antd";
+import { Link } from "react-router-dom";
 import ImageView from "../imageView/ImageView";
 import Metadata from "../metadata/Metadata";
 import axios from "axios";
-const { Content } = Layout;
-const { TextArea } = Input;
 
-const columns = [
-  {
-    title: "Media",
-    dataIndex: "alt",
-    width: "30%",
-  },
-  {
-    title: "Transcript",
-    dataIndex: "transcript",
-    ellipsis: true,
-    width: "70%",
-  },
-];
+const { Content } = Layout;
 
 export default class Item extends Component {
   state = {
@@ -37,11 +13,9 @@ export default class Item extends Component {
     loading: true,
     data: [],
     media: [],
-    drawerVisible: false,
-    transSrc: undefined,
-    transText: undefined,
-    transTitle: undefined,
     active: 0,
+    path: [],
+    pathLoading: false,
   };
 
   constructor(props) {
@@ -50,15 +24,16 @@ export default class Item extends Component {
     axios.get("/api/items/" + props.itemId).then((response) => {
       this.state.data = response.data;
       let media = response.data["o:media"];
+      this.state.pathLoading = true;
+      this.loadPath(props.itemId).then((path) => {
+        this.setState({ path: path, pathLoading: false });
+      });
       let fetched = media.map((each) => {
         return axios.get("/api/media/" + each["o:id"]).then((mediaPage) => {
           return {
             key: mediaPage.data["o:id"],
             src: mediaPage.data["o:original_url"],
             alt: mediaPage.data["o:source"],
-            transcript: mediaPage.data["bibo:transcriptOf"]
-              ? mediaPage.data["bibo:transcriptOf"][0]["@value"]
-              : "",
           };
         });
       });
@@ -70,41 +45,18 @@ export default class Item extends Component {
     });
   }
 
-  showDrawer = () => {
-    this.setState({
-      drawervisible: true,
-    });
-  };
-
-  onClose = () => {
-    this.setState({
-      drawervisible: false,
-    });
-  };
-
-  onClickTrans = (record) => {
-    this.state.media.some((each, index) => {
-      if (each["key"] == record["key"]) {
-        this.setState({
-          transTitle: each["alt"],
-          transSrc: each["src"],
-          transText: each["transcript"],
-          active: index,
-        });
-        return true;
+  loadPath = (itemId, path = []) => {
+    return axios.get("/api/items/" + itemId).then((response) => {
+      if (response.data["dcterms:isPartOf"]) {
+        path.push(...response.data["dcterms:isPartOf"]);
+        return this.loadPath(
+          response.data["dcterms:isPartOf"][0]["value_resource_id"],
+          path
+        );
+      } else {
+        return path;
       }
     });
-    this.showDrawer();
-  };
-
-  onTextChange = ({ target: { value } }) => {
-    this.setState({ transText: value });
-  };
-
-  onSubmitTrans = () => {
-    let mediaData = this.state.media;
-    mediaData[this.state.active]["transcript"] = this.state.transText;
-    this.setState({ media: mediaData, drawervisible: false });
   };
 
   render() {
@@ -117,15 +69,17 @@ export default class Item extends Component {
         <Layout>
           <Divider>{this.state.data["o:title"]}</Divider>
           <Breadcrumb>
-            <Breadcrumb.Item>
-              <a href="">Home</a>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-              <a href="">Application Center</a>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-              <a href="">Application List</a>
-            </Breadcrumb.Item>
+            {this.state.pathLoading ? (
+              <Spin></Spin>
+            ) : (
+              this.state.path.reverse().map((each) => {
+                return (
+                  <Breadcrumb.Item>
+                    <Link to="/">{each["display_title"]}</Link>
+                  </Breadcrumb.Item>
+                );
+              })
+            )}
             <Breadcrumb.Item>{this.state.data["o:title"]}</Breadcrumb.Item>
           </Breadcrumb>
           <Content>
@@ -138,63 +92,12 @@ export default class Item extends Component {
                   active={this.state.active}
                 />
               </Col>
-              <Col span={8}>
-                <Table
-                  loading={
-                    this.state.length !== 0 && this.state.updated === true
-                  }
-                  onRow={(record) => {
-                    return {
-                      onClick: (event) => {
-                        this.onClickTrans(record);
-                      },
-                    };
-                  }}
-                  columns={columns}
-                  dataSource={this.state.media}
+              <Col span={16}>
+                <Metadata
+                  target={{ itemId: this.props.itemId, data: this.state.data }}
                 />
               </Col>
-              <Col span={8}>
-                <Metadata target={{ itemId: this.props.itemId }} />
-              </Col>
             </Row>
-            <Drawer
-              title={this.state.transTitle}
-              placement="right"
-              closable={false}
-              onClose={this.onClose}
-              visible={this.state.drawervisible}
-              getContainer={false}
-              style={{ position: "absolute" }}
-              width="55%"
-            >
-              <Layout>
-                <Content>
-                  <Row gutter={[16, 24]} justify="end">
-                    <Col span={12}>
-                      <ImageView
-                        id={"temp"}
-                        visible={true}
-                        imgs={this.state.media}
-                        active={this.state.active}
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <TextArea
-                        value={this.state.transText}
-                        onChange={this.onTextChange}
-                        autoSize={{ minRows: 10 }}
-                      />
-                    </Col>
-                    <Col span={6}>
-                      <Button type="primary" onClick={this.onSubmitTrans}>
-                        Submit Change
-                      </Button>
-                    </Col>
-                  </Row>
-                </Content>
-              </Layout>
-            </Drawer>
           </Content>
         </Layout>
       </div>
