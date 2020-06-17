@@ -27,6 +27,10 @@ export default class ProjectList extends Component {
     }
   }
 
+  onSelect = (selectedKeys) => {
+    this.props.onProjectListSelect(selectedKeys);
+  };
+
   render() {
     return this.state.loading ? (
       <div>
@@ -34,7 +38,11 @@ export default class ProjectList extends Component {
       </div>
     ) : (
       <div className="project-list-container">
-        <DirectoryTree treeData={this.state.projects} blockNode={true} />
+        <DirectoryTree
+          treeData={this.state.projects}
+          blockNode={true}
+          onSelect={this.onSelect}
+        />
       </div>
     );
   }

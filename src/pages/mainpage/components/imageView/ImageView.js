@@ -38,9 +38,7 @@ export default class ImageView extends Component {
             id={"image-view-container-" + this.props.id}
             className="image-view-container"
             style={
-              this.props.viewerHeight
-                ? { height: this.props.viewerHeight }
-                : { height: "100%" }
+              this.props.viewerHeight ? { height: this.props.viewerHeight } : {}
             }
           >
             <Viewer

@@ -69,7 +69,7 @@ export default class ImageDetails extends Component {
                     : ""
                 }
                 onChange={this.onTextChange}
-                autoSize={{ minRows: 10, maxRows: 25 }}
+                autoSize={{ minRows: 25, maxRows: 25 }}
               />
             </Col>
             <Col span={6}>

@@ -20,29 +20,43 @@ export default class Item extends Component {
 
   constructor(props) {
     super(props);
-    this.state.id = props.itemId;
-    axios.get("/api/items/" + props.itemId).then((response) => {
-      this.state.data = response.data;
-      let media = response.data["o:media"];
-      this.state.pathLoading = true;
-      this.loadPath(props.itemId).then((path) => {
-        this.setState({ path: path, pathLoading: false });
-      });
-      let fetched = media.map((each) => {
-        return axios.get("/api/media/" + each["o:id"]).then((mediaPage) => {
-          return {
-            key: mediaPage.data["o:id"],
-            src: mediaPage.data["o:original_url"],
-            alt: mediaPage.data["o:source"],
-          };
+    let itemId = parseInt(props.match.params.itemId, 10);
+    this.state.id = itemId;
+    this.loadData(itemId);
+  }
+
+  loadData = (itemId) => {
+    if (itemId) {
+      this.setState({ loading: true });
+      axios.get("/api/items/" + itemId).then((response) => {
+        this.state.data = response.data;
+        let media = response.data["o:media"];
+        this.state.pathLoading = true;
+        this.loadPath(itemId).then((path) => {
+          this.setState({ path: path.reverse(), pathLoading: false });
         });
+        let fetched = media.map((each) => {
+          return axios.get("/api/media/" + each["o:id"]).then((mediaPage) => {
+            return {
+              key: mediaPage.data["o:id"],
+              src: mediaPage.data["o:original_url"],
+              alt: mediaPage.data["o:source"],
+            };
+          });
+        });
+        axios.all(fetched).then(
+          axios.spread((...results) => {
+            this.setState({ media: results, loading: false });
+          })
+        );
       });
-      axios.all(fetched).then(
-        axios.spread((...results) => {
-          this.setState({ media: results, loading: false });
-        })
-      );
-    });
+    }
+  };
+
+  componentWillReceiveProps(nextProps) {
+    let itemId = parseInt(nextProps.match.params.itemId, 10);
+    this.setState({ id: itemId });
+    this.loadData(itemId);
   }
 
   loadPath = (itemId, path = []) => {
@@ -72,10 +86,12 @@ export default class Item extends Component {
             {this.state.pathLoading ? (
               <Spin></Spin>
             ) : (
-              this.state.path.reverse().map((each) => {
+              this.state.path.map((each, key) => {
                 return (
                   <Breadcrumb.Item>
-                    <Link to="/">{each["display_title"]}</Link>
+                    <Link to={"/items/" + each["value_resource_id"]}>
+                      {each["display_title"]}
+                    </Link>
                   </Breadcrumb.Item>
                 );
               })
@@ -83,21 +99,37 @@ export default class Item extends Component {
             <Breadcrumb.Item>{this.state.data["o:title"]}</Breadcrumb.Item>
           </Breadcrumb>
           <Content>
-            <Row gutter={16}>
-              <Col span={8}>
-                <ImageView
-                  id={this.state.id}
-                  visible={!this.state.drawerVisible}
-                  imgs={this.state.media}
-                  active={this.state.active}
-                />
-              </Col>
-              <Col span={16}>
-                <Metadata
-                  target={{ itemId: this.props.itemId, data: this.state.data }}
-                />
-              </Col>
-            </Row>
+            {this.state.media.length > 0 ? (
+              <Row gutter={16}>
+                <Col span={8}>
+                  <ImageView
+                    id={this.state.id}
+                    visible={!this.state.drawerVisible}
+                    imgs={this.state.media}
+                    active={this.state.active}
+                  />
+                </Col>
+                <Col span={16}>
+                  <Metadata
+                    target={{
+                      itemId: this.state.id,
+                      data: this.state.data,
+                    }}
+                  />
+                </Col>
+              </Row>
+            ) : (
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Metadata
+                    target={{
+                      itemId: this.state.id,
+                      data: this.state.data,
+                    }}
+                  />
+                </Col>
+              </Row>
+            )}
           </Content>
         </Layout>
       </div>

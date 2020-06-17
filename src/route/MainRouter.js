@@ -7,8 +7,8 @@ export default class MainRouter extends Component {
   render() {
     return (
       <HashRouter>
-        <Route exact path={"/"} component={MainPage} />
         <Route path="/media" component={MediaRouter} />
+        <Route path="/" component={MainPage} />
       </HashRouter>
     );
   }
