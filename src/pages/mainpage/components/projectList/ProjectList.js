@@ -11,20 +11,16 @@ export default class ProjectList extends Component {
 
   constructor(props) {
     super(props);
-    if (props["project"]["key"]) {
-      this.state.projects.push(props["project"]);
-    }
+    try {
+      this.state.projects = props["projects"];
+    } catch (error) {}
   }
 
-  async componentWillReceiveProps(nextProps) {
-    if (nextProps["project"]["key"] !== this.props["project"]["key"]) {
-      this.setState({ loading: true });
-      let data = this.state.projects;
-      data.push(nextProps["project"]);
-      this.setState({ projects: data }, () => {
-        this.setState({ loading: false });
-      });
-    }
+  componentWillReceiveProps(nextProps) {
+    this.setState({ loading: true });
+    this.setState({ projects: nextProps["projects"] }, () => {
+      this.setState({ loading: false });
+    });
   }
 
   onSelect = (selectedKeys) => {

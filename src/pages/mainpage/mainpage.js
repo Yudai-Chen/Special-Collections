@@ -25,7 +25,7 @@ export default class MainPage extends Component {
     selectedFiles: [],
     rowRecord: {},
     tabState: "1",
-    project: [],
+    projects: [],
     selectedProjectKeys: undefined,
   };
   getSelectedFiles = (files) => {
@@ -41,11 +41,17 @@ export default class MainPage extends Component {
   };
 
   onCreateProject = (project) => {
-    this.setState({ project: project });
+    let data = this.state.projects;
+    data.push(project);
+    this.setState({ projects: data });
   };
 
   onProjectListSelect = (selectedKeys) => {
     this.setState({ selectedProjectKeys: selectedKeys });
+  };
+
+  onUpdateProjects = (newProjects) => {
+    this.setState({ projects: newProjects });
   };
 
   render() {
@@ -66,8 +72,10 @@ export default class MainPage extends Component {
               >
                 <Datalist
                   shownFiles={files}
+                  projects={this.state.projects}
                   handleRowClick={this.onRowClick}
                   handleCreateProject={this.onCreateProject}
+                  updataProjects={this.onUpdateProjects}
                 />
               </TabPane>
               <TabPane
@@ -142,7 +150,7 @@ export default class MainPage extends Component {
                 key="2"
               >
                 <ProjectList
-                  project={this.state.project}
+                  projects={this.state.projects}
                   onProjectListSelect={this.onProjectListSelect}
                 />
               </TabPane>

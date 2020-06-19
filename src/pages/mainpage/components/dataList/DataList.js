@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Input, Modal, Button, Table, Space } from "antd";
+import { Spin, Input, Modal, Button, Table, Space, Menu, Dropdown } from "antd";
+import { withRouter, Link } from "react-router-dom";
+import { DownOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 const placeholder = require("../../image-placeholder.png");
@@ -46,19 +48,36 @@ function eqSet(as, bs) {
   return true;
 }
 
-export default class DataList extends Component {
+function openInNewWindow(url) {
+  const win = window.open(url, "_blank");
+  if (win != null) {
+    win.focus();
+  }
+}
+
+class DataList extends Component {
   state = {
     selectedRowKeys: [],
     selectedRows: [],
     showData: [],
     updated: "true",
     modalVisible: false,
+    modal2Visible: false,
     projectName: undefined,
     projectNote: undefined,
+    loadingProject: false,
+    projects: [],
+    menuDisplay: "Select A Project",
+    addProjectId: undefined,
   };
 
   constructor(props) {
     super(props);
+    try {
+      if (props["project"]["key"]) {
+        this.state.projects.push(props["project"]);
+      }
+    } catch (error) {}
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
@@ -191,11 +210,77 @@ export default class DataList extends Component {
     if (!eqSet(oldSet, newSet)) {
       this.getSelectedFiles(nextProps["shownFiles"]);
     }
+    this.setState({ projects: nextProps["projects"] });
   }
 
-  setModalVisible(modalVisible) {
+  setModalVisible = (modalVisible) => {
     this.setState({ modalVisible });
-  }
+  };
+
+  setModal2Visible = (modal2Visible) => {
+    this.setState({ modal2Visible });
+  };
+
+  onProjectAdd = () => {
+    let key = this.state.addProjectId;
+    if (!key) {
+      Modal.error({
+        title: "Fail to add to project!",
+        content: "A project should be selected.",
+      });
+      return;
+    }
+    let all = this.state.projects;
+    all.map((eachProject) => {
+      if (eachProject.key == key) {
+        let oldChildren = [];
+        eachProject.children.map((eachChild) => {
+          oldChildren.push(eachChild["itemId"]);
+        });
+        let oldChildrenSet = new Set(oldChildren);
+        this.state.selectedRows.map((eachRow) => {
+          if (!oldChildrenSet.has(eachRow["itemId"])) {
+            eachProject.children.push({
+              key: key + "-" + eachRow["itemId"],
+              itemId: eachRow["itemId"],
+              title: eachRow["title"],
+              isLeaf: true,
+            });
+          }
+        });
+      }
+    });
+    this.props.updataProjects(all);
+    this.setModal2Visible(false);
+  };
+
+  onNoteAdd = () => {
+    let data = this.state.selectedRows.map((each) => {
+      return {
+        key: each["itemId"],
+        title: each["title"],
+        isLeaf: true,
+      };
+    });
+
+    openInNewWindow("/#/note/" + JSON.stringify(data));
+    // return (
+    //   <Link
+    //     to={{
+    //       pathname: "/note",
+    //       state: { targets: data },
+    //     }}
+    //     target="_blank"
+    //   ></Link>
+    // );
+  };
+
+  onMenuClick = ({ key }) => {
+    try {
+      let project = this.state.projects.filter((each) => each["key"] == key);
+      this.setState({ menuDisplay: project[0]["title"], addProjectId: key });
+    } catch (error) {}
+  };
 
   render() {
     const { selectedRowKeys } = this.state;
@@ -204,6 +289,17 @@ export default class DataList extends Component {
       onChange: this.onSelectChange,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
     };
+    const menu = (
+      <Menu onClick={this.onMenuClick}>
+        {this.state.loadingProject ? (
+          <Spin></Spin>
+        ) : (
+          this.state.projects.map((each) => (
+            <Menu.Item key={each["key"]}>{each["title"]}</Menu.Item>
+          ))
+        )}
+      </Menu>
+    );
     return (
       <div>
         <Space direction="vertical" style={{ width: "100%" }}>
@@ -225,18 +321,31 @@ export default class DataList extends Component {
             columns={columns}
             dataSource={this.state.showData}
           />
-          <div align="right">
-            <Button type="primary" onClick={() => this.setModalVisible(true)}>
-              Create Project
-            </Button>
+          <div
+            style={{
+              display: "flex",
+              "justify-content": "flex-end",
+            }}
+          >
+            <div style={{ margin: "5px" }}>
+              <Button onClick={this.onNoteAdd}>Add Note</Button>
+            </div>
+            <div style={{ margin: "5px" }}>
+              <Button onClick={() => this.setModal2Visible(true)}>
+                Add To Project
+              </Button>
+            </div>
+            <div style={{ margin: "5px" }}>
+              <Button type="primary" onClick={() => this.setModalVisible(true)}>
+                Create Project
+              </Button>
+            </div>
           </div>
           <Modal
             title="New Project"
             centered
             visible={this.state.modalVisible}
-            onOk={() => {
-              this.onCreateProject();
-            }}
+            onOk={this.onCreateProject}
             onCancel={() => this.setModalVisible(false)}
           >
             <div style={{ marginBottom: 16 }}>
@@ -251,8 +360,8 @@ export default class DataList extends Component {
             </div>
             <div style={{ marginBottom: 16 }}>
               <Input
-                addonBefore="Project Note"
-                placeholder="Add your note for this project."
+                addonBefore="Description"
+                placeholder="Add your description for this project."
                 value={this.state.projectNote}
                 onChange={({ target: { value } }) => {
                   this.setState({ projectNote: value });
@@ -260,8 +369,26 @@ export default class DataList extends Component {
               />
             </div>
           </Modal>
+          <Modal
+            title="Add to Project"
+            centered
+            visible={this.state.modal2Visible}
+            onOk={this.onProjectAdd}
+            onCancel={() => this.setModal2Visible(false)}
+          >
+            <Dropdown overlay={menu} trigger={["click"]}>
+              <a
+                className="ant-dropdown-link"
+                onClick={(e) => e.preventDefault()}
+              >
+                {this.state.menuDisplay} <DownOutlined />
+              </a>
+            </Dropdown>
+          </Modal>
         </Space>
       </div>
     );
   }
 }
+
+export default withRouter(DataList);
