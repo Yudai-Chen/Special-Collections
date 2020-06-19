@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import { Divider, Row, Col, Spin, Layout, Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
-import ImageView from "../imageView/ImageView";
-import Metadata from "../metadata/Metadata";
+import ImageView from "../../../../components/imageView/ImageView";
+import Metadata from "../../../../components/metadata/Metadata";
+import ProjectList from "../projectList/ProjectList";
 import axios from "axios";
 
-const { Content } = Layout;
+const { Sider, Content } = Layout;
 
 export default class Item extends Component {
   state = {
     id: undefined,
-    loading: true,
+    loading: false,
     data: [],
     media: [],
     active: 0,
@@ -21,8 +22,10 @@ export default class Item extends Component {
   constructor(props) {
     super(props);
     let itemId = parseInt(props.match.params.itemId, 10);
-    this.state.id = itemId;
-    this.loadData(itemId);
+    if (itemId) {
+      this.state.id = itemId;
+      this.loadData(itemId);
+    }
   }
 
   loadData = (itemId) => {
@@ -75,64 +78,91 @@ export default class Item extends Component {
 
   render() {
     return this.state.loading ? (
-      <div>
-        <Spin tip="Loading..."></Spin>
-      </div>
+      <Layout>
+        <Content>
+          <div className="item-container">
+            <div>
+              <Spin tip="Loading..."></Spin>
+            </div>
+          </div>
+        </Content>
+      </Layout>
     ) : (
-      <div>
+      <Layout>
+        <Sider
+          style={{
+            overflow: "scroll",
+            minHeight: "100vh",
+            width: "20vw",
+            left: 0,
+          }}
+          theme="light"
+        >
+          <ProjectList projects={this.state.projects} />
+        </Sider>
         <Layout>
-          <Divider>{this.state.data["o:title"]}</Divider>
-          <Breadcrumb>
-            {this.state.pathLoading ? (
-              <Spin></Spin>
-            ) : (
-              this.state.path.map((each, key) => {
-                return (
-                  <Breadcrumb.Item>
-                    <Link to={"/items/" + each["value_resource_id"]}>
-                      {each["display_title"]}
-                    </Link>
-                  </Breadcrumb.Item>
-                );
-              })
-            )}
-            <Breadcrumb.Item>{this.state.data["o:title"]}</Breadcrumb.Item>
-          </Breadcrumb>
           <Content>
-            {this.state.media.length > 0 ? (
-              <Row gutter={16}>
-                <Col span={8}>
-                  <ImageView
-                    id={this.state.id}
-                    visible={!this.state.drawerVisible}
-                    imgs={this.state.media}
-                    active={this.state.active}
-                  />
-                </Col>
-                <Col span={16}>
-                  <Metadata
-                    target={{
-                      itemId: this.state.id,
-                      data: this.state.data,
-                    }}
-                  />
-                </Col>
-              </Row>
-            ) : (
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Metadata
-                    target={{
-                      itemId: this.state.id,
-                      data: this.state.data,
-                    }}
-                  />
-                </Col>
-              </Row>
-            )}
+            <div className="item-container">
+              <div>
+                <Layout>
+                  <Divider>{this.state.data["o:title"]}</Divider>
+                  <Breadcrumb>
+                    {this.state.pathLoading ? (
+                      <Spin></Spin>
+                    ) : (
+                      this.state.path.map((each, key) => {
+                        return (
+                          <Breadcrumb.Item>
+                            <Link to={"/items/" + each["value_resource_id"]}>
+                              {each["display_title"]}
+                            </Link>
+                          </Breadcrumb.Item>
+                        );
+                      })
+                    )}
+                    <Breadcrumb.Item>
+                      {this.state.data["o:title"]}
+                    </Breadcrumb.Item>
+                  </Breadcrumb>
+                  <Content>
+                    {this.state.media.length > 0 ? (
+                      <Row gutter={16}>
+                        <Col span={8}>
+                          <ImageView
+                            id={this.state.id}
+                            visible={!this.state.drawerVisible}
+                            imgs={this.state.media}
+                            active={this.state.active}
+                          />
+                        </Col>
+                        <Col span={16}>
+                          <Metadata
+                            target={{
+                              itemId: this.state.id,
+                              data: this.state.data,
+                            }}
+                          />
+                        </Col>
+                      </Row>
+                    ) : (
+                      <Row gutter={16}>
+                        <Col span={24}>
+                          <Metadata
+                            target={{
+                              itemId: this.state.id,
+                              data: this.state.data,
+                            }}
+                          />
+                        </Col>
+                      </Row>
+                    )}
+                  </Content>
+                </Layout>
+              </div>
+            </div>
           </Content>
         </Layout>
-      </div>
+      </Layout>
     );
   }
 }

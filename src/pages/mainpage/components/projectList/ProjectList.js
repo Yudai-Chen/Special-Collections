@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Spin, Tree } from "antd";
+import { Redirect, Route } from "react-router-dom";
 
 const { DirectoryTree } = Tree;
 
@@ -23,8 +24,15 @@ export default class ProjectList extends Component {
     });
   }
 
-  onSelect = (selectedKeys) => {
-    this.props.onProjectListSelect(selectedKeys);
+  onSelect = (itemKey) => {
+    let itemId;
+    if (String(itemKey[0]).indexOf("-") != -1) {
+      itemId = itemKey[0].substring(
+        itemKey[0].indexOf("-") + 1,
+        itemKey[0].length
+      );
+    }
+    return <Redirect push to={"/items/" + itemId} />;
   };
 
   render() {

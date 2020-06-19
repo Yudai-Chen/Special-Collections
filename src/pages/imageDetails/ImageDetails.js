@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ImageView from "../mainpage/components/imageView/ImageView";
+import ImageView from "../../components/imageView/ImageView";
 import axios from "axios";
 import { Button, Layout, Row, Col, Spin, Input } from "antd";
 

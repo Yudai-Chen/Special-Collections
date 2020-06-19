@@ -1,111 +1,33 @@
 import React, { Component } from "react";
-import { Layout, Tabs, Divider } from "antd";
-import Archive from "./components/archive/Archive";
-import Preview from "./components/preview/Preview";
-import Datalist from "./components/dataList/DataList";
-import Metadata from "./components/metadata/Metadata";
-import Filmstrip from "./components/filmstrip/Filmstrip";
-import Project from "./components/project/Project";
-import ProjectList from "./components/projectList/ProjectList";
+import { Layout, Menu } from "antd";
+
+import Item from "./components/item/Item";
+import Home from "./components/home/Home";
+import SearchPage from "./components/searchPage/SearchPage";
+import { Link, Switch, HashRouter, Route } from "react-router-dom";
 import {
   FolderOutlined,
   FolderAddOutlined,
-  TableOutlined,
-  VideoCameraAddOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import "antd/dist/antd.css";
 
-const { Header, Sider, Content } = Layout;
-const { TabPane } = Tabs;
+const { Header } = Layout;
 
-const logo = require("./1.png");
+const logo = require("./logo.png");
 
 export default class MainPage extends Component {
   state = {
-    selectedFiles: [],
-    rowRecord: {},
-    tabState: "1",
-    projects: [],
-    selectedProjectKeys: undefined,
-  };
-  getSelectedFiles = (files) => {
-    this.setState({ selectedFiles: files });
+    current: "home",
   };
 
-  onTabChange = (activeKey) => {
-    this.setState({ tabState: activeKey });
-  };
-
-  onRowClick = (record) => {
-    this.setState({ rowRecord: record });
-  };
-
-  onCreateProject = (project) => {
-    let data = this.state.projects;
-    data.push(project);
-    this.setState({ projects: data });
-  };
-
-  onProjectListSelect = (selectedKeys) => {
-    this.setState({ selectedProjectKeys: selectedKeys });
-  };
-
-  onUpdateProjects = (newProjects) => {
-    this.setState({ projects: newProjects });
+  handleClick = (e) => {
+    this.setState({
+      current: e.key,
+    });
   };
 
   render() {
-    let files = this.state.selectedFiles;
-    let content =
-      this.state.tabState === "1" ? (
-        <Layout>
-          <Content>
-            <Tabs defaultActiveKey="1">
-              <TabPane
-                tab={
-                  <span>
-                    <TableOutlined />
-                    List
-                  </span>
-                }
-                key="1"
-              >
-                <Datalist
-                  shownFiles={files}
-                  projects={this.state.projects}
-                  handleRowClick={this.onRowClick}
-                  handleCreateProject={this.onCreateProject}
-                  updataProjects={this.onUpdateProjects}
-                />
-              </TabPane>
-              <TabPane
-                tab={
-                  <span>
-                    <VideoCameraAddOutlined />
-                    Filmstrip
-                  </span>
-                }
-                key="2"
-              >
-                <Filmstrip shownFiles={files} />
-              </TabPane>
-            </Tabs>
-          </Content>
-          <Sider theme="light" collapsible={false}>
-            <Preview target={this.state.rowRecord} />
-            <Divider style={{ height: "20" }} />
-            <Metadata target={this.state.rowRecord} />
-          </Sider>
-        </Layout>
-      ) : (
-        <Layout>
-          <Content>
-            <div className="container">
-              <Project shownFile={this.state.selectedProjectKeys} />
-            </div>
-          </Content>
-        </Layout>
-      );
     return (
       <Layout>
         <Header>
@@ -113,51 +35,31 @@ export default class MainPage extends Component {
             <img src={logo} alt="logo.png" width="200" height="50" />
           </div>
         </Header>
-        <Layout>
-          <Sider
-            style={{
-              overflow: "scroll",
-              minHeight: "100vh",
-              width: "20vw",
-              left: 0,
-            }}
-            theme="light"
-          >
-            <Tabs defaultActiveKey="1" onChange={this.onTabChange}>
-              <TabPane
-                tab={
-                  <span>
-                    <FolderOutlined />
-                    Folder
-                  </span>
-                }
-                key="1"
-              >
-                <div>
-                  <Archive
-                    updateSelectedFiles={this.getSelectedFiles}
-                    handleExpand={this.getSelectedFiles}
-                  />
-                </div>
-              </TabPane>
-              <TabPane
-                tab={
-                  <span>
-                    <FolderAddOutlined />
-                    Project
-                  </span>
-                }
-                key="2"
-              >
-                <ProjectList
-                  projects={this.state.projects}
-                  onProjectListSelect={this.onProjectListSelect}
-                />
-              </TabPane>
-            </Tabs>
-          </Sider>
-          {content}
-        </Layout>
+        <Menu
+          onClick={this.handleClick}
+          selectedKeys={[this.state.current]}
+          mode="horizontal"
+        >
+          <Menu.Item key="home" icon={<FolderOutlined />}>
+            <Link to="/home">Home</Link>
+          </Menu.Item>
+          <Menu.Item key="search" icon={<SearchOutlined />}>
+            <Link to="/search">Search</Link>
+          </Menu.Item>
+          <Menu.Item key="projects" icon={<FolderAddOutlined />}>
+            <Link to="/items">Projects</Link>
+          </Menu.Item>
+        </Menu>
+        <HashRouter>
+          <Switch>
+            <Route path="/projects/:projectId" component={null} />
+            <Route path="/items" component={Item} />
+            <Route path="/items/:itemId" component={Item} />
+            <Route path="/search" component={SearchPage} />
+            <Route path="/home" component={Home} />
+            <Redirect from="/" to="/home" />
+          </Switch>
+        </HashRouter>
       </Layout>
     );
   }
