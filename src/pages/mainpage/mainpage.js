@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import { Layout, Menu } from "antd";
 
 import Item from "./components/item/Item";
+import ProjectsPage from "./components/projectsPage/ProjectsPage";
 import Home from "./components/home/Home";
 import SearchPage from "./components/searchPage/SearchPage";
-import { Link, Switch, HashRouter, Route } from "react-router-dom";
+import { Redirect, Link, Switch, HashRouter, Route } from "react-router-dom";
 import {
   FolderOutlined,
   FolderAddOutlined,
@@ -52,9 +53,7 @@ export default class MainPage extends Component {
         </Menu>
         <HashRouter>
           <Switch>
-            <Route path="/projects/:projectId" component={null} />
-            <Route path="/items" component={Item} />
-            <Route path="/items/:itemId" component={Item} />
+            <Route path="/items" component={ProjectsPage} />
             <Route path="/search" component={SearchPage} />
             <Route path="/home" component={Home} />
             <Redirect from="/" to="/home" />

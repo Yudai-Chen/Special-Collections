@@ -15,9 +15,7 @@ export default class MainContent extends Component {
   state = {
     selectedFiles: [],
     rowRecord: {},
-    tabState: "1",
     projects: [],
-    selectedProjectKeys: undefined,
   };
 
   getSelectedFiles = (files) => {

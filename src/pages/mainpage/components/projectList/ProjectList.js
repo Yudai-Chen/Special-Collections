@@ -1,10 +1,27 @@
 import React, { Component } from "react";
 import { Spin, Tree } from "antd";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
+import axios from "axios";
 
 const { DirectoryTree } = Tree;
 
-export default class ProjectList extends Component {
+function updateTreeData(list, key, children) {
+  return list.map((node) => {
+    if (node.key === key) {
+      return { ...node, children };
+    }
+    if (node.children) {
+      return {
+        ...node,
+        children: updateTreeData(node.children, key, children),
+      };
+    }
+
+    return node;
+  });
+}
+
+class ProjectList extends Component {
   state = {
     projects: [],
     loading: false,
@@ -13,16 +30,48 @@ export default class ProjectList extends Component {
   constructor(props) {
     super(props);
     try {
-      this.state.projects = props["projects"];
+      this.loadProjectList();
     } catch (error) {}
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ loading: true });
-    this.setState({ projects: nextProps["projects"] }, () => {
-      this.setState({ loading: false });
+  onLoadData = async (treeNode) => {
+    let item_set_id = treeNode.key;
+    const response = await axios.get("/api/items?item_set_id=" + item_set_id);
+    let thisChildren = response.data.map((each) => ({
+      key: item_set_id + "-" + each["o:id"],
+      title: each["o:title"],
+      isLeaf: true,
+    }));
+
+    return new Promise(async (resolve) => {
+      if (!thisChildren || thisChildren.length === 0) {
+        resolve();
+        return;
+      }
+      let data = this.state.projects;
+      data = updateTreeData(data, treeNode.key, thisChildren);
+      this.setState({
+        projects: data,
+      });
+      resolve();
     });
-  }
+  };
+
+  loadProjectList = () => {
+    this.state.projectLoading = true;
+    axios.get("/api/item_sets").then((response) => {
+      let item_sets = response.data.map((each) => ({
+        key: each["o:id"],
+        title: each["o:title"],
+        isLeaf: false,
+      }));
+      this.setState({ projects: item_sets }, () => {
+        this.setState({ projectLoading: false });
+      });
+    });
+  };
+
+  componentDidMount() {}
 
   onSelect = (itemKey) => {
     let itemId;
@@ -31,12 +80,12 @@ export default class ProjectList extends Component {
         itemKey[0].indexOf("-") + 1,
         itemKey[0].length
       );
+      this.props.history.push("/items/" + itemId);
     }
-    return <Redirect push to={"/items/" + itemId} />;
   };
 
   render() {
-    return this.state.loading ? (
+    return this.state.projectLoading || this.state.loading ? (
       <div>
         <Spin tip="Loading..."></Spin>
       </div>
@@ -44,10 +93,12 @@ export default class ProjectList extends Component {
       <div className="project-list-container">
         <DirectoryTree
           treeData={this.state.projects}
-          blockNode={true}
+          loadData={this.onLoadData}
           onSelect={this.onSelect}
         />
       </div>
     );
   }
 }
+
+export default withRouter(ProjectList);

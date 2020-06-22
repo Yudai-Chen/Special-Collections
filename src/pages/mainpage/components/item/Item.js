@@ -78,6 +78,73 @@ export default class Item extends Component {
 
   render() {
     return this.state.loading ? (
+      <div className="item-container">
+        <div>
+          <Spin tip="Loading..."></Spin>
+        </div>
+      </div>
+    ) : (
+      <div className="item-container">
+        <div>
+          <Layout>
+            <Divider>
+              {this.state.data ? "No Data" : this.state.data["o:title"]}
+            </Divider>
+            <Breadcrumb>
+              {this.state.pathLoading ? (
+                <Spin></Spin>
+              ) : (
+                this.state.path.map((each, key) => {
+                  return (
+                    <Breadcrumb.Item>
+                      <Link to={"/items/" + each["value_resource_id"]}>
+                        {each["display_title"]}
+                      </Link>
+                    </Breadcrumb.Item>
+                  );
+                })
+              )}
+              <Breadcrumb.Item>{this.state.data["o:title"]}</Breadcrumb.Item>
+            </Breadcrumb>
+            <Content>
+              {this.state.media.length > 0 ? (
+                <Row gutter={16}>
+                  <Col span={8}>
+                    <ImageView
+                      id={this.state.id}
+                      visible={!this.state.drawerVisible}
+                      imgs={this.state.media}
+                      active={this.state.active}
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <Metadata
+                      target={{
+                        itemId: this.state.id,
+                        data: this.state.data,
+                      }}
+                    />
+                  </Col>
+                </Row>
+              ) : (
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Metadata
+                      target={{
+                        itemId: this.state.id,
+                        data: this.state.data,
+                      }}
+                    />
+                  </Col>
+                </Row>
+              )}
+            </Content>
+          </Layout>
+        </div>
+      </div>
+    );
+
+    return this.state.loading ? (
       <Layout>
         <Content>
           <div className="item-container">
@@ -98,14 +165,16 @@ export default class Item extends Component {
           }}
           theme="light"
         >
-          <ProjectList projects={this.state.projects} />
+          <ProjectList />
         </Sider>
         <Layout>
           <Content>
             <div className="item-container">
               <div>
                 <Layout>
-                  <Divider>{this.state.data["o:title"]}</Divider>
+                  <Divider>
+                    {this.state.data ? "No Data" : this.state.data["o:title"]}
+                  </Divider>
                   <Breadcrumb>
                     {this.state.pathLoading ? (
                       <Spin></Spin>

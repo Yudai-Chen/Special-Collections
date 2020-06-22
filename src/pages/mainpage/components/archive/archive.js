@@ -41,6 +41,13 @@ export default class Archive extends Component {
     checkedFiles: [],
   };
 
+  constructor(props) {
+    super(props);
+    this.getRootData().then((rootData) => {
+      this.setState({ treeData: rootData });
+    });
+  }
+
   async getRootData() {
     const response = await axios.get("/api/items/103719");
     const rootId = response.data["o:id"];
@@ -109,12 +116,6 @@ export default class Archive extends Component {
   };
 
   render() {
-    if (this.state.treeData.length === 0) {
-      this.getRootData().then((rootData) => {
-        this.setState({ treeData: rootData });
-      });
-    }
-
     return (
       <div className="archive-container">
         <DirectoryTree

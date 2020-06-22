@@ -4,7 +4,7 @@ import { withRouter, Link } from "react-router-dom";
 import { DownOutlined } from "@ant-design/icons";
 import axios from "axios";
 
-const placeholder = require("../../../../image-placeholder.png");
+const placeholder = require("../../image-placeholder.png");
 
 const columns = [
   {
