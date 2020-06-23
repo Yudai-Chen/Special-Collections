@@ -136,30 +136,27 @@ export default class MainPage extends Component {
   };
 
   onFinish = (values) => {
-    console.log(values);
-    // let property = values["property-list"].map((each) => {"property["+});
+    let params = { fulltext_search: "" };
+    if (values["property-list"]) {
+      values["property-list"].map((each, index) => {
+        params["property[" + index + "][joiner]"] = each["joiner"];
+        params["property[" + index + "][property]"] = each["property"];
+        params["property[" + index + "][type]"] = each["type"];
+        params["property[" + index + "][text]"] = each["key"];
+      });
+    }
+    if (values["project"]) {
+      values["project"].map((each, index) => {
+        params["item_set_id[" + index + "]"] = each;
+      });
+    }
+
     axios
       .get("/api/items", {
-        params: {
-          fulltext_search: "",
-          property: [
-            {
-              joiner: "and",
-              property: 1,
-              type: "in",
-              text: "test",
-            },
-          ],
-          "property[0][joiner]": "and",
-          "property[0][property]": 1,
-          "property[0][type]": "in",
-          "property[0][text]": "test",
-          item_set_id: 150066,
-        },
+        params: params,
       })
       .then(
         (response) => {
-          console.log(response.data);
           let results = response.data.map((each) => each["o:id"]);
           this.setState({ results });
         },
@@ -442,7 +439,7 @@ export default class MainPage extends Component {
               }
               key="2"
             >
-              <Filmstrip shownFiles={this.state.selectedFiles} />
+              <Filmstrip shownFiles={this.state.results} />
             </TabPane>
           </Tabs>
         </Col>

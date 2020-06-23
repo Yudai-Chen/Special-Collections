@@ -40,6 +40,17 @@ const columns = [
       // multiple: 3,
     },
   },
+  {
+    title: "View",
+    dataIndex: "view",
+    render: (text, record) => (
+      <Space size="middle">
+        <a>
+          <Link to={"/items/" + record.key}>View</Link>
+        </a>
+      </Space>
+    ),
+  },
 ];
 
 function eqSet(as, bs) {
