@@ -38,40 +38,28 @@ export default class Item extends Component {
   loadData = (itemId) => {
     if (itemId) {
       this.setState({ loading: true });
-      axios
-        .get("/api/items/" + itemId)
-        .then((response) => {
-          this.state.data = response.data;
-          let media = response.data["o:media"];
-          this.state.pathLoading = true;
-          this.loadPath(itemId).then((path) => {
-            this.setState({ path: path.reverse(), pathLoading: false });
-          });
-          let fetched = media.map((each) => {
-            return axios.get("/api/media/" + each["o:id"]).then((mediaPage) => {
-              return {
-                key: mediaPage.data["o:id"],
-                src: mediaPage.data["o:original_url"],
-                alt: mediaPage.data["o:source"],
-              };
-            });
-          });
-          axios.all(fetched).then(
-            axios.spread((...results) => {
-              this.setState({ media: results, loading: false });
-            })
-          );
-        })
-        .then(() => {
-          axios
-            .get("/api/item_sets/" + this.state.data["o:item_set"][0]["o:id"])
-            .then(
-              (response) => {
-                this.setState({ itemSet: response.data["o:title"] });
-              },
-              (error) => {}
-            );
+      axios.get("/api/items/" + itemId).then((response) => {
+        this.state.data = response.data;
+        let media = response.data["o:media"];
+        this.state.pathLoading = true;
+        this.loadPath(itemId).then((path) => {
+          this.setState({ path: path.reverse(), pathLoading: false });
         });
+        let fetched = media.map((each) => {
+          return axios.get("/api/media/" + each["o:id"]).then((mediaPage) => {
+            return {
+              key: mediaPage.data["o:id"],
+              src: mediaPage.data["o:original_url"],
+              alt: mediaPage.data["o:source"],
+            };
+          });
+        });
+        axios.all(fetched).then(
+          axios.spread((...results) => {
+            this.setState({ media: results, loading: false });
+          })
+        );
+      });
     }
   };
 
