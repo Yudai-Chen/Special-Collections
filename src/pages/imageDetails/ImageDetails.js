@@ -22,7 +22,7 @@ export default class ImageDetails extends Component {
     this.state.mediaId = id;
     try {
       axios
-        .get("/api/media/" + id)
+        .get("http://10.134.196.104/api/media/" + id)
         .then((response) => {
           this.state.data = response.data;
         })

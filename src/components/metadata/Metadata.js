@@ -31,23 +31,25 @@ export default class Metadata extends Component {
       if (itemId) {
         let labels = [];
         this.setState({ loading: true });
-        axios.get("/api/items/" + itemId).then((response) => {
-          for (var val in response.data) {
-            if (
-              val.indexOf("o:") === -1 &&
-              val.indexOf("@") === -1 &&
-              val.indexOf("isPartOf") === -1
-            ) {
-              labels.push({
-                property: JSON.stringify(
-                  response.data[val][0]["property_label"]
-                ),
-                value: JSON.stringify(response.data[val][0]["@value"]),
-              });
+        axios
+          .get("http://10.134.196.104/api/items/" + itemId)
+          .then((response) => {
+            for (var val in response.data) {
+              if (
+                val.indexOf("o:") === -1 &&
+                val.indexOf("@") === -1 &&
+                val.indexOf("isPartOf") === -1
+              ) {
+                labels.push({
+                  property: JSON.stringify(
+                    response.data[val][0]["property_label"]
+                  ),
+                  value: JSON.stringify(response.data[val][0]["@value"]),
+                });
+              }
             }
-          }
-          this.setState({ data: labels, loading: false });
-        });
+            this.setState({ data: labels, loading: false });
+          });
       }
     } else {
       let labels = [];

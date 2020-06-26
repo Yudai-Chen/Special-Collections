@@ -11,6 +11,7 @@ import {
   Select,
   Row,
   Col,
+  Divider,
 } from "antd";
 import Datalist from "../dataList/DataList";
 import Filmstrip from "../filmstrip/Filmstrip";
@@ -59,20 +60,22 @@ export default class MainPage extends Component {
 
   loadTemplateList = () => {
     this.setState({ loading: true });
-    axios.get("/api/resource_templates").then((response) => {
-      let templates = response.data.map((each) => ({
-        id: each["o:id"],
-        title: each["o:label"],
-        properties: each["o:resource_template_property"],
-      }));
-      this.setState({ templates });
-      this.setState({ loading: false });
-    });
+    axios
+      .get("http://10.134.196.104/api/resource_templates")
+      .then((response) => {
+        let templates = response.data.map((each) => ({
+          id: each["o:id"],
+          title: each["o:label"],
+          properties: each["o:resource_template_property"],
+        }));
+        this.setState({ templates });
+        this.setState({ loading: false });
+      });
   };
 
   loadProjectList = () => {
     this.setState({ projectLoading: true });
-    axios.get("/api/item_sets").then((response) => {
+    axios.get("http://10.134.196.104/api/item_sets").then((response) => {
       let item_sets = response.data.map((each) => ({
         id: each["o:id"],
         title: each["o:title"],
@@ -84,14 +87,16 @@ export default class MainPage extends Component {
 
   loadClassList = () => {
     this.setState({ classLoading: true });
-    axios.get("/api/resource_classes?per_page=1000").then((response) => {
-      let classes = response.data.map((each) => ({
-        id: each["o:id"],
-        title: each["o:label"],
-      }));
-      this.setState({ classList: classes });
-      this.setState({ classLoading: false });
-    });
+    axios
+      .get("http://10.134.196.104/api/resource_classes?per_page=1000")
+      .then((response) => {
+        let classes = response.data.map((each) => ({
+          id: each["o:id"],
+          title: each["o:label"],
+        }));
+        this.setState({ classList: classes });
+        this.setState({ classLoading: false });
+      });
   };
 
   onRowClick = (record) => {
@@ -112,7 +117,9 @@ export default class MainPage extends Component {
     try {
       this.setState({ menuLoading: true });
       let requests = this.state.templates[key]["properties"].map((each) => {
-        return axios.get("/api/properties/" + each["o:property"]["o:id"]);
+        return axios.get(
+          "http://10.134.196.104/api/properties/" + each["o:property"]["o:id"]
+        );
       });
       axios.all(requests).then(
         axios.spread((...responses) => {
@@ -152,13 +159,51 @@ export default class MainPage extends Component {
     }
 
     axios
-      .get("/api/items", {
+      .get("http://10.134.196.104/api/items", {
         params: params,
       })
       .then(
         (response) => {
           let results = response.data.map((each) => each["o:id"]);
           this.setState({ results });
+        },
+        () => {
+          console.log("error");
+        }
+      );
+  };
+
+  searchTranscript = () => {
+    let params = {
+      fulltext_search: "",
+      ["property[0][joiner]"]: "and",
+      ["property[0][property]"]: 83,
+      ["property[0][type]"]: "in",
+      ["property[0][text]"]: "LETTER",
+      sort_by: "o:item"["o:id"],
+    };
+    axios
+      .get("http://10.134.196.104/api/media", {
+        params: params,
+      })
+      .then(
+        (response) => {
+          console.log(response.data);
+          let results = [];
+          let lastId = -1;
+          response.data.map((record) => {
+            if (record["o:item"]["o:id"] == lastId) {
+            } else {
+              results.push({
+                key: record["o:item"]["o:id"],
+                itemId: record["o:item"]["o:id"],
+                title: "Unknown",
+                created: "Unknown",
+                preview: record["thumbnail_urls"]["square"],
+                media: [{}],
+              });
+            }
+          });
         },
         () => {
           console.log("error");
@@ -196,6 +241,7 @@ export default class MainPage extends Component {
             )}
           </div>
           <div>
+            <Divider>Item Search</Divider>
             <Form
               {...layout}
               name="search-form"
@@ -409,6 +455,11 @@ export default class MainPage extends Component {
                 </Button>
               </Form.Item>
             </Form>
+            <Divider>Transcript Search</Divider>
+            <Input></Input>
+            <Button type="primary" onClick={this.searchTranscript}>
+              Search for transcript
+            </Button>
           </div>
         </Col>
         <Col span={18}>
@@ -428,6 +479,7 @@ export default class MainPage extends Component {
                 handleRowClick={this.onRowClick}
                 handleCreateProject={this.onCreateProject}
                 updataProjects={this.onUpdateProjects}
+                type="transcript"
               />
             </TabPane>
             <TabPane

@@ -66,6 +66,25 @@ function openInNewWindow(url) {
   }
 }
 
+const expandedRowRender = () => {
+  const columns = [
+    { title: "MediaId", dataIndex: "mediaId", key: "mediaId" },
+    { title: "Thumbnail", dataIndex: "thumbnail", key: "thumbnail" },
+    { title: "Transcript", dataIndex: "transcript", key: "transcript" },
+  ];
+
+  const data = [];
+  for (let i = 0; i < 3; ++i) {
+    data.push({
+      key: i,
+      mediaId: i,
+      thumbnail: "2014-12-24 23:12:00",
+      transcript: "This is production name",
+    });
+  }
+  return <Table columns={columns} dataSource={data} pagination={false} />;
+};
+
 class DataList extends Component {
   state = {
     selectedRowKeys: [],
@@ -96,32 +115,34 @@ class DataList extends Component {
   };
 
   onRowClick = (record) => {
-    return axios.get("/api/items/" + record["itemId"]).then((response) => {
-      let media = response.data["o:media"];
-      let requests = media.map((each) => {
-        return axios.get("/api/media/" + each["o:id"]);
-      });
-      let mediaInfo = [];
-      return axios
-        .all(requests)
-        .then(
-          axios.spread((...mediaPage) => {
-            mediaPage.map((each) => {
-              mediaInfo.push({
-                title: each.data["o:title"],
-                src: each.data["o:thumbnail_urls"]["medium"],
-              });
-            });
-          })
-        )
-        .then(() => {
-          return {
-            item: record["title"],
-            itemId: record["itemId"],
-            mediaInfo: mediaInfo,
-          };
+    return axios
+      .get("http://10.134.196.104/api/items/" + record["itemId"])
+      .then((response) => {
+        let media = response.data["o:media"];
+        let requests = media.map((each) => {
+          return axios.get("http://10.134.196.104/api/media/" + each["o:id"]);
         });
-    });
+        let mediaInfo = [];
+        return axios
+          .all(requests)
+          .then(
+            axios.spread((...mediaPage) => {
+              mediaPage.map((each) => {
+                mediaInfo.push({
+                  title: each.data["o:title"],
+                  src: each.data["o:thumbnail_urls"]["medium"],
+                });
+              });
+            })
+          )
+          .then(() => {
+            return {
+              item: record["title"],
+              itemId: record["itemId"],
+              mediaInfo: mediaInfo,
+            };
+          });
+      });
   };
 
   findNewProjectId = () => {
@@ -163,12 +184,15 @@ class DataList extends Component {
     this.setState({ updated: "false" });
     let requests = fileKeys.map((eachItem) => {
       return axios
-        .get("/api/items/" + eachItem)
+        .get("http://10.134.196.104/api/items/" + eachItem)
         .then((response) => {
           if (!response.data["dcterms:hasPart"]) {
             try {
               return axios
-                .get("/api/media/" + response.data["o:media"][0]["o:id"])
+                .get(
+                  "http://10.134.196.104/api/media/" +
+                    response.data["o:media"][0]["o:id"]
+                )
                 .then((response) => {
                   return response.data["o:thumbnail_urls"]["square"];
                 })
@@ -331,6 +355,10 @@ class DataList extends Component {
             rowSelection={rowSelection}
             columns={columns}
             dataSource={this.state.showData}
+            // expandable={{
+            //   expandedRowRender,
+            //   //this.props.type === "transcript" ? this.expandedRowRender : null
+            // }}
           />
           <div
             style={{

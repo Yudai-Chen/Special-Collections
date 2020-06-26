@@ -38,28 +38,32 @@ export default class Item extends Component {
   loadData = (itemId) => {
     if (itemId) {
       this.setState({ loading: true });
-      axios.get("/api/items/" + itemId).then((response) => {
-        this.state.data = response.data;
-        let media = response.data["o:media"];
-        this.state.pathLoading = true;
-        this.loadPath(itemId).then((path) => {
-          this.setState({ path: path.reverse(), pathLoading: false });
-        });
-        let fetched = media.map((each) => {
-          return axios.get("/api/media/" + each["o:id"]).then((mediaPage) => {
-            return {
-              key: mediaPage.data["o:id"],
-              src: mediaPage.data["o:original_url"],
-              alt: mediaPage.data["o:source"],
-            };
+      axios
+        .get("http://10.134.196.104/api/items/" + itemId)
+        .then((response) => {
+          this.state.data = response.data;
+          let media = response.data["o:media"];
+          this.state.pathLoading = true;
+          this.loadPath(itemId).then((path) => {
+            this.setState({ path: path.reverse(), pathLoading: false });
           });
+          let fetched = media.map((each) => {
+            return axios
+              .get("http://10.134.196.104/api/media/" + each["o:id"])
+              .then((mediaPage) => {
+                return {
+                  key: mediaPage.data["o:id"],
+                  src: mediaPage.data["o:original_url"],
+                  alt: mediaPage.data["o:source"],
+                };
+              });
+          });
+          axios.all(fetched).then(
+            axios.spread((...results) => {
+              this.setState({ media: results, loading: false });
+            })
+          );
         });
-        axios.all(fetched).then(
-          axios.spread((...results) => {
-            this.setState({ media: results, loading: false });
-          })
-        );
-      });
     }
   };
 
@@ -70,17 +74,19 @@ export default class Item extends Component {
   }
 
   loadPath = (itemId, path = []) => {
-    return axios.get("/api/items/" + itemId).then((response) => {
-      if (response.data["dcterms:isPartOf"]) {
-        path.push(...response.data["dcterms:isPartOf"]);
-        return this.loadPath(
-          response.data["dcterms:isPartOf"][0]["value_resource_id"],
-          path
-        );
-      } else {
-        return path;
-      }
-    });
+    return axios
+      .get("http://10.134.196.104/api/items/" + itemId)
+      .then((response) => {
+        if (response.data["dcterms:isPartOf"]) {
+          path.push(...response.data["dcterms:isPartOf"]);
+          return this.loadPath(
+            response.data["dcterms:isPartOf"][0]["value_resource_id"],
+            path
+          );
+        } else {
+          return path;
+        }
+      });
   };
 
   onNoteAdd = () => {

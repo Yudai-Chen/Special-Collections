@@ -49,7 +49,7 @@ export default class Archive extends Component {
   }
 
   async getRootData() {
-    const response = await axios.get("/api/items/103719");
+    const response = await axios.get("http://10.134.196.104/api/items/103719");
     const rootId = response.data["o:id"];
     const rootTitle = response.data["o:title"];
     const rootData = [
@@ -73,7 +73,9 @@ export default class Archive extends Component {
 
   onLoadData = async (treeNode) => {
     const parentId = treeNode.key;
-    const response = await axios.get("/api/items/" + parentId);
+    const response = await axios.get(
+      "http://10.134.196.104/api/items/" + parentId
+    );
 
     let list = response.data["dcterms:hasPart"];
     let thisChildren = [];
