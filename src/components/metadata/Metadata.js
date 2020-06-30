@@ -4,8 +4,8 @@ import axios from "axios";
 
 const columns = [
   {
-    title: "Property",
-    dataIndex: "property",
+    title: "Label",
+    dataIndex: "label",
     width: "30%",
   },
   {
@@ -32,22 +32,9 @@ export default class Metadata extends Component {
         let labels = [];
         this.setState({ loading: true });
         axios
-          .get("http://10.134.196.104/api/items/" + itemId)
+          .get("http://10.134.196.104/iiif/" + itemId + "/manifest")
           .then((response) => {
-            for (var val in response.data) {
-              if (
-                val.indexOf("o:") === -1 &&
-                val.indexOf("@") === -1 &&
-                val.indexOf("isPartOf") === -1
-              ) {
-                labels.push({
-                  property: JSON.stringify(
-                    response.data[val][0]["property_label"]
-                  ),
-                  value: JSON.stringify(response.data[val][0]["@value"]),
-                });
-              }
-            }
+            labels = response.data["metadata"];
             this.setState({ data: labels, loading: false });
           });
       }
@@ -57,10 +44,11 @@ export default class Metadata extends Component {
         if (
           val.indexOf("o:") === -1 &&
           val.indexOf("@") === -1 &&
-          val.indexOf("isPartOf") === -1
+          val.indexOf("isPartOf") === -1 &&
+          val.indexOf("hasPart") === -1
         ) {
           labels.push({
-            property: JSON.stringify(data[val][0]["property_label"]),
+            label: JSON.stringify(data[val][0]["property_label"]),
             value: JSON.stringify(data[val][0]["@value"]),
           });
         }

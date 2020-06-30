@@ -45,7 +45,12 @@ export default class Preview extends Component {
             {this.state.content.map((each) => {
               return (
                 <div>
-                  <img src={each.src} alt={each.title} />
+                  <img
+                    src={each.src}
+                    alt={each.title}
+                    height="200"
+                    width="200"
+                  />
                   <p>{each.title}</p>
                 </div>
               );

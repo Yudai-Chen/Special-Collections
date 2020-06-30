@@ -116,32 +116,20 @@ class DataList extends Component {
 
   onRowClick = (record) => {
     return axios
-      .get("http://10.134.196.104/api/items/" + record["itemId"])
+      .get("http://10.134.196.104/iiif/" + record["itemId"] + "/manifest")
       .then((response) => {
-        let media = response.data["o:media"];
-        let requests = media.map((each) => {
-          return axios.get("http://10.134.196.104/api/media/" + each["o:id"]);
-        });
-        let mediaInfo = [];
-        return axios
-          .all(requests)
-          .then(
-            axios.spread((...mediaPage) => {
-              mediaPage.map((each) => {
-                mediaInfo.push({
-                  title: each.data["o:title"],
-                  src: each.data["o:thumbnail_urls"]["medium"],
-                });
-              });
-            })
-          )
-          .then(() => {
-            return {
-              item: record["title"],
-              itemId: record["itemId"],
-              mediaInfo: mediaInfo,
-            };
-          });
+        let mediaInfo = response.data["sequences"][0].canvases.map(
+          (canvas, index) => ({
+            key: index,
+            src: canvas["thumbnail"]["@id"],
+            alt: canvas["label"],
+          })
+        );
+        return {
+          item: record["title"],
+          itemId: record["itemId"],
+          mediaInfo: mediaInfo,
+        };
       });
   };
 
@@ -181,62 +169,53 @@ class DataList extends Component {
   };
 
   getSelectedFiles = (fileKeys) => {
-    this.setState({ updated: "false" });
-    let requests = fileKeys.map((eachItem) => {
-      return axios
-        .get("http://10.134.196.104/api/items/" + eachItem)
-        .then((response) => {
-          if (!response.data["dcterms:hasPart"]) {
-            try {
-              return axios
-                .get(
-                  "http://10.134.196.104/api/media/" +
-                    response.data["o:media"][0]["o:id"]
-                )
-                .then((response) => {
-                  return response.data["o:thumbnail_urls"]["square"];
-                })
-                .then((src) => {
-                  return {
-                    key: response.data["o:id"],
-                    itemId: response.data["o:id"],
-                    title: response.data["o:title"],
-                    created: response.data["o:created"]["@value"],
-                    preview: src,
-                  };
-                });
-            } catch (err) {
-              let src = placeholder;
-              return {
-                key: response.data["o:id"],
-                itemId: response.data["o:id"],
-                title: response.data["o:title"],
-                created: response.data["o:created"]["@value"],
-                preview: src,
-              };
-            }
-          }
-        })
-        .then((child) => {
-          return child;
-        });
-    });
+    if (fileKeys.length > 0) {
+      this.setState({ updated: "false" });
 
-    axios
-      .all(requests)
-      .then(
-        axios.spread((...responses) => {
-          let data = [];
-          responses.map((each) => {
-            if (each) {
-              data.push(each);
-            }
-          });
-          this.setState({ showData: data });
-          this.setState({ updated: "true" });
-        })
-      )
-      .catch((errors) => {});
+      let ids = "";
+      fileKeys.map((eachItem) => {
+        ids += eachItem + ",";
+      });
+      axios
+        .get("http://10.134.196.104/iiif/collection/" + ids)
+        .then((response) => {
+          let requests = response.data["manifests"].map((manifest) =>
+            axios.get(manifest["@id"])
+          );
+          axios
+            .all(requests)
+            .then(
+              axios.spread((...responses) => {
+                let data = [];
+                responses.map((each) => {
+                  if (
+                    each.data["metadata"].filter(
+                      (each) => each["label"] == "Has Part"
+                    ).length == 0
+                  ) {
+                    let cutId = each.data["@id"].substring(
+                      0,
+                      each.data["@id"].length - 9
+                    );
+                    let itemId = cutId.substring(cutId.lastIndexOf("/") + 1);
+                    data.push({
+                      key: itemId,
+                      itemId,
+                      title: each.data["label"],
+                      created: "temp",
+                      preview: each.data["thumbnail"]
+                        ? each.data["thumbnail"]["@id"]
+                        : placeholder,
+                    });
+                  }
+                });
+                this.setState({ showData: data });
+                this.setState({ updated: "true" });
+              })
+            )
+            .catch((errors) => {});
+        });
+    }
   };
 
   componentWillReceiveProps(nextProps) {
