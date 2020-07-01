@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Tree } from "antd";
+import { HOST_ADDRESS } from "../../Mainpage";
 import "antd/dist/antd.css";
 
 const { DirectoryTree } = Tree;
@@ -49,7 +50,7 @@ export default class Archive extends Component {
   }
 
   async getRootData() {
-    const response = await axios.get("http://10.134.196.104/api/items/103719");
+    const response = await axios.get(HOST_ADDRESS + "/api/items/103719");
     const rootId = response.data["o:id"];
     const rootTitle = response.data["o:title"];
     const rootData = [
@@ -73,9 +74,7 @@ export default class Archive extends Component {
 
   onLoadData = async (treeNode) => {
     const parentId = treeNode.key;
-    const response = await axios.get(
-      "http://10.134.196.104/api/items/" + parentId
-    );
+    const response = await axios.get(HOST_ADDRESS + "/api/items/" + parentId);
 
     let list = response.data["dcterms:hasPart"];
     let thisChildren = [];

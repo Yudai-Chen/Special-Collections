@@ -5,6 +5,8 @@ import Item from "./components/item/Item";
 import ProjectsPage from "./components/projectsPage/ProjectsPage";
 import Home from "./components/home/Home";
 import SearchPage from "./components/searchPage/SearchPage";
+import Welcome from "../welcome/Welcome";
+
 import { Redirect, Link, Switch, HashRouter, Route } from "react-router-dom";
 import {
   FolderOutlined,
@@ -16,6 +18,8 @@ import "antd/dist/antd.css";
 const { Header } = Layout;
 
 const logo = require("./logo.png");
+
+export const HOST_ADDRESS = "http://10.134.196.104";
 
 export default class MainPage extends Component {
   state = {
@@ -56,6 +60,7 @@ export default class MainPage extends Component {
             <Route path="/items" component={ProjectsPage} />
             <Route path="/search" component={SearchPage} />
             <Route path="/home" component={Home} />
+            <Route path="/welcome" component={Welcome} />
             <Redirect from="/" to="/home" />
           </Switch>
         </HashRouter>

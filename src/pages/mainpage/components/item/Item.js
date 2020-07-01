@@ -3,9 +3,10 @@ import { Button, Divider, Row, Col, Spin, Layout, Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
 import ImageView from "../../../../components/imageView/ImageView";
 import Metadata from "../../../../components/metadata/Metadata";
+import RelationGraph from "../relationGraph/RelationGraph";
 import axios from "axios";
-
-const { Sider, Content } = Layout;
+import { HOST_ADDRESS } from "../../Mainpage";
+const { Content } = Layout;
 
 function openInNewWindow(url) {
   const win = window.open(url, "_blank");
@@ -38,30 +39,34 @@ export default class Item extends Component {
   loadData = (itemId) => {
     if (itemId) {
       this.setState({ loading: true });
-      axios
-        .get("http://10.134.196.104/api/items/" + itemId)
-        .then((response) => {
-          this.state.data = response.data;
-          this.state.pathLoading = true;
-          this.loadPath(itemId).then((path) => {
-            this.setState({ path: path.reverse(), pathLoading: false });
-          });
+      axios.get(HOST_ADDRESS + "/api/items/" + itemId).then((response) => {
+        this.state.data = response.data;
+        this.state.pathLoading = true;
+        this.loadPath(itemId).then((path) => {
+          this.setState({ path: path.reverse(), pathLoading: false });
         });
+      });
       axios
-        .get("http://10.134.196.104/iiif/" + itemId + "/manifest")
+        .get(HOST_ADDRESS + "/iiif/" + itemId + "/manifest")
         .then((response) => {
-          let media = response.data["sequences"][0].canvases.map(
-            (canvas, index) => ({
-              key: canvas["images"][0]["resource"]["service"]["@id"].substring(
-                canvas["images"][0]["resource"]["service"]["@id"].lastIndexOf(
-                  "/"
-                ) + 1
-              ),
-              src: canvas["images"][0]["resource"]["@id"],
-              alt: canvas["label"],
-            })
-          );
-          this.setState({ media, loading: false });
+          try {
+            let media = response.data["sequences"][0].canvases.map(
+              (canvas, index) => ({
+                key: canvas["images"][0]["resource"]["service"][
+                  "@id"
+                ].substring(
+                  canvas["images"][0]["resource"]["service"]["@id"].lastIndexOf(
+                    "/"
+                  ) + 1
+                ),
+                src: canvas["images"][0]["resource"]["@id"],
+                alt: canvas["label"],
+              })
+            );
+            this.setState({ media, loading: false });
+          } catch (error) {
+            this.setState({ media: [], loading: false });
+          }
         });
     }
   };
@@ -73,19 +78,17 @@ export default class Item extends Component {
   }
 
   loadPath = (itemId, path = []) => {
-    return axios
-      .get("http://10.134.196.104/api/items/" + itemId)
-      .then((response) => {
-        if (response.data["dcterms:isPartOf"]) {
-          path.push(...response.data["dcterms:isPartOf"]);
-          return this.loadPath(
-            response.data["dcterms:isPartOf"][0]["value_resource_id"],
-            path
-          );
-        } else {
-          return path;
-        }
-      });
+    return axios.get(HOST_ADDRESS + "/api/items/" + itemId).then((response) => {
+      if (response.data["dcterms:isPartOf"]) {
+        path.push(...response.data["dcterms:isPartOf"]);
+        return this.loadPath(
+          response.data["dcterms:isPartOf"][0]["value_resource_id"],
+          path
+        );
+      } else {
+        return path;
+      }
+    });
   };
 
   onNoteAdd = () => {
@@ -158,7 +161,7 @@ export default class Item extends Component {
                       </div>
                     </div>
                   </Col>
-                  <Col span={16}>
+                  <Col span={12}>
                     <Metadata
                       target={{
                         itemId: this.state.id,
@@ -166,16 +169,28 @@ export default class Item extends Component {
                       }}
                     />
                   </Col>
+                  <Col span={4}>
+                    <RelationGraph
+                      itemId={this.state.id}
+                      title={this.state.data["o:title"]}
+                    ></RelationGraph>
+                  </Col>
                 </Row>
               ) : (
                 <Row gutter={16}>
-                  <Col span={24}>
+                  <Col span={18}>
                     <Metadata
                       target={{
                         itemId: this.state.id,
                         data: this.state.data,
                       }}
                     />
+                  </Col>
+                  <Col span={6}>
+                    <RelationGraph
+                      itemId={this.state.id}
+                      title={this.state.data["o:title"]}
+                    ></RelationGraph>
                   </Col>
                 </Row>
               )}

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Card, Col, Row } from "antd";
 import axios from "axios";
-
+import { HOST_ADDRESS } from "../../Mainpage";
 const { Meta } = Card;
 
 export default class Filmstrip extends Component {
@@ -19,16 +19,14 @@ export default class Filmstrip extends Component {
     let data = [];
     let total = 0;
     const promises = fileKeys.map(async (eachItem) => {
-      let response = await axios.get(
-        "http://10.134.196.104/api/items/" + eachItem
-      );
+      let response = await axios.get(HOST_ADDRESS + "/api/items/" + eachItem);
       let media = response.data["o:media"];
       let itemTitle = response.data["o:title"];
       if (media.length > 0) {
         total += media.length;
         let innerPromises = media.map(async (each) => {
           let mediaPage = await axios.get(
-            "http://10.134.196.104/api/media/" + each["o:id"]
+            HOST_ADDRESS + "/api/media/" + each["o:id"]
           );
 
           data.push(

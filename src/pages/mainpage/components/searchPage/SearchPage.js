@@ -23,6 +23,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
+import { HOST_ADDRESS } from "../../Mainpage";
 const { Option } = Select;
 const { TabPane } = Tabs;
 
@@ -30,6 +31,8 @@ const layout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
+
+const placeholder = require("../../image-placeholder.png");
 
 export default class MainPage extends Component {
   state = {
@@ -47,6 +50,7 @@ export default class MainPage extends Component {
     projectLoading: false,
     classLoading: false,
     results: [],
+    transcriptKeyword: "",
   };
 
   formRef = React.createRef();
@@ -60,22 +64,20 @@ export default class MainPage extends Component {
 
   loadTemplateList = () => {
     this.setState({ loading: true });
-    axios
-      .get("http://10.134.196.104/api/resource_templates")
-      .then((response) => {
-        let templates = response.data.map((each) => ({
-          id: each["o:id"],
-          title: each["o:label"],
-          properties: each["o:resource_template_property"],
-        }));
-        this.setState({ templates });
-        this.setState({ loading: false });
-      });
+    axios.get(HOST_ADDRESS + "/api/resource_templates").then((response) => {
+      let templates = response.data.map((each) => ({
+        id: each["o:id"],
+        title: each["o:label"],
+        properties: each["o:resource_template_property"],
+      }));
+      this.setState({ templates });
+      this.setState({ loading: false });
+    });
   };
 
   loadProjectList = () => {
     this.setState({ projectLoading: true });
-    axios.get("http://10.134.196.104/api/item_sets").then((response) => {
+    axios.get(HOST_ADDRESS + "/api/item_sets").then((response) => {
       let item_sets = response.data.map((each) => ({
         id: each["o:id"],
         title: each["o:title"],
@@ -88,7 +90,7 @@ export default class MainPage extends Component {
   loadClassList = () => {
     this.setState({ classLoading: true });
     axios
-      .get("http://10.134.196.104/api/resource_classes?per_page=1000")
+      .get(HOST_ADDRESS + "/api/resource_classes?per_page=1000")
       .then((response) => {
         let classes = response.data.map((each) => ({
           id: each["o:id"],
@@ -118,13 +120,16 @@ export default class MainPage extends Component {
       this.setState({ menuLoading: true });
       let requests = this.state.templates[key]["properties"].map((each) => {
         return axios.get(
-          "http://10.134.196.104/api/properties/" + each["o:property"]["o:id"]
+          HOST_ADDRESS + "/api/properties/" + each["o:property"]["o:id"]
         );
       });
       axios.all(requests).then(
         axios.spread((...responses) => {
           let properties = responses.map((each) => {
-            return { id: each.data["o:id"], title: each.data["o:local_name"] };
+            return {
+              id: each.data["o:id"],
+              title: each.data["o:local_name"],
+            };
           });
           this.setState({
             templateName: this.state.templates[key]["title"],
@@ -159,13 +164,17 @@ export default class MainPage extends Component {
     }
 
     axios
-      .get("http://10.134.196.104/api/items", {
+      .get(HOST_ADDRESS + "/api/items", {
         params: params,
       })
       .then(
         (response) => {
+          this.setState({ loadingResults: true });
           let results = response.data.map((each) => each["o:id"]);
-          this.setState({ results });
+          this.setState({ results }, () => {
+            this.setState({ transcriptSearch: false });
+            this.setState({ loadingResults: false });
+          });
         },
         () => {
           console.log("error");
@@ -174,41 +183,74 @@ export default class MainPage extends Component {
   };
 
   searchTranscript = () => {
+    let transcriptItems = [];
     let params = {
       fulltext_search: "",
       ["property[0][joiner]"]: "and",
       ["property[0][property]"]: 83,
       ["property[0][type]"]: "in",
-      ["property[0][text]"]: "LETTER",
+      ["property[0][text]"]: this.state.transcriptKeyword,
       sort_by: "o:item"["o:id"],
     };
     axios
-      .get("http://10.134.196.104/api/media", {
+      .get(HOST_ADDRESS + "/api/media", {
         params: params,
       })
       .then(
         (response) => {
-          console.log(response.data);
           let results = [];
           let lastId = -1;
+          this.setState({ loadingResults: true });
           response.data.map((record) => {
             if (record["o:item"]["o:id"] == lastId) {
+              results[results.length - 1].media.push({
+                mediaId: record["o:id"],
+                mediaTitle: record["o:title"],
+                thumbnail: record["o:thumbnail_urls"]["square"],
+                transcript: record["bibo:transcriptOf"]
+                  ? record["bibo:transcriptOf"][0]["@value"].substring(0, 50)
+                  : "",
+              });
             } else {
+              transcriptItems.push(record["o:item"]["o:id"]);
               results.push({
                 key: record["o:item"]["o:id"],
                 itemId: record["o:item"]["o:id"],
                 title: "Unknown",
                 created: "Unknown",
-                preview: record["thumbnail_urls"]["square"],
-                media: [{}],
+                preview: placeholder,
+                media: [
+                  {
+                    mediaId: record["o:id"],
+                    mediaTitle: record["o:title"],
+                    thumbnail: record["o:thumbnail_urls"]["square"],
+                    transcript: record["bibo:transcriptOf"]
+                      ? record["bibo:transcriptOf"][0]["@value"].substring(
+                          0,
+                          50
+                        )
+                      : "",
+                  },
+                ],
               });
+              lastId = record["o:item"]["o:id"];
             }
           });
+          return results;
         },
+
         () => {
           console.log("error");
         }
-      );
+      )
+      .then((results) => {
+        this.setState({ results, transcriptItems }, () => {
+          this.setState({
+            loadingResults: false,
+            transcriptSearch: true,
+          });
+        });
+      });
   };
 
   render() {
@@ -256,7 +298,10 @@ export default class MainPage extends Component {
                       {fields.map((field, index) => (
                         <Space
                           key={field.key}
-                          style={{ display: "flex", marginBottom: 8 }}
+                          style={{
+                            display: "flex",
+                            marginBottom: 8,
+                          }}
                           align="start"
                         >
                           <Form.Item {...field} label={"Property " + index}>
@@ -456,10 +501,19 @@ export default class MainPage extends Component {
               </Form.Item>
             </Form>
             <Divider>Transcript Search</Divider>
-            <Input></Input>
-            <Button type="primary" onClick={this.searchTranscript}>
-              Search for transcript
-            </Button>
+            <Space direction="vertical" style={{ width: "100%" }}>
+              <Input
+                addonBefore="Keyword"
+                placeholder="Search for media whose transcript contains ..."
+                value={this.state.transcriptKeyword}
+                onChange={({ target: { value } }) => {
+                  this.setState({ transcriptKeyword: value });
+                }}
+              ></Input>
+              <Button type="primary" onClick={this.searchTranscript}>
+                Search for transcript
+              </Button>
+            </Space>
           </div>
         </Col>
         <Col span={18}>
@@ -479,7 +533,9 @@ export default class MainPage extends Component {
                 handleRowClick={this.onRowClick}
                 handleCreateProject={this.onCreateProject}
                 updataProjects={this.onUpdateProjects}
-                type="transcript"
+                type={this.state.transcriptSearch}
+                loading={this.state.loadingResults}
+                transcriptItems={this.state.transcriptItems}
               />
             </TabPane>
             <TabPane

@@ -69,6 +69,7 @@ export default class MainContent extends Component {
                 handleRowClick={this.onRowClick}
                 handleCreateProject={this.onCreateProject}
                 updataProjects={this.onUpdateProjects}
+                type={false}
               />
             </TabPane>
             <TabPane

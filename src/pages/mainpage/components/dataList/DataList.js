@@ -3,6 +3,7 @@ import { Spin, Input, Modal, Button, Table, Space, Menu, Dropdown } from "antd";
 import { withRouter, Link } from "react-router-dom";
 import { DownOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { HOST_ADDRESS } from "../../Mainpage";
 
 const placeholder = require("../../image-placeholder.png");
 
@@ -24,7 +25,7 @@ const columns = [
     title: "Title",
     dataIndex: "title",
     sorter: {
-      compare: (a, b) => a.item.localeCompare(b.item),
+      compare: (a, b) => a.title.localeCompare(b.title),
       // multiple: 3,
     },
   },
@@ -45,9 +46,7 @@ const columns = [
     dataIndex: "view",
     render: (text, record) => (
       <Space size="middle">
-        <a>
-          <Link to={"/items/" + record.key}>View</Link>
-        </a>
+        <Link to={"/items/" + record.key}>View</Link>
       </Space>
     ),
   },
@@ -65,25 +64,6 @@ function openInNewWindow(url) {
     win.focus();
   }
 }
-
-const expandedRowRender = () => {
-  const columns = [
-    { title: "MediaId", dataIndex: "mediaId", key: "mediaId" },
-    { title: "Thumbnail", dataIndex: "thumbnail", key: "thumbnail" },
-    { title: "Transcript", dataIndex: "transcript", key: "transcript" },
-  ];
-
-  const data = [];
-  for (let i = 0; i < 3; ++i) {
-    data.push({
-      key: i,
-      mediaId: i,
-      thumbnail: "2014-12-24 23:12:00",
-      transcript: "This is production name",
-    });
-  }
-  return <Table columns={columns} dataSource={data} pagination={false} />;
-};
 
 class DataList extends Component {
   state = {
@@ -116,7 +96,7 @@ class DataList extends Component {
 
   onRowClick = (record) => {
     return axios
-      .get("http://10.134.196.104/iiif/" + record["itemId"] + "/manifest")
+      .get(HOST_ADDRESS + "/iiif/" + record["itemId"] + "/manifest")
       .then((response) => {
         let mediaInfo = response.data["sequences"][0].canvases.map(
           (canvas, index) => ({
@@ -168,63 +148,131 @@ class DataList extends Component {
     this.setModalVisible(false);
   };
 
+  getPayload = (payload, transcriptItems) => {
+    this.setState({ updated: "false" });
+    this.setState({ showData: payload }, () => {
+      this.setState({ updated: "true" });
+    });
+  };
+
   getSelectedFiles = (fileKeys) => {
     if (fileKeys.length > 0) {
       this.setState({ updated: "false" });
-
-      let ids = "";
-      fileKeys.map((eachItem) => {
-        ids += eachItem + ",";
+      let requests = fileKeys.map((eachItem) => {
+        return axios
+          .get(HOST_ADDRESS + "/api/items/" + eachItem)
+          .then((response) => {
+            if (!response.data["dcterms:hasPart"]) {
+              try {
+                return axios
+                  .get(
+                    HOST_ADDRESS +
+                      "/api/media/" +
+                      response.data["o:media"][0]["o:id"]
+                  )
+                  .then((response) => {
+                    return response.data["o:thumbnail_urls"]["square"];
+                  })
+                  .then((src) => {
+                    return {
+                      key: response.data["o:id"],
+                      itemId: response.data["o:id"],
+                      title: response.data["o:title"],
+                      created: response.data["o:created"]["@value"],
+                      preview: src,
+                    };
+                  });
+              } catch (err) {
+                let src = placeholder;
+                return {
+                  key: response.data["o:id"],
+                  itemId: response.data["o:id"],
+                  title: response.data["o:title"],
+                  created: response.data["o:created"]["@value"],
+                  preview: src,
+                };
+              }
+            }
+          })
+          .then((child) => {
+            return child;
+          });
       });
       axios
-        .get("http://10.134.196.104/iiif/collection/" + ids)
-        .then((response) => {
-          let requests = response.data["manifests"].map((manifest) =>
-            axios.get(manifest["@id"])
-          );
-          axios
-            .all(requests)
-            .then(
-              axios.spread((...responses) => {
-                let data = [];
-                responses.map((each) => {
-                  if (
-                    each.data["metadata"].filter(
-                      (each) => each["label"] == "Has Part"
-                    ).length == 0
-                  ) {
-                    let cutId = each.data["@id"].substring(
-                      0,
-                      each.data["@id"].length - 9
-                    );
-                    let itemId = cutId.substring(cutId.lastIndexOf("/") + 1);
-                    data.push({
-                      key: itemId,
-                      itemId,
-                      title: each.data["label"],
-                      created: "temp",
-                      preview: each.data["thumbnail"]
-                        ? each.data["thumbnail"]["@id"]
-                        : placeholder,
-                    });
-                  }
-                });
-                this.setState({ showData: data });
-                this.setState({ updated: "true" });
-              })
-            )
-            .catch((errors) => {});
-        });
+        .all(requests)
+        .then(
+          axios.spread((...responses) => {
+            let data = [];
+            responses.map((each) => {
+              if (each) {
+                data.push(each);
+              }
+            });
+            this.setState({ showData: data });
+            this.setState({ updated: "true" });
+          })
+        )
+        .catch((errors) => {});
+
+      // let ids = "";
+      // fileKeys.map((eachItem) => {
+      //   ids += eachItem + ",";
+      // });
+      // axios
+      //   .get(HOST_ADDRESS + "/iiif/collection/" + ids)
+      //   .then((response) => {
+      //     let requests = response.data["manifests"].map((manifest) =>
+      //       axios.get(manifest["@id"])
+      //     );
+      //     axios
+      //       .all(requests)
+      //       .then(
+      //         axios.spread((...responses) => {
+      //           let data = [];
+      //           responses.map((each) => {
+      //             if (
+      //               each.data["metadata"].filter(
+      //                 (each) => each["label"] == "Has Part"
+      //               ).length == 0
+      //             ) {
+      //               let cutId = each.data["@id"].substring(
+      //                 0,
+      //                 each.data["@id"].length - 9
+      //               );
+      //               let itemId = cutId.substring(cutId.lastIndexOf("/") + 1);
+      //               data.push({
+      //                 key: itemId,
+      //                 itemId,
+      //                 title: each.data["label"],
+      //                 created: "temp",
+      //                 preview: each.data["thumbnail"]
+      //                   ? each.data["thumbnail"]["@id"]
+      //                   : placeholder,
+      //               });
+      //             }
+      //           });
+      //           this.setState({ showData: data });
+      //           this.setState({ updated: "true" });
+      //         })
+      //       )
+      //       .catch((errors) => {});
+      //   });
     }
   };
 
   componentWillReceiveProps(nextProps) {
-    let oldSet = new Set(this.props["shownFiles"]);
-    let newSet = new Set(nextProps["shownFiles"]);
-    if (!eqSet(oldSet, newSet)) {
-      this.getSelectedFiles(nextProps["shownFiles"]);
+    if (!nextProps["loading"]) {
+      if (!nextProps["type"]) {
+        let oldSet = new Set(this.props["shownFiles"]);
+        let newSet = new Set(nextProps["shownFiles"]);
+        if (!eqSet(oldSet, newSet)) {
+          this.getSelectedFiles(nextProps["shownFiles"]);
+        }
+        this.setState({ projects: nextProps["projects"] });
+      } else {
+        this.getPayload(nextProps["shownFiles"], nextProps["transcriptItems"]);
+      }
     }
-    this.setState({ projects: nextProps["projects"] });
   }
 
   setModalVisible = (modalVisible) => {
@@ -278,15 +326,6 @@ class DataList extends Component {
     });
 
     openInNewWindow("/#/note/" + JSON.stringify(data));
-    // return (
-    //   <Link
-    //     to={{
-    //       pathname: "/note",
-    //       state: { targets: data },
-    //     }}
-    //     target="_blank"
-    //   ></Link>
-    // );
   };
 
   onMenuClick = ({ key }) => {
@@ -294,6 +333,43 @@ class DataList extends Component {
       let project = this.state.projects.filter((each) => each["key"] == key);
       this.setState({ menuDisplay: project[0]["title"], addProjectId: key });
     } catch (error) {}
+  };
+
+  expandedRowRender = (record) => {
+    const columns = [
+      {
+        title: "Thumbnail",
+        dataIndex: "thumbnail",
+        key: "thumbnail",
+        render: (record) => <img src={record} width="20px" alt="" />,
+      },
+      { title: "Media Id", dataIndex: "mediaId", key: "mediaId" },
+      { title: "Media Title", dataIndex: "mediaTitle", key: "mediaTitle" },
+      {
+        title: "Transcript",
+        dataIndex: "transcript",
+        key: "transcript",
+        ellipsis: true,
+      },
+      {
+        title: "View",
+        dataIndex: "view",
+        render: (text, record) => (
+          <Space size="middle">
+            <Link to={"/media/" + record.mediaId} target="_blank">
+              View
+            </Link>
+          </Space>
+        ),
+      },
+    ];
+    return (
+      <Table
+        columns={columns}
+        dataSource={record["media"]}
+        pagination={false}
+      />
+    );
   };
 
   render() {
@@ -334,10 +410,10 @@ class DataList extends Component {
             rowSelection={rowSelection}
             columns={columns}
             dataSource={this.state.showData}
-            // expandable={{
-            //   expandedRowRender,
-            //   //this.props.type === "transcript" ? this.expandedRowRender : null
-            // }}
+            expandable={{
+              expandedRowRender:
+                this.props.type === true ? this.expandedRowRender : null,
+            }}
           />
           <div
             style={{

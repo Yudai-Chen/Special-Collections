@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Spin, Tree } from "antd";
 import { Redirect, withRouter } from "react-router-dom";
 import axios from "axios";
-
+import { HOST_ADDRESS } from "../../Mainpage";
 const { DirectoryTree } = Tree;
 
 function updateTreeData(list, key, children) {
@@ -37,7 +37,7 @@ class ProjectList extends Component {
   onLoadData = async (treeNode) => {
     let item_set_id = treeNode.key;
     const response = await axios.get(
-      "http://10.134.196.104/api/items?item_set_id=" + item_set_id
+      HOST_ADDRESS + "/api/items?item_set_id=" + item_set_id
     );
     let thisChildren = response.data.map((each) => ({
       key: item_set_id + "-" + each["o:id"],
@@ -61,7 +61,7 @@ class ProjectList extends Component {
 
   loadProjectList = () => {
     this.state.projectLoading = true;
-    axios.get("http://10.134.196.104/api/item_sets").then((response) => {
+    axios.get(HOST_ADDRESS + "/api/item_sets").then((response) => {
       let item_sets = response.data.map((each) => ({
         key: each["o:id"],
         title: each["o:title"],

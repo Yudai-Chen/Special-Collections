@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Table, Spin } from "antd";
 import axios from "axios";
+import { HOST_ADDRESS } from "../../pages/mainpage/Mainpage";
 
 const columns = [
   {
@@ -32,7 +33,7 @@ export default class Metadata extends Component {
         let labels = [];
         this.setState({ loading: true });
         axios
-          .get("http://10.134.196.104/iiif/" + itemId + "/manifest")
+          .get(HOST_ADDRESS + "/iiif/" + itemId + "/manifest")
           .then((response) => {
             labels = response.data["metadata"];
             this.setState({ data: labels, loading: false });

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ImageView from "../../components/imageView/ImageView";
 import axios from "axios";
 import { Button, Layout, Row, Col, Spin, Input } from "antd";
+import { HOST_ADDRESS } from "../../pages/mainpage/Mainpage";
 
 const { TextArea } = Input;
 const { Header, Content } = Layout;
@@ -22,7 +23,7 @@ export default class ImageDetails extends Component {
     this.state.mediaId = id;
     try {
       axios
-        .get("http://10.134.196.104/api/media/" + id)
+        .get(HOST_ADDRESS + "/api/media/" + id)
         .then((response) => {
           this.state.data = response.data;
         })
