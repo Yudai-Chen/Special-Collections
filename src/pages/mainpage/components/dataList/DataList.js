@@ -303,32 +303,32 @@ class DataList extends Component {
 
       "@type": ["o:Item"],
 
-      "o:resource_class": {
-        "o:id": 362,
-        "@id": "http://10.134.196.104/api/resource_classes/362",
-      },
+      // "o:resource_class": {
+      //   "o:id": 362,
+      //   "@id": "http://10.134.196.104/api/resource_classes/362",
+      // },
     };
-    axios.get(HOST_ADDRESS + "/api/items/150064").then((response) => {
-      console.log("get");
-      console.log(response.data);
-      // axios
-      //   .post(HOST_ADDRESS + "/api/items", response.data, {
-      //     params: {
-      //       key_identity: "NLRZBFxnrjOAfC7SGgiFQ0CXrbXryKcs",
-      //       key_credential: "IdhCdIlVncnMBkXxtOTt9aEx87cD0HRg",
-      //     },
-      //     headers: headers,
-      //   })
-      //   .then((response) => {
-      //     console.log("new post");
-      //     console.log(response.data);
-      //   });
-    });
+    // axios.get(HOST_ADDRESS + "/api/items/150064").then((response) => {
+    //   console.log("get");
+    //   console.log(response.data);
+    //   // axios
+    //   //   .post(HOST_ADDRESS + "/api/items", response.data, {
+    //   //     params: {
+    //   //       key_identity: "NLRZBFxnrjOAfC7SGgiFQ0CXrbXryKcs",
+    //   //       key_credential: "IdhCdIlVncnMBkXxtOTt9aEx87cD0HRg",
+    //   //     },
+    //   //     headers: headers,
+    //   //   })
+    //   //   .then((response) => {
+    //   //     console.log("new post");
+    //   //     console.log(response.data);
+    //   //   });
+    // });
     axios
       .post(HOST_ADDRESS + "/api/items", payload, {
         params: {
-          key_identity: "NLRZBFxnrjOAfC7SGgiFQ0CXrbXryKcs",
-          key_credential: "IdhCdIlVncnMBkXxtOTt9aEx87cD0HRg",
+          key_identity: "sBskEv8YoF88Pea9Eitpz8WqvEujhmZi",
+          key_credential: "Dq0tuMI7lzew7LouLCzxEOIn4u1h7f7F",
         },
         headers: headers,
       })

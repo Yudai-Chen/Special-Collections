@@ -19,7 +19,7 @@ const { Header } = Layout;
 
 const logo = require("./logo.png");
 
-export const HOST_ADDRESS = "http://10.134.196.104";
+export const HOST_ADDRESS = "http://10.134.196.80";
 
 export default class MainPage extends Component {
   state = {
