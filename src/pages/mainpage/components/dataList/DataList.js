@@ -158,32 +158,22 @@ class DataList extends Component {
   getSelectedFiles = (fileKeys) => {
     if (fileKeys.length > 0) {
       this.setState({ updated: "false" });
-      let requests = fileKeys.map((eachItem) => {
-        return axios
-          .get(HOST_ADDRESS + "/api/items/" + eachItem)
-          .then((response) => {
-            if (!response.data["dcterms:hasPart"]) {
-              try {
-                return axios
-                  .get(
-                    HOST_ADDRESS +
-                      "/api/media/" +
-                      response.data["o:media"][0]["o:id"]
-                  )
-                  .then((response) => {
-                    return response.data["o:thumbnail_urls"]["square"];
-                  })
-                  .then((src) => {
-                    return {
-                      key: response.data["o:id"],
-                      itemId: response.data["o:id"],
-                      title: response.data["o:title"],
-                      created: response.data["o:created"]["@value"],
-                      preview: src,
-                    };
-                  });
-              } catch (err) {
-                let src = placeholder;
+      let requests = fileKeys.map(async (eachItem) => {
+        const response = await axios.get(
+          HOST_ADDRESS + "/api/items/" + eachItem
+        );
+        if (!response.data["dcterms:hasPart"]) {
+          try {
+            return axios
+              .get(
+                HOST_ADDRESS +
+                  "/api/media/" +
+                  response.data["o:media"][0]["o:id"]
+              )
+              .then((response_1) => {
+                return response_1.data["o:thumbnail_urls"]["square"];
+              })
+              .then((src) => {
                 return {
                   key: response.data["o:id"],
                   itemId: response.data["o:id"],
@@ -191,12 +181,20 @@ class DataList extends Component {
                   created: response.data["o:created"]["@value"],
                   preview: src,
                 };
-              }
-            }
-          })
-          .then((child) => {
-            return child;
-          });
+              });
+          } catch (err) {
+            let src_1 = placeholder;
+            return {
+              key: response.data["o:id"],
+              itemId: response.data["o:id"],
+              title: response.data["o:title"],
+              created: response.data["o:created"]["@value"],
+              preview: src_1,
+            };
+          }
+        }
+        const child = undefined;
+        return child;
       });
       axios
         .all(requests)
@@ -261,17 +259,15 @@ class DataList extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps["loading"]) {
-      if (!nextProps["type"]) {
-        let oldSet = new Set(this.props["shownFiles"]);
-        let newSet = new Set(nextProps["shownFiles"]);
-        if (!eqSet(oldSet, newSet)) {
-          this.getSelectedFiles(nextProps["shownFiles"]);
-        }
-        this.setState({ projects: nextProps["projects"] });
-      } else {
-        this.getPayload(nextProps["shownFiles"], nextProps["transcriptItems"]);
+    if (!nextProps["type"]) {
+      let oldSet = new Set(this.props["shownFiles"]);
+      let newSet = new Set(nextProps["shownFiles"]);
+      if (!eqSet(oldSet, newSet)) {
+        this.getSelectedFiles(nextProps["shownFiles"]);
       }
+      this.setState({ projects: nextProps["projects"] });
+    } else {
+      this.getPayload(nextProps["shownFiles"], nextProps["transcriptItems"]);
     }
   }
 
@@ -292,27 +288,76 @@ class DataList extends Component {
       });
       return;
     }
-    let all = this.state.projects;
-    all.map((eachProject) => {
-      if (eachProject.key == key) {
-        let oldChildren = [];
-        eachProject.children.map((eachChild) => {
-          oldChildren.push(eachChild["itemId"]);
-        });
-        let oldChildrenSet = new Set(oldChildren);
-        this.state.selectedRows.map((eachRow) => {
-          if (!oldChildrenSet.has(eachRow["itemId"])) {
-            eachProject.children.push({
-              key: key + "-" + eachRow["itemId"],
-              itemId: eachRow["itemId"],
-              title: eachRow["title"],
-              isLeaf: true,
-            });
-          }
-        });
-      }
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    let payload = {
+      "dcterms:title": [
+        {
+          type: "literal",
+          property_id: 1,
+          property_label: "Title",
+          "@value": "react test",
+        },
+      ],
+
+      "@type": ["o:Item"],
+
+      "o:resource_class": {
+        "o:id": 362,
+        "@id": "http://10.134.196.104/api/resource_classes/362",
+      },
+    };
+    axios.get(HOST_ADDRESS + "/api/items/150064").then((response) => {
+      console.log("get");
+      console.log(response.data);
+      // axios
+      //   .post(HOST_ADDRESS + "/api/items", response.data, {
+      //     params: {
+      //       key_identity: "NLRZBFxnrjOAfC7SGgiFQ0CXrbXryKcs",
+      //       key_credential: "IdhCdIlVncnMBkXxtOTt9aEx87cD0HRg",
+      //     },
+      //     headers: headers,
+      //   })
+      //   .then((response) => {
+      //     console.log("new post");
+      //     console.log(response.data);
+      //   });
     });
-    this.props.updataProjects(all);
+    axios
+      .post(HOST_ADDRESS + "/api/items", payload, {
+        params: {
+          key_identity: "NLRZBFxnrjOAfC7SGgiFQ0CXrbXryKcs",
+          key_credential: "IdhCdIlVncnMBkXxtOTt9aEx87cD0HRg",
+        },
+        headers: headers,
+      })
+      .then((response) => {
+        console.log("post");
+        console.log(response.data);
+      });
+
+    // let all = this.state.projects;
+    // all.map((eachProject) => {
+    //   if (eachProject.key == key) {
+    //     let oldChildren = [];
+    //     eachProject.children.map((eachChild) => {
+    //       oldChildren.push(eachChild["itemId"]);
+    //     });
+    //     let oldChildrenSet = new Set(oldChildren);
+    //     this.state.selectedRows.map((eachRow) => {
+    //       if (!oldChildrenSet.has(eachRow["itemId"])) {
+    //         eachProject.children.push({
+    //           key: key + "-" + eachRow["itemId"],
+    //           itemId: eachRow["itemId"],
+    //           title: eachRow["title"],
+    //           isLeaf: true,
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
+    // this.props.updataProjects(all);
     this.setModal2Visible(false);
   };
 

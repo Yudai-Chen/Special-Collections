@@ -94,6 +94,7 @@ class ProjectList extends Component {
     ) : (
       <div className="project-list-container">
         <DirectoryTree
+          blockNode={true}
           treeData={this.state.projects}
           loadData={this.onLoadData}
           onSelect={this.onSelect}

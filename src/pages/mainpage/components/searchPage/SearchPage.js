@@ -164,7 +164,7 @@ export default class MainPage extends Component {
     }
 
     axios
-      .get(HOST_ADDRESS + "/api/items", {
+      .get(HOST_ADDRESS + "/api/items?per_page=1000", {
         params: params,
       })
       .then(
@@ -193,7 +193,7 @@ export default class MainPage extends Component {
       sort_by: "o:item"["o:id"],
     };
     axios
-      .get(HOST_ADDRESS + "/api/media", {
+      .get(HOST_ADDRESS + "/api/media?per_page=1000", {
         params: params,
       })
       .then(
