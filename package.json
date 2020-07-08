@@ -142,5 +142,6 @@
     "presets": [
       "react-app"
     ]
-  }
+  },
+  "homepage": "http://localhost/react"
 }
