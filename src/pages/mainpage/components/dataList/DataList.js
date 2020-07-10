@@ -87,7 +87,7 @@ class DataList extends Component {
       if (props["project"]["key"]) {
         this.state.projects.push(props["project"]);
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
@@ -167,8 +167,8 @@ class DataList extends Component {
             return axios
               .get(
                 HOST_ADDRESS +
-                  "/api/media/" +
-                  response.data["o:media"][0]["o:id"]
+                "/api/media/" +
+                response.data["o:media"][0]["o:id"]
               )
               .then((response_1) => {
                 return response_1.data["o:thumbnail_urls"]["square"];
@@ -210,7 +210,7 @@ class DataList extends Component {
             this.setState({ updated: "true" });
           })
         )
-        .catch((errors) => {});
+        .catch((errors) => { });
 
       // let ids = "";
       // fileKeys.map((eachItem) => {
@@ -289,7 +289,7 @@ class DataList extends Component {
       return;
     }
     const headers = {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     };
     let payload = {
       "dcterms:title": [
@@ -377,7 +377,7 @@ class DataList extends Component {
     try {
       let project = this.state.projects.filter((each) => each["key"] == key);
       this.setState({ menuDisplay: project[0]["title"], addProjectId: key });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   expandedRowRender = (record) => {
@@ -429,10 +429,10 @@ class DataList extends Component {
         {this.state.loadingProject ? (
           <Spin></Spin>
         ) : (
-          this.state.projects.map((each) => (
-            <Menu.Item key={each["key"]}>{each["title"]}</Menu.Item>
-          ))
-        )}
+            this.state.projects.map((each) => (
+              <Menu.Item key={each["key"]}>{each["title"]}</Menu.Item>
+            ))
+          )}
       </Menu>
     );
     return (
