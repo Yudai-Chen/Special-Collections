@@ -3,7 +3,7 @@ import { Spin, Input, Modal, Button, Table, Space, Menu, Dropdown } from "antd";
 import { withRouter, Link } from "react-router-dom";
 import { DownOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { HOST_ADDRESS } from "../../Mainpage";
+import { HOST_ADDRESS, key_credential, key_identity } from "../../Mainpage";
 
 const placeholder = require("../../image-placeholder.png");
 
@@ -91,6 +91,7 @@ class DataList extends Component {
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
+    console.log(selectedRowKeys);
     this.setState({ selectedRowKeys, selectedRows });
   };
 
@@ -128,23 +129,66 @@ class DataList extends Component {
       });
       return;
     }
-    let projectId = this.findNewProjectId();
-    let data = [];
-    this.state.selectedRows.map((each) => {
-      data.push({
-        key: projectId + "-" + each["itemId"],
-        itemId: each["itemId"],
-        title: each["title"],
-        isLeaf: true,
-      });
-    });
-    let project = {
-      title: this.state.projectName,
-      key: projectId,
-      note: this.state.projectNote,
-      children: data,
+    const headers = {
+      "Content-Type": "application/json"
     };
-    this.props.handleCreateProject(project);
+    let payload = {
+      "dcterms:title": [
+        {
+          type: "literal",
+          property_id: 1,
+          property_label: "Title",
+          "@value": this.state.projectName,
+        },
+      ],
+      "dcterms: description": [
+        {
+          type: "literal",
+          property_id: 4,
+          property_label: "Description",
+          "@value": this.state.projectNote,
+        }
+      ],
+    };
+
+    axios
+      .post(HOST_ADDRESS + "/api/item_sets", payload, {
+        params: {
+          key_identity,
+          key_credential,
+        },
+        headers: headers,
+      })
+      .then((response) => {
+        console.log("create project");
+        console.log(response.data);
+        let projectId = response.data["o:id"];
+        console.log(this.state.selectedRowKeys);
+        return this.state.selectedRowKeys.map((each) => {
+          return axios.get(HOST_ADDRESS + "/api/items/" + each).then((response) => {
+            let originItemSets = response.data["o:item_set"] ? response.data["o:item_set"] : [];
+            originItemSets.push({ "o:id": projectId });
+            console.log(originItemSets);
+            return axios.patch(HOST_ADDRESS + "/api/items/" + each, { "o:item_set": originItemSets }, {
+              params: {
+                key_identity,
+                key_credential,
+              },
+              headers: headers,
+            });
+          })
+
+        })
+      }).then((requests) => {
+        axios.all(requests).then(
+          axios.spread((...responses) => {
+            let properties = responses.map((each) => {
+              console.log(each.data);
+            });
+          })
+        );
+      })
+
     this.setModalVisible(false);
   };
 
@@ -211,50 +255,6 @@ class DataList extends Component {
           })
         )
         .catch((errors) => { });
-
-      // let ids = "";
-      // fileKeys.map((eachItem) => {
-      //   ids += eachItem + ",";
-      // });
-      // axios
-      //   .get(HOST_ADDRESS + "/iiif/collection/" + ids)
-      //   .then((response) => {
-      //     let requests = response.data["manifests"].map((manifest) =>
-      //       axios.get(manifest["@id"])
-      //     );
-      //     axios
-      //       .all(requests)
-      //       .then(
-      //         axios.spread((...responses) => {
-      //           let data = [];
-      //           responses.map((each) => {
-      //             if (
-      //               each.data["metadata"].filter(
-      //                 (each) => each["label"] == "Has Part"
-      //               ).length == 0
-      //             ) {
-      //               let cutId = each.data["@id"].substring(
-      //                 0,
-      //                 each.data["@id"].length - 9
-      //               );
-      //               let itemId = cutId.substring(cutId.lastIndexOf("/") + 1);
-      //               data.push({
-      //                 key: itemId,
-      //                 itemId,
-      //                 title: each.data["label"],
-      //                 created: "temp",
-      //                 preview: each.data["thumbnail"]
-      //                   ? each.data["thumbnail"]["@id"]
-      //                   : placeholder,
-      //               });
-      //             }
-      //           });
-      //           this.setState({ showData: data });
-      //           this.setState({ updated: "true" });
-      //         })
-      //       )
-      //       .catch((errors) => {});
-      //   });
     }
   };
 
@@ -288,76 +288,7 @@ class DataList extends Component {
       });
       return;
     }
-    const headers = {
-      "Content-Type": "application/json"
-    };
-    let payload = {
-      "dcterms:title": [
-        {
-          type: "literal",
-          property_id: 1,
-          property_label: "Title",
-          "@value": "react test",
-        },
-      ],
 
-      "@type": ["o:Item"],
-
-      // "o:resource_class": {
-      //   "o:id": 362,
-      //   "@id": "http://10.134.196.104/api/resource_classes/362",
-      // },
-    };
-    // axios.get(HOST_ADDRESS + "/api/items/150064").then((response) => {
-    //   console.log("get");
-    //   console.log(response.data);
-    //   // axios
-    //   //   .post(HOST_ADDRESS + "/api/items", response.data, {
-    //   //     params: {
-    //   //       key_identity: "NLRZBFxnrjOAfC7SGgiFQ0CXrbXryKcs",
-    //   //       key_credential: "IdhCdIlVncnMBkXxtOTt9aEx87cD0HRg",
-    //   //     },
-    //   //     headers: headers,
-    //   //   })
-    //   //   .then((response) => {
-    //   //     console.log("new post");
-    //   //     console.log(response.data);
-    //   //   });
-    // });
-    axios
-      .post(HOST_ADDRESS + "/api/items", payload, {
-        params: {
-          key_identity: "sBskEv8YoF88Pea9Eitpz8WqvEujhmZi",
-          key_credential: "Dq0tuMI7lzew7LouLCzxEOIn4u1h7f7F",
-        },
-        headers: headers,
-      })
-      .then((response) => {
-        console.log("post");
-        console.log(response.data);
-      });
-
-    // let all = this.state.projects;
-    // all.map((eachProject) => {
-    //   if (eachProject.key == key) {
-    //     let oldChildren = [];
-    //     eachProject.children.map((eachChild) => {
-    //       oldChildren.push(eachChild["itemId"]);
-    //     });
-    //     let oldChildrenSet = new Set(oldChildren);
-    //     this.state.selectedRows.map((eachRow) => {
-    //       if (!oldChildrenSet.has(eachRow["itemId"])) {
-    //         eachProject.children.push({
-    //           key: key + "-" + eachRow["itemId"],
-    //           itemId: eachRow["itemId"],
-    //           title: eachRow["title"],
-    //           isLeaf: true,
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
-    // this.props.updataProjects(all);
     this.setModal2Visible(false);
   };
 

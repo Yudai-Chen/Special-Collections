@@ -19,7 +19,9 @@ const { Header } = Layout;
 
 const logo = require("./logo.png");
 
-export const HOST_ADDRESS = "http://10.134.196.104/omeka";
+export const HOST_ADDRESS = "http://10.134.196.80/omeka";
+export const key_identity = "sBskEv8YoF88Pea9Eitpz8WqvEujhmZi";
+export const key_credential = "Dq0tuMI7lzew7LouLCzxEOIn4u1h7f7F";
 
 export default class MainPage extends Component {
   state = {
