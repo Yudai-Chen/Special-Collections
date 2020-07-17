@@ -18,6 +18,7 @@ function openInNewWindow(url) {
 export default class Item extends Component {
   state = {
     id: undefined,
+    title: undefined,
     loading: false,
     data: [],
     media: [],
@@ -41,6 +42,9 @@ export default class Item extends Component {
       this.setState({ loading: true });
       axios.get(HOST_ADDRESS + "/api/items/" + itemId).then((response) => {
         this.state.data = response.data;
+        this.state.title = response.data["o:title"]
+          ? response.data["o:title"]
+          : "untitled";
         this.state.pathLoading = true;
         this.loadPath(itemId).then((path) => {
           this.setState({ path: path.reverse(), pathLoading: false });
@@ -95,7 +99,7 @@ export default class Item extends Component {
     let data = [
       {
         key: this.state.id,
-        title: this.state.data["o:title"],
+        title: this.state.title,
         isLeaf: true,
       },
     ];
@@ -138,7 +142,7 @@ export default class Item extends Component {
                   );
                 })
               )}
-              <Breadcrumb.Item>{this.state.data["o:title"]}</Breadcrumb.Item>
+              <Breadcrumb.Item>{this.state.title}</Breadcrumb.Item>
             </Breadcrumb>
             <Content>
               {this.state.media.length > 0 ? (
@@ -161,7 +165,7 @@ export default class Item extends Component {
                       </div>
                     </div>
                   </Col>
-                  <Col span={12}>
+                  <Col span={16}>
                     <Metadata
                       target={{
                         itemId: this.state.id,
@@ -169,16 +173,20 @@ export default class Item extends Component {
                       }}
                     />
                   </Col>
-                  <Col span={4}>
-                    <RelationGraph
-                      itemId={this.state.id}
-                      title={this.state.data["o:title"]}
-                    ></RelationGraph>
+                  <Col span={24}>
+                    {this.state.title ? (
+                      <RelationGraph
+                        itemId={this.state.id}
+                        title={this.state.title}
+                      ></RelationGraph>
+                    ) : (
+                      <Spin></Spin>
+                    )}
                   </Col>
                 </Row>
               ) : (
                 <Row gutter={16}>
-                  <Col span={18}>
+                  <Col span={24}>
                     <Metadata
                       target={{
                         itemId: this.state.id,
@@ -186,11 +194,15 @@ export default class Item extends Component {
                       }}
                     />
                   </Col>
-                  <Col span={6}>
-                    <RelationGraph
-                      itemId={this.state.id}
-                      title={this.state.data["o:title"]}
-                    ></RelationGraph>
+                  <Col span={24}>
+                    {this.state.title ? (
+                      <RelationGraph
+                        itemId={this.state.id}
+                        title={this.state.title}
+                      ></RelationGraph>
+                    ) : (
+                      <Spin></Spin>
+                    )}
                   </Col>
                 </Row>
               )}

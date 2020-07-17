@@ -2,94 +2,129 @@ import React, { Component } from "react";
 import axios from "axios";
 import { HOST_ADDRESS } from "../../Mainpage";
 import Graph from "react-graph-vis";
+import { Spin } from "antd";
+
 export default class RelationGraph extends Component {
-  state = { graph: { nodes: [], edges: [] } };
+  state = { graph: { nodes: [], edges: [] }, loading: false };
   constructor(props) {
     super(props);
     this.state.graph["nodes"].push({
       id: props.itemId,
-      label: props.title,
+      label: this.splitToSeveralLines(props.title, 10),
       title: props.title,
     });
-    this.buildGraph(props.itemId, 1, this.state.graph).then((res) => {
-      this.setState({ graph: res });
-    });
+    this.buildGraph(props.itemId, 4, this.state.graph);
   }
+
+  splitToSeveralLines = (s, maxLen) => {
+    let i = 0;
+    let last = 0;
+    let len = s.length;
+    let res = "";
+    while (i < len) {
+      i += maxLen;
+      res += s.slice(last, i);
+      res += "\n";
+      last = i;
+    }
+    return res;
+  };
 
   buildGraph = (itemId, depth, graph) => {
     if (depth == 0) {
       return graph;
     }
-
-    return axios
-      .get(HOST_ADDRESS + "/iiif/" + itemId + "/manifest")
-      .then((response) => {
-        let each = response.data.related;
-        let ids = [];
-        ids.push(
-          parseInt(each["@id"].substring(each["@id"].lastIndexOf("/") + 1)),
-          10
-        );
-        return ids;
-      })
-      .then((ids) => {
-        let queryIds = "";
-        ids.map((id) => {
-          queryIds += id + ",";
-        });
-        return axios
-          .get(HOST_ADDRESS + "/iiif/collection/" + queryIds)
-          .then((response) => {
-            response.data["manifests"].map((manifest) => {
-              graph["nodes"].push({ id: ids[0], label: manifest["label"] });
-              graph["edges"].push({ from: itemId, to: ids[0] });
-            });
-            graph = this.buildGraph(itemId, depth - 1, graph);
-            return graph;
-          });
+    this.setState({ loading: true });
+    return axios.get(HOST_ADDRESS + "/api/items/" + itemId).then((response) => {
+      let exist = graph["nodes"].find((each) => {
+        return each["id"] == itemId;
       });
+      if (exist && exist != -1) {
+        exist["group"] = response.data["o:resource_class"]
+          ? response.data["o:resource_class"]["o:id"]
+          : 0;
+      }
+      let links = [];
+      for (var property in response.data) {
+        try {
+          if (response.data[property][0]["type"] == "resource") {
+            response.data[property].map((each) => {
+              links.push(each);
+            });
+          }
+        } catch (error) {}
+      }
+      links.map(async (each) => {
+        let test = graph["nodes"].find((item) => {
+          return item["id"] == each["value_resource_id"];
+        });
+        if (!test || test == -1) {
+          graph["nodes"].push({
+            id: each["value_resource_id"],
+            label: this.splitToSeveralLines(each["display_title"], 10),
+            titel: each["display_title"],
+          });
+        }
+        test = graph["edges"].find((item) => {
+          return (
+            item["to"] == itemId && item["from"] == each["value_resource_id"]
+          );
+        });
+        if (!test || test == -1) {
+          graph["edges"].push({ from: itemId, to: each["value_resource_id"] });
+          graph = await this.buildGraph(
+            each["value_resource_id"],
+            depth - 1,
+            graph
+          );
+        }
+      });
+
+      this.setState({ graph: graph, loading: false });
+    });
   };
 
   render() {
-    const graph = {
-      nodes: [
-        { id: 1, label: "Node 1", title: "node 1 tootip text" },
-        { id: 2, label: "Node 2", title: "node 2 tootip text" },
-        { id: 3, label: "Node 3", title: "node 3 tootip text" },
-        { id: 4, label: "Node 4", title: "node 4 tootip text" },
-        { id: 5, label: "Node 5", title: "node 5 tootip text" },
-      ],
-      edges: [
-        { from: 1, to: 2 },
-        { from: 1, to: 3 },
-        { from: 2, to: 4 },
-        { from: 2, to: 5 },
-      ],
-    };
-
     const options = {
+      autoResize: true,
       layout: {
         hierarchical: true,
       },
       edges: {
+        arrows: {
+          to: {
+            enabled: false,
+          },
+        },
         color: "#000000",
       },
-      height: "200px",
+      nodes: {
+        color: {
+          background: "#ffffff",
+        },
+        shape: "box",
+      },
+      height: "1000px",
     };
 
     const events = {
       select: function (event) {
         var { nodes, edges } = event;
+        window.open("#/items/" + nodes[0]);
       },
     };
 
-    return (
-      <Graph
-        graph={this.state.graph}
-        options={options}
-        events={events}
-        getNetwork={(network) => {}}
-      />
+    return this.state.loading ? (
+      <Spin></Spin>
+    ) : (
+      <div height="1000">
+        <Graph
+          graph={this.state.graph}
+          options={options}
+          events={events}
+          getNetwork={(network) => {}}
+        />
+      </div>
     );
   }
 }
