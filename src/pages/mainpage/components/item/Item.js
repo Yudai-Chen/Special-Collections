@@ -104,7 +104,7 @@ export default class Item extends Component {
       },
     ];
 
-    openInNewWindow("/#/note/" + JSON.stringify(data));
+    openInNewWindow("/react/#/note/" + JSON.stringify(data));
     // return (
     //   <Link
     //     to={{
@@ -124,92 +124,92 @@ export default class Item extends Component {
         </div>
       </div>
     ) : (
-      <div className="item-container">
-        <div>
-          <Layout>
-            <Divider>{this.state.itemSet}</Divider>
-            <Breadcrumb>
-              {this.state.pathLoading ? (
-                <Spin></Spin>
-              ) : (
-                this.state.path.map((each, key) => {
-                  return (
-                    <Breadcrumb.Item>
-                      <Link to={"/items/" + each["value_resource_id"]}>
-                        {each["display_title"]}
-                      </Link>
-                    </Breadcrumb.Item>
-                  );
-                })
-              )}
-              <Breadcrumb.Item>{this.state.title}</Breadcrumb.Item>
-            </Breadcrumb>
-            <Content>
-              {this.state.media.length > 0 ? (
-                <Row gutter={16}>
-                  <Col span={8}>
-                    <ImageView
-                      id={this.state.id}
-                      visible={!this.state.drawerVisible}
-                      imgs={this.state.media}
-                      active={this.state.active}
-                    />
-                    <div
-                      style={{
-                        display: "flex",
-                        "justify-content": "flex-end",
-                      }}
-                    >
-                      <div style={{ margin: "5px" }}>
-                        <Button onClick={this.onNoteAdd}>Add Note</Button>
+        <div className="item-container">
+          <div>
+            <Layout>
+              <Divider>{this.state.itemSet}</Divider>
+              <Breadcrumb>
+                {this.state.pathLoading ? (
+                  <Spin></Spin>
+                ) : (
+                    this.state.path.map((each, key) => {
+                      return (
+                        <Breadcrumb.Item>
+                          <Link to={"/items/" + each["value_resource_id"]}>
+                            {each["display_title"]}
+                          </Link>
+                        </Breadcrumb.Item>
+                      );
+                    })
+                  )}
+                <Breadcrumb.Item>{this.state.title}</Breadcrumb.Item>
+              </Breadcrumb>
+              <Content>
+                {this.state.media.length > 0 ? (
+                  <Row gutter={16}>
+                    <Col span={8}>
+                      <ImageView
+                        id={this.state.id}
+                        visible={!this.state.drawerVisible}
+                        imgs={this.state.media}
+                        active={this.state.active}
+                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          "justify-content": "flex-end",
+                        }}
+                      >
+                        <div style={{ margin: "5px" }}>
+                          <Button onClick={this.onNoteAdd}>Add Note</Button>
+                        </div>
                       </div>
-                    </div>
-                  </Col>
-                  <Col span={16}>
-                    <Metadata
-                      target={{
-                        itemId: this.state.id,
-                        data: this.state.data,
-                      }}
-                    />
-                  </Col>
-                  <Col span={24}>
-                    {this.state.title ? (
-                      <RelationGraph
-                        itemId={this.state.id}
-                        title={this.state.title}
-                      ></RelationGraph>
-                    ) : (
-                      <Spin></Spin>
-                    )}
-                  </Col>
-                </Row>
-              ) : (
-                <Row gutter={16}>
-                  <Col span={24}>
-                    <Metadata
-                      target={{
-                        itemId: this.state.id,
-                        data: this.state.data,
-                      }}
-                    />
-                  </Col>
-                  <Col span={24}>
-                    {this.state.title ? (
-                      <RelationGraph
-                        itemId={this.state.id}
-                        title={this.state.title}
-                      ></RelationGraph>
-                    ) : (
-                      <Spin></Spin>
-                    )}
-                  </Col>
-                </Row>
-              )}
-            </Content>
-          </Layout>
+                    </Col>
+                    <Col span={16}>
+                      <Metadata
+                        target={{
+                          itemId: this.state.id,
+                          data: this.state.data,
+                        }}
+                      />
+                    </Col>
+                    <Col span={24}>
+                      {this.state.title ? (
+                        <RelationGraph
+                          itemId={this.state.id}
+                          title={this.state.title}
+                        ></RelationGraph>
+                      ) : (
+                          <Spin></Spin>
+                        )}
+                    </Col>
+                  </Row>
+                ) : (
+                    <Row gutter={16}>
+                      <Col span={24}>
+                        <Metadata
+                          target={{
+                            itemId: this.state.id,
+                            data: this.state.data,
+                          }}
+                        />
+                      </Col>
+                      <Col span={24}>
+                        {this.state.title ? (
+                          <RelationGraph
+                            itemId={this.state.id}
+                            title={this.state.title}
+                          ></RelationGraph>
+                        ) : (
+                            <Spin></Spin>
+                          )}
+                      </Col>
+                    </Row>
+                  )}
+              </Content>
+            </Layout>
+          </div>
         </div>
-      </div>
-    );
+      );
   }
 }

@@ -1,9 +1,16 @@
 import React, { Component } from "react";
 import { Button, Input, Row, Col, Spin, Tree } from "antd";
 import { withRouter } from "react-router";
+import { HOST_ADDRESS, key_credential, key_identity } from "../mainpage/Mainpage";
+import ImageView from "../../components/imageView/ImageView"
+import axios from "axios";
 
 const { DirectoryTree } = Tree;
 const { TextArea } = Input;
+
+const headers = {
+  "Content-Type": "application/json"
+};
 
 class NewNote extends Component {
   state = {
@@ -11,6 +18,9 @@ class NewNote extends Component {
     targets: [],
     loading: false,
     checkedFiles: [],
+    displaying: undefined,
+    data: [],
+    media: undefined,
   };
 
   constructor(props) {
@@ -22,6 +32,19 @@ class NewNote extends Component {
     //   const { targets } = this.props.location.state;
     //   this.state.targets = targets;
     // }
+  }
+
+  getData = () => {
+    let data = [];
+    let requests = this.state.targets.map((each) => {
+      return axios.get(HOST_ADDRESS + "/api/items/" + each["key"]);
+    })
+    axios.all(requests).then(axios.spread((...responses) => {
+      responses.map((each) => {
+        data.push(each.data);
+      })
+      this.setState({ data: data }, () => { this.setState({ loadingData: false }); });
+    }))
   }
 
   componentWillReceiveProps(nextProps) {
@@ -64,46 +87,142 @@ class NewNote extends Component {
     });
   };
 
+  onSelect = (itemKey) => {
+    console.log(itemKey[0]);
+    this.setState({ displaying: itemKey[0] });
+    if (this.state.displaying) {
+      axios
+        .get(HOST_ADDRESS + "/iiif/" + this.state.displaying + "/manifest")
+        .then((response) => {
+          try {
+            let media = response.data["sequences"][0].canvases.map(
+              (canvas, index) => ({
+                key: canvas["images"][0]["resource"]["service"][
+                  "@id"
+                ].substring(
+                  canvas["images"][0]["resource"]["service"]["@id"].lastIndexOf(
+                    "/"
+                  ) + 1
+                ),
+                src: canvas["images"][0]["resource"]["@id"],
+                alt: canvas["label"],
+              })
+            );
+            this.setState({ media, loading: false });
+          } catch (error) {
+            this.setState({ media: [], loading: false });
+          }
+        });
+    }
+  };
+
+
+  onSubmit = () => {
+    let payload = {
+      "dcterms:title": [
+        {
+          type: "literal",
+          property_id: 1,
+          property_label: "Title",
+          "@value": this.state.projectName,
+        },
+      ],
+      "dcterms: description": [
+        {
+          type: "literal",
+          property_id: 4,
+          property_label: "Description",
+          "@value": this.state.projectNote,
+        }
+      ],
+    };
+    // axios
+    //   .post(HOST_ADDRESS + "/api/items", payload, {
+    //     params: {
+    //       key_identity,
+    //       key_credential,
+    //     },
+    //     headers: headers,
+    //   })
+    //   .then((response) => {
+    //     let projectId = response.data["o:id"];
+    //     return this.state.selectedRowKeys.map((each) => {
+    //       return axios.get(HOST_ADDRESS + "/api/items/" + each).then((response) => {
+    //         let originItemSets = response.data["o:item_set"] ? response.data["o:item_set"] : [];
+    //         originItemSets.push({ "o:id": projectId });
+    //         return axios.patch(HOST_ADDRESS + "/api/items/" + each, { "o:item_set": originItemSets }, {
+    //           params: {
+    //             key_identity,
+    //             key_credential,
+    //           },
+    //           headers: headers,
+    //         });
+    //       })
+
+    //     })
+    //   })
+    //   .then((requests) => {
+    //     axios.all(requests).then(() => {
+    //       Modal.success({
+    //         title: "Success!",
+    //         content: "Create project success.",
+    //       });
+    //       this.setState({ projectLoading: true });
+    //       this.loadProjectList();
+    //     });
+    //   })
+    // this.state.targets.map();
+  };
+
   render() {
+
     return this.state.loading ? (
       <Spin></Spin>
     ) : (
-      <div>
-        <Row gutter={[16, 24]} justify="end">
-          <Col span={12}>
-            <Col span={24}>
-              <h2>Attach to:</h2>
-              <DirectoryTree
-                treeData={this.state.targets}
-                blockNode={true}
-                checkable
-                onCheck={this.onCheck}
-              />
-            </Col>
+        <div>
+          <Row gutter={[16, 24]} justify="end">
             <Col span={6}>
-              <Button onClick={this.onRemove}>Remove</Button>
-            </Col>
-          </Col>
-          <Col span={12}>
-            <Row gutter={[16, 24]} justify="end">
               <Col span={24}>
-                <h2>Note:</h2>
-                <TextArea
-                  value={this.state.input}
-                  onChange={this.onTextChange}
-                  autoSize={{ minRows: 25, maxRows: 25 }}
+                <h2>Attach to:</h2>
+                <DirectoryTree
+                  treeData={this.state.targets}
+                  blockNode={true}
+                  checkable
+                  onCheck={this.onCheck}
+                  onSelect={this.onSelect}
                 />
               </Col>
               <Col span={6}>
-                <Button type="primary" onClick={() => {}}>
-                  Submit Change
-                </Button>
+                <Button onClick={this.onRemove}>Remove</Button>
               </Col>
-            </Row>
-          </Col>
-        </Row>
-      </div>
-    );
+            </Col>
+            <Col span={6}>
+              <ImageView
+                id={this.state.displaying}
+                visible={true}
+                imgs={this.state.media}
+              />
+            </Col>
+            <Col span={12}>
+              <Row gutter={[16, 24]} justify="end">
+                <Col span={24}>
+                  <h2>Note:</h2>
+                  <TextArea
+                    value={this.state.input}
+                    onChange={this.onTextChange}
+                    autoSize={{ minRows: 25, maxRows: 25 }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <Button type="primary" onClick={this.onSubmit}>
+                    Submit Change
+                </Button>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </div>
+      );
   }
 }
 

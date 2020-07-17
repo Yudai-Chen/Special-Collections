@@ -7,6 +7,10 @@ import { HOST_ADDRESS, key_credential, key_identity } from "../../Mainpage";
 
 const placeholder = require("../../image-placeholder.png");
 
+const headers = {
+  "Content-Type": "application/json"
+};
+
 const columns = [
   {
     title: "Preview",
@@ -75,7 +79,7 @@ class DataList extends Component {
     modal2Visible: false,
     projectName: undefined,
     projectNote: undefined,
-    loadingProject: false,
+    projectLoading: false,
     projects: [],
     menuDisplay: "Select A Project",
     addProjectId: undefined,
@@ -83,16 +87,24 @@ class DataList extends Component {
 
   constructor(props) {
     super(props);
-    try {
-      if (props["project"]["key"]) {
-        this.state.projects.push(props["project"]);
-      }
-    } catch (error) { }
+    this.state.projectLoading = true;
+    this.loadProjectList();
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
-    console.log(selectedRowKeys);
     this.setState({ selectedRowKeys, selectedRows });
+  };
+
+  loadProjectList = () => {
+    axios.get(HOST_ADDRESS + "/api/item_sets").then((response) => {
+      let item_sets = response.data.map((each) => ({
+        key: each["o:id"],
+        title: each["o:title"],
+      }));
+      this.setState({ projects: item_sets }, () => {
+        this.setState({ projectLoading: false });
+      });
+    });
   };
 
   onRowClick = (record) => {
@@ -129,9 +141,7 @@ class DataList extends Component {
       });
       return;
     }
-    const headers = {
-      "Content-Type": "application/json"
-    };
+
     let payload = {
       "dcterms:title": [
         {
@@ -160,15 +170,11 @@ class DataList extends Component {
         headers: headers,
       })
       .then((response) => {
-        console.log("create project");
-        console.log(response.data);
         let projectId = response.data["o:id"];
-        console.log(this.state.selectedRowKeys);
         return this.state.selectedRowKeys.map((each) => {
           return axios.get(HOST_ADDRESS + "/api/items/" + each).then((response) => {
             let originItemSets = response.data["o:item_set"] ? response.data["o:item_set"] : [];
             originItemSets.push({ "o:id": projectId });
-            console.log(originItemSets);
             return axios.patch(HOST_ADDRESS + "/api/items/" + each, { "o:item_set": originItemSets }, {
               params: {
                 key_identity,
@@ -179,14 +185,16 @@ class DataList extends Component {
           })
 
         })
-      }).then((requests) => {
-        axios.all(requests).then(
-          axios.spread((...responses) => {
-            let properties = responses.map((each) => {
-              console.log(each.data);
-            });
-          })
-        );
+      })
+      .then((requests) => {
+        axios.all(requests).then(() => {
+          Modal.success({
+            title: "Success!",
+            content: "Create project success.",
+          });
+          this.setState({ projectLoading: true });
+          this.loadProjectList();
+        });
       })
 
     this.setModalVisible(false);
@@ -269,6 +277,7 @@ class DataList extends Component {
     } else {
       this.getPayload(nextProps["shownFiles"], nextProps["transcriptItems"]);
     }
+    this.loadProjectList();
   }
 
   setModalVisible = (modalVisible) => {
@@ -280,15 +289,35 @@ class DataList extends Component {
   };
 
   onProjectAdd = () => {
-    let key = this.state.addProjectId;
-    if (!key) {
+    let projectId = this.state.addProjectId;
+    if (!projectId) {
       Modal.error({
         title: "Fail to add to project!",
         content: "A project should be selected.",
       });
       return;
     }
+    let requests = this.state.selectedRowKeys.map((each) => {
+      return axios.get(HOST_ADDRESS + "/api/items/" + each).then((response) => {
+        let originItemSets = response.data["o:item_set"] ? response.data["o:item_set"] : [];
+        originItemSets.push({ "o:id": projectId });
+        return axios.patch(HOST_ADDRESS + "/api/items/" + each, { "o:item_set": originItemSets }, {
+          params: {
+            key_identity,
+            key_credential,
+          },
+          headers: headers,
+        });
+      })
 
+    });
+
+    axios.all(requests).then(
+      Modal.success({
+        title: "Success!",
+        content: "Add to project success.",
+      })
+    );
     this.setModal2Visible(false);
   };
 
@@ -357,7 +386,7 @@ class DataList extends Component {
     };
     const menu = (
       <Menu onClick={this.onMenuClick}>
-        {this.state.loadingProject ? (
+        {this.state.projectLoading ? (
           <Spin></Spin>
         ) : (
             this.state.projects.map((each) => (
