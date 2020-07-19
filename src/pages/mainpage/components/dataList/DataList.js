@@ -330,7 +330,7 @@ class DataList extends Component {
       };
     });
 
-    openInNewWindow("/#/note/" + JSON.stringify(data));
+    openInNewWindow("/react/#/note/" + JSON.stringify(data));
   };
 
   onMenuClick = ({ key }) => {
