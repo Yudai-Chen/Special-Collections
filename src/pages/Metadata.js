@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Table, Spin } from "antd";
 import axios from "axios";
-import { HOST_ADDRESS } from "../../pages/mainpage/Mainpage";
+import { HOST_ADDRESS } from "./Mainpage";
 
 const columns = [
   {

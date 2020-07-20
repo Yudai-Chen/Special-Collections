@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 import { Button, Input, Row, Col, Spin, Tree } from "antd";
 import { withRouter } from "react-router";
-import { HOST_ADDRESS, key_credential, key_identity } from "../mainpage/Mainpage";
-import ImageView from "../../components/imageView/ImageView"
+import { HOST_ADDRESS, key_credential, key_identity } from "./Mainpage";
+import ImageView from "./ImageView";
 import axios from "axios";
 
 const { DirectoryTree } = Tree;
 const { TextArea } = Input;
 
 const headers = {
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 };
 
 class NewNote extends Component {
@@ -38,14 +38,18 @@ class NewNote extends Component {
     let data = [];
     let requests = this.state.targets.map((each) => {
       return axios.get(HOST_ADDRESS + "/api/items/" + each["key"]);
-    })
-    axios.all(requests).then(axios.spread((...responses) => {
-      responses.map((each) => {
-        data.push(each.data);
+    });
+    axios.all(requests).then(
+      axios.spread((...responses) => {
+        responses.map((each) => {
+          data.push(each.data);
+        });
+        this.setState({ data: data }, () => {
+          this.setState({ loadingData: false });
+        });
       })
-      this.setState({ data: data }, () => { this.setState({ loadingData: false }); });
-    }))
-  }
+    );
+  };
 
   componentWillReceiveProps(nextProps) {
     // if (nextProps.location.state !== undefined) {
@@ -116,7 +120,6 @@ class NewNote extends Component {
     }
   };
 
-
   onSubmit = () => {
     let payload = {
       "dcterms:title": [
@@ -133,7 +136,7 @@ class NewNote extends Component {
           property_id: 4,
           property_label: "Description",
           "@value": this.state.projectNote,
-        }
+        },
       ],
     };
     // axios
@@ -175,54 +178,53 @@ class NewNote extends Component {
   };
 
   render() {
-
     return this.state.loading ? (
       <Spin></Spin>
     ) : (
-        <div>
-          <Row gutter={[16, 24]} justify="end">
+      <div>
+        <Row gutter={[16, 24]} justify="end">
+          <Col span={6}>
+            <Col span={24}>
+              <h2>Attach to:</h2>
+              <DirectoryTree
+                treeData={this.state.targets}
+                blockNode={true}
+                checkable
+                onCheck={this.onCheck}
+                onSelect={this.onSelect}
+              />
+            </Col>
             <Col span={6}>
+              <Button onClick={this.onRemove}>Remove</Button>
+            </Col>
+          </Col>
+          <Col span={6}>
+            <ImageView
+              id={this.state.displaying}
+              visible={true}
+              imgs={this.state.media}
+            />
+          </Col>
+          <Col span={12}>
+            <Row gutter={[16, 24]} justify="end">
               <Col span={24}>
-                <h2>Attach to:</h2>
-                <DirectoryTree
-                  treeData={this.state.targets}
-                  blockNode={true}
-                  checkable
-                  onCheck={this.onCheck}
-                  onSelect={this.onSelect}
+                <h2>Note:</h2>
+                <TextArea
+                  value={this.state.input}
+                  onChange={this.onTextChange}
+                  autoSize={{ minRows: 25, maxRows: 25 }}
                 />
               </Col>
               <Col span={6}>
-                <Button onClick={this.onRemove}>Remove</Button>
-              </Col>
-            </Col>
-            <Col span={6}>
-              <ImageView
-                id={this.state.displaying}
-                visible={true}
-                imgs={this.state.media}
-              />
-            </Col>
-            <Col span={12}>
-              <Row gutter={[16, 24]} justify="end">
-                <Col span={24}>
-                  <h2>Note:</h2>
-                  <TextArea
-                    value={this.state.input}
-                    onChange={this.onTextChange}
-                    autoSize={{ minRows: 25, maxRows: 25 }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <Button type="primary" onClick={this.onSubmit}>
-                    Submit Change
+                <Button type="primary" onClick={this.onSubmit}>
+                  Submit Change
                 </Button>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </div>
-      );
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </div>
+    );
   }
 }
 

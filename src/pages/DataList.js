@@ -3,12 +3,11 @@ import { Spin, Input, Modal, Button, Table, Space, Menu, Dropdown } from "antd";
 import { withRouter, Link } from "react-router-dom";
 import { DownOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { HOST_ADDRESS, key_credential, key_identity } from "../../Mainpage";
-
-const placeholder = require("../../image-placeholder.png");
+import { HOST_ADDRESS, key_credential, key_identity } from "./Mainpage";
+import { PlaceHolder } from "../utils/Utils";
 
 const headers = {
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 };
 
 const columns = [
@@ -157,7 +156,7 @@ class DataList extends Component {
           property_id: 4,
           property_label: "Description",
           "@value": this.state.projectNote,
-        }
+        },
       ],
     };
 
@@ -172,19 +171,26 @@ class DataList extends Component {
       .then((response) => {
         let projectId = response.data["o:id"];
         return this.state.selectedRowKeys.map((each) => {
-          return axios.get(HOST_ADDRESS + "/api/items/" + each).then((response) => {
-            let originItemSets = response.data["o:item_set"] ? response.data["o:item_set"] : [];
-            originItemSets.push({ "o:id": projectId });
-            return axios.patch(HOST_ADDRESS + "/api/items/" + each, { "o:item_set": originItemSets }, {
-              params: {
-                key_identity,
-                key_credential,
-              },
-              headers: headers,
+          return axios
+            .get(HOST_ADDRESS + "/api/items/" + each)
+            .then((response) => {
+              let originItemSets = response.data["o:item_set"]
+                ? response.data["o:item_set"]
+                : [];
+              originItemSets.push({ "o:id": projectId });
+              return axios.patch(
+                HOST_ADDRESS + "/api/items/" + each,
+                { "o:item_set": originItemSets },
+                {
+                  params: {
+                    key_identity,
+                    key_credential,
+                  },
+                  headers: headers,
+                }
+              );
             });
-          })
-
-        })
+        });
       })
       .then((requests) => {
         axios.all(requests).then(() => {
@@ -195,7 +201,7 @@ class DataList extends Component {
           this.setState({ projectLoading: true });
           this.loadProjectList();
         });
-      })
+      });
 
     this.setModalVisible(false);
   };
@@ -219,8 +225,8 @@ class DataList extends Component {
             return axios
               .get(
                 HOST_ADDRESS +
-                "/api/media/" +
-                response.data["o:media"][0]["o:id"]
+                  "/api/media/" +
+                  response.data["o:media"][0]["o:id"]
               )
               .then((response_1) => {
                 return response_1.data["o:thumbnail_urls"]["square"];
@@ -235,7 +241,7 @@ class DataList extends Component {
                 };
               });
           } catch (err) {
-            let src_1 = placeholder;
+            let src_1 = PlaceHolder;
             return {
               key: response.data["o:id"],
               itemId: response.data["o:id"],
@@ -262,7 +268,7 @@ class DataList extends Component {
             this.setState({ updated: "true" });
           })
         )
-        .catch((errors) => { });
+        .catch((errors) => {});
     }
   };
 
@@ -299,17 +305,22 @@ class DataList extends Component {
     }
     let requests = this.state.selectedRowKeys.map((each) => {
       return axios.get(HOST_ADDRESS + "/api/items/" + each).then((response) => {
-        let originItemSets = response.data["o:item_set"] ? response.data["o:item_set"] : [];
+        let originItemSets = response.data["o:item_set"]
+          ? response.data["o:item_set"]
+          : [];
         originItemSets.push({ "o:id": projectId });
-        return axios.patch(HOST_ADDRESS + "/api/items/" + each, { "o:item_set": originItemSets }, {
-          params: {
-            key_identity,
-            key_credential,
-          },
-          headers: headers,
-        });
-      })
-
+        return axios.patch(
+          HOST_ADDRESS + "/api/items/" + each,
+          { "o:item_set": originItemSets },
+          {
+            params: {
+              key_identity,
+              key_credential,
+            },
+            headers: headers,
+          }
+        );
+      });
     });
 
     axios.all(requests).then(
@@ -337,7 +348,7 @@ class DataList extends Component {
     try {
       let project = this.state.projects.filter((each) => each["key"] == key);
       this.setState({ menuDisplay: project[0]["title"], addProjectId: key });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   expandedRowRender = (record) => {
@@ -389,10 +400,10 @@ class DataList extends Component {
         {this.state.projectLoading ? (
           <Spin></Spin>
         ) : (
-            this.state.projects.map((each) => (
-              <Menu.Item key={each["key"]}>{each["title"]}</Menu.Item>
-            ))
-          )}
+          this.state.projects.map((each) => (
+            <Menu.Item key={each["key"]}>{each["title"]}</Menu.Item>
+          ))
+        )}
       </Menu>
     );
     return (

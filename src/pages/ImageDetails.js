@@ -1,13 +1,11 @@
 import React, { Component } from "react";
-import ImageView from "../../components/imageView/ImageView";
+import ImageView from "./ImageView";
 import axios from "axios";
 import { Button, Layout, Row, Col, Spin, Input } from "antd";
-import { HOST_ADDRESS } from "../../pages/mainpage/Mainpage";
+import { HOST_ADDRESS } from "./Mainpage";
 
 const { TextArea } = Input;
 const { Header, Content } = Layout;
-
-const placeholder = require("../mainpage/image-placeholder.png");
 
 export default class ImageDetails extends Component {
   state = {

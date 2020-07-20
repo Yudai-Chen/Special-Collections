@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { Layout, Menu } from "antd";
 
-import Item from "./components/item/Item";
-import ProjectsPage from "./components/projectsPage/ProjectsPage";
-import Home from "./components/home/Home";
-import SearchPage from "./components/searchPage/SearchPage";
-import Welcome from "../welcome/Welcome";
+import ProjectsPage from "./ProjectsPage";
+import Home from "./Home";
+import SearchPage from "./SearchPage";
+import Welcome from "./Welcome";
 
 import { Redirect, Link, Switch, HashRouter, Route } from "react-router-dom";
 import {
@@ -17,7 +16,7 @@ import "antd/dist/antd.css";
 
 const { Header } = Layout;
 
-const logo = require("./logo.png");
+const logo = require("../resources/logo.png");
 
 export const HOST_ADDRESS = "http://10.134.196.80/omeka";
 export const key_identity = "sBskEv8YoF88Pea9Eitpz8WqvEujhmZi";

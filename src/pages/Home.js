@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { Layout, Tabs, Divider } from "antd";
-import Preview from "../preview/Preview";
-import Datalist from "../dataList/DataList";
-import Filmstrip from "../filmstrip/Filmstrip";
-import Metadata from "../../../../components/metadata/Metadata";
-import Archive from "../archive/Archive";
+import Preview from "./Preview";
+import Datalist from "./DataList";
+import Filmstrip from "./Filmstrip";
+import Metadata from "./Metadata";
+import Archive from "./Archive";
 
 import { TableOutlined, VideoCameraAddOutlined } from "@ant-design/icons";
 

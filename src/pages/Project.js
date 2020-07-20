@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Item from "../item/Item";
+import Item from "./Item";
 import { Redirect, Route } from "react-router-dom";
 
 export default class Project extends Component {

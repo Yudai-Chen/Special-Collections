@@ -13,8 +13,8 @@ import {
   Col,
   Divider,
 } from "antd";
-import Datalist from "../dataList/DataList";
-import Filmstrip from "../filmstrip/Filmstrip";
+import Datalist from "./DataList";
+import Filmstrip from "./Filmstrip";
 import {
   TableOutlined,
   VideoCameraAddOutlined,
@@ -23,7 +23,9 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { HOST_ADDRESS } from "../../Mainpage";
+import { HOST_ADDRESS } from "./Mainpage";
+import { PlaceHolder } from "../utils/Utils";
+
 const { Option } = Select;
 const { TabPane } = Tabs;
 
@@ -31,8 +33,6 @@ const layout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-
-const placeholder = require("../../image-placeholder.png");
 
 export default class MainPage extends Component {
   state = {
@@ -218,7 +218,7 @@ export default class MainPage extends Component {
                 itemId: record["o:item"]["o:id"],
                 title: "Unknown",
                 created: "Unknown",
-                preview: placeholder,
+                preview: PlaceHolder,
                 media: [
                   {
                     mediaId: record["o:id"],
@@ -312,7 +312,7 @@ export default class MainPage extends Component {
                                 fieldKey={[field.fieldKey, "joiner"]}
                                 noStyle
                               >
-                                <Select dplaceholder="joiner">
+                                <Select placeholder="joiner">
                                   <Option value="and">AND</Option>
                                   {field.key > 0 ? (
                                     <Option value="or">OR</Option>

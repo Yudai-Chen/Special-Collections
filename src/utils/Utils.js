@@ -1,4 +1,3 @@
-import axios from "axios";
-import HOST_ADDRESS from "../pages/mainpage/Mainpage";
-
 export function getItemSets() {}
+
+export const PlaceHolder = require("../resources/image-placeholder.png");

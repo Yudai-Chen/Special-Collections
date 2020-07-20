@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Tree } from "antd";
-import { HOST_ADDRESS } from "../../Mainpage";
+import { HOST_ADDRESS } from "./Mainpage";
 import "antd/dist/antd.css";
 
 const { DirectoryTree } = Tree;

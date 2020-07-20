@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Space, Carousel } from "antd";
-
-const placeholder = require("../../image-placeholder.png");
+import { PlaceHolder } from "../utils/Utils";
 
 export default class Preview extends Component {
   state = {
@@ -9,7 +8,7 @@ export default class Preview extends Component {
     content: [
       {
         title: "No Image",
-        src: placeholder,
+        src: PlaceHolder,
       },
     ],
   };
@@ -28,7 +27,7 @@ export default class Preview extends Component {
           content: [
             {
               title: "No Image",
-              src: placeholder,
+              src: PlaceHolder,
             },
           ],
         });

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Layout } from "antd";
 import { Route } from "react-router-dom";
-import ProjectList from "../projectList/ProjectList";
-import Item from "../item/Item";
+import ProjectList from "./ProjectList";
+import Item from "./Item";
 
 const { Sider, Content } = Layout;
 

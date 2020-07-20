@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Spin, Tree } from "antd";
 import { Redirect, withRouter } from "react-router-dom";
 import axios from "axios";
-import { HOST_ADDRESS } from "../../Mainpage";
+import { HOST_ADDRESS } from "./Mainpage";
 const { DirectoryTree } = Tree;
 
 function updateTreeData(list, key, children) {

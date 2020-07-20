@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { HOST_ADDRESS } from "../../Mainpage";
+import { HOST_ADDRESS } from "./Mainpage";
 import Graph from "react-graph-vis";
 import { Spin } from "antd";
 
@@ -52,7 +52,7 @@ export default class RelationGraph extends Component {
               links.push(each);
             });
           }
-        } catch (error) { }
+        } catch (error) {}
       }
       links.map(async (each) => {
         let test = graph["nodes"].find((item) => {
@@ -117,14 +117,14 @@ export default class RelationGraph extends Component {
     return this.state.loading ? (
       <Spin></Spin>
     ) : (
-        <div height="1000">
-          <Graph
-            graph={this.state.graph}
-            options={options}
-            events={events}
-            getNetwork={(network) => { }}
-          />
-        </div>
-      );
+      <div height="1000">
+        <Graph
+          graph={this.state.graph}
+          options={options}
+          events={events}
+          getNetwork={(network) => {}}
+        />
+      </div>
+    );
   }
 }
