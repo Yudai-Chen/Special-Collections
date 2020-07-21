@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Modal, Input, Space, Button } from "antd";
 import axios from "axios";
+import { useCookies } from "react-cookie";
+import { useHistory, useLocation } from "react-router-dom";
 
 const headers = {
   "Content-Type": "application/json",
@@ -17,6 +19,10 @@ export default class Welcome extends Component {
   };
 
   sendTest = () => {
+    let [cookies, setCookie] = useCookies(["userInfo"]);
+    let history = useHistory();
+    let location = useLocation();
+    let { from } = location.state || { from: { pathname: "/main" } };
     let payload = {
       "dcterms:title": [
         {
@@ -53,11 +59,31 @@ export default class Welcome extends Component {
             key_credential: "",
           },
         });
+
+        setCookie("userInfo", this.state.config, { path: "/" });
+        axios.delete(
+          "http://" +
+            this.state.config.host +
+            "/api/items/" +
+            response.data["o:id"],
+          {
+            params: {
+              key_identity: this.state.config.key_identity,
+              key_credential: this.state.config.key_credential,
+            },
+            headers: headers,
+          }
+        );
+        history.replace(from);
       })
       .catch((error) => {
         if (error.response) {
-          console.log(error.response);
-          console.log(error.response.status);
+          if (error.response.status === 403) {
+            Modal.error({
+              title: "Authentication fails",
+              content: "Invalid keys.",
+            });
+          }
         } else {
           Modal.error({
             title: "Connection fails",
@@ -72,7 +98,7 @@ export default class Welcome extends Component {
       <Space direction="vertical" style={{ width: "100%" }}>
         <Input
           addonBefore="Host Address"
-          placeholder='Input the host IP address of the Omeka S backend. Please leave out "http://"'
+          placeholder='Input the host IP address of the Omeka S backend. Please leave out "http://" and do not end with a "/"'
           value={this.state.config.host}
           onChange={({ target: { value } }) => {
             this.setState({

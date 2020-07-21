@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import MainRouter from "./route/MainRouter";
+import { MainRouter } from "./route/Routers";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(<MainRouter />, document.getElementById("root"));
