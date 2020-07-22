@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, Input, Row, Col, Spin, Tree } from "antd";
 import { withRouter } from "react-router";
-import { HOST_ADDRESS, key_credential, key_identity } from "./Mainpage";
+import { HOST_ADDRESS, key_credential, key_identity } from "../components/Mainpage";
 import ImageView from "./ImageView";
 import axios from "axios";
 
@@ -181,50 +181,50 @@ class NewNote extends Component {
     return this.state.loading ? (
       <Spin></Spin>
     ) : (
-      <div>
-        <Row gutter={[16, 24]} justify="end">
-          <Col span={6}>
-            <Col span={24}>
-              <h2>Attach to:</h2>
-              <DirectoryTree
-                treeData={this.state.targets}
-                blockNode={true}
-                checkable
-                onCheck={this.onCheck}
-                onSelect={this.onSelect}
-              />
-            </Col>
+        <div>
+          <Row gutter={[16, 24]} justify="end">
             <Col span={6}>
-              <Button onClick={this.onRemove}>Remove</Button>
-            </Col>
-          </Col>
-          <Col span={6}>
-            <ImageView
-              id={this.state.displaying}
-              visible={true}
-              imgs={this.state.media}
-            />
-          </Col>
-          <Col span={12}>
-            <Row gutter={[16, 24]} justify="end">
               <Col span={24}>
-                <h2>Note:</h2>
-                <TextArea
-                  value={this.state.input}
-                  onChange={this.onTextChange}
-                  autoSize={{ minRows: 25, maxRows: 25 }}
+                <h2>Attach to:</h2>
+                <DirectoryTree
+                  treeData={this.state.targets}
+                  blockNode={true}
+                  checkable
+                  onCheck={this.onCheck}
+                  onSelect={this.onSelect}
                 />
               </Col>
               <Col span={6}>
-                <Button type="primary" onClick={this.onSubmit}>
-                  Submit Change
-                </Button>
+                <Button onClick={this.onRemove}>Remove</Button>
               </Col>
-            </Row>
-          </Col>
-        </Row>
-      </div>
-    );
+            </Col>
+            <Col span={6}>
+              <ImageView
+                id={this.state.displaying}
+                visible={true}
+                imgs={this.state.media}
+              />
+            </Col>
+            <Col span={12}>
+              <Row gutter={[16, 24]} justify="end">
+                <Col span={24}>
+                  <h2>Note:</h2>
+                  <TextArea
+                    value={this.state.input}
+                    onChange={this.onTextChange}
+                    autoSize={{ minRows: 25, maxRows: 25 }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <Button type="primary" onClick={this.onSubmit}>
+                    Submit Change
+                </Button>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </div>
+      );
   }
 }
 

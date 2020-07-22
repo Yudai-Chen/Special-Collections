@@ -13,8 +13,8 @@ import {
   Col,
   Divider,
 } from "antd";
-import Datalist from "./DataList";
-import Filmstrip from "./Filmstrip";
+import Datalist from "../pages/DataList";
+import Filmstrip from "../pages/Filmstrip";
 import {
   TableOutlined,
   VideoCameraAddOutlined,
@@ -23,7 +23,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { HOST_ADDRESS } from "./Mainpage";
+import { HOST_ADDRESS } from "../components/Mainpage";
 import { PlaceHolder } from "../utils/Utils";
 
 const { Option } = Select;
@@ -140,7 +140,7 @@ export default class MainPage extends Component {
         })
       );
       this.setState({});
-    } catch (error) {}
+    } catch (error) { }
   };
 
   onReset = () => {
@@ -226,9 +226,9 @@ export default class MainPage extends Component {
                     thumbnail: record["o:thumbnail_urls"]["square"],
                     transcript: record["bibo:transcriptOf"]
                       ? record["bibo:transcriptOf"][0]["@value"].substring(
-                          0,
-                          50
-                        )
+                        0,
+                        50
+                      )
                       : "",
                   },
                 ],
@@ -259,10 +259,10 @@ export default class MainPage extends Component {
         {this.state.loading ? (
           <Spin></Spin>
         ) : (
-          this.state.templates.map((each, index) => (
-            <Menu.Item key={index}>{each["title"]}</Menu.Item>
-          ))
-        )}
+            this.state.templates.map((each, index) => (
+              <Menu.Item key={index}>{each["title"]}</Menu.Item>
+            ))
+          )}
       </Menu>
     );
     return (
@@ -272,15 +272,15 @@ export default class MainPage extends Component {
             {this.state.menuLoading ? (
               <Spin></Spin>
             ) : (
-              <Dropdown overlay={menu}>
-                <a
-                  className="template-list"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  {this.state.templateName} <DownOutlined />
-                </a>
-              </Dropdown>
-            )}
+                <Dropdown overlay={menu}>
+                  <a
+                    className="template-list"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    {this.state.templateName} <DownOutlined />
+                  </a>
+                </Dropdown>
+              )}
           </div>
           <div>
             <Divider>Item Search</Divider>
@@ -408,12 +408,12 @@ export default class MainPage extends Component {
                               {this.state.classLoading ? (
                                 <Spin></Spin>
                               ) : (
-                                this.state.classList.map((each) => (
-                                  <Option value={each["id"]}>
-                                    {each["title"]}
-                                  </Option>
-                                ))
-                              )}
+                                  this.state.classList.map((each) => (
+                                    <Option value={each["id"]}>
+                                      {each["title"]}
+                                    </Option>
+                                  ))
+                                )}
                             </Select>
                           </Form.Item>
                           {fields.length > 1 ? (
@@ -457,12 +457,12 @@ export default class MainPage extends Component {
                               {this.state.projectLoading ? (
                                 <Spin></Spin>
                               ) : (
-                                this.state.projectList.map((each) => (
-                                  <Option value={each["id"]}>
-                                    {each["title"]}
-                                  </Option>
-                                ))
-                              )}
+                                  this.state.projectList.map((each) => (
+                                    <Option value={each["id"]}>
+                                      {each["title"]}
+                                    </Option>
+                                  ))
+                                )}
                             </Select>
                           </Form.Item>
                           {fields.length > 1 ? (

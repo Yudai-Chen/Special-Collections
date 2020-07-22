@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import axios from "axios";
-import { Tree } from "antd";
-import { HOST_ADDRESS } from "./Mainpage";
+import React, { useState, useEffect } from "react";
+import { Input, Tree, Button } from "antd";
+import { getItem } from "../utils/Utils";
+import { useCookies } from "react-cookie";
 import "antd/dist/antd.css";
 
 const { DirectoryTree } = Tree;
 
-function updateTreeData(list, key, children) {
+const updateTreeData = (list, key, children) => {
   return list.map((node) => {
     if (node.key === key) {
       return { ...node, children };
@@ -17,12 +17,11 @@ function updateTreeData(list, key, children) {
         children: updateTreeData(node.children, key, children),
       };
     }
-
     return node;
   });
 }
 
-function makeTreeNodeLeaf(list, key) {
+const makeTreeNodeLeaf = (list, key) => {
   return list.map((node) => {
     if (node.key === key) {
       node.isLeaf = true;
@@ -36,98 +35,74 @@ function makeTreeNodeLeaf(list, key) {
   });
 }
 
-export default class Archive extends Component {
-  state = {
-    treeData: [],
-    checkedFiles: [],
-  };
+const Archive = (props) => {
+  const [hasRoot, setHasRoot] = useState(false);
+  const [treeData, setTreeData] = useState([]);
+  const [userInfo] = useCookies(["userInfo"]);
+  const [rootId, setRootId] = useState(undefined);
 
-  constructor(props) {
-    super(props);
-    this.getRootData().then((rootData) => {
-      this.setState({ treeData: rootData });
-    });
-  }
-
-  async getRootData() {
-    const response = await axios.get(HOST_ADDRESS + "/api/items/103719");
-    const rootId = response.data["o:id"];
-    const rootTitle = response.data["o:title"];
-    const rootData = [
-      {
-        title: rootTitle,
-        key: rootId,
-        isLeaf: false,
-      },
-    ];
-    return rootData;
-  }
-
-  onCheck = (checkedKeys) => {
-    const files = [];
-    checkedKeys.map((each) => {
-      files.push(each);
-    });
-    this.setState({ checkedFiles: files });
-    this.props.updateSelectedFiles(files);
-  };
-
-  onLoadData = async (treeNode) => {
-    const parentId = treeNode.key;
-    const response = await axios.get(HOST_ADDRESS + "/api/items/" + parentId);
-
-    let list = response.data["dcterms:hasPart"];
-    let thisChildren = [];
-
-    return new Promise(async (resolve) => {
+  const onLoadData = (treeNode) => {
+    getItem(userInfo.host, treeNode.key).then((response) => {
+      let list = response.data["dcterms:hasPart"];
       if (!list || list.length === 0) {
-        let dataList = this.state.treeData;
-        dataList = makeTreeNodeLeaf(dataList, treeNode.key);
-        this.setState({
-          treeData: dataList,
-        });
-        resolve();
+        setTreeData(makeTreeNodeLeaf(treeData, treeNode.key));
         return;
       }
-
-      if (list && list.length > 0) {
-        list.map((each) => {
-          let child = {
-            key: each["value_resource_id"],
-            title: each["display_title"],
-            isLeaf: false,
-          };
-          if (each["thumbnail_url"]) {
-            child.icon = (
-              <img src={each["thumbnail_url"]} height="20" width="20" />
-            );
-          }
-          thisChildren.push(child);
-          return child;
-        });
-      }
-
-      let dataList = this.state.treeData;
-      dataList = updateTreeData(dataList, treeNode.key, thisChildren);
-      this.setState({
-        treeData: dataList,
+      let thisChildren = list.map((each) => {
+        let child = {
+          key: each["value_resource_id"],
+          title: each["display_title"],
+          isLeaf: false,
+        };
+        if (each["thumbnail_url"]) {
+          child.icon = (
+            <img src={each["thumbnail_url"]} height="20" width="20" />
+          );
+        }
+        return child;
       });
-      resolve();
-    });
+      setTreeData(updateTreeData(treeData, treeNode.key, thisChildren));
+    })
   };
 
-  render() {
-    return (
-      <div className="archive-container">
-        <DirectoryTree
-          multiple
-          blockNode={true}
-          loadData={this.onLoadData}
-          onCheck={this.onCheck}
-          checkable
-          treeData={this.state.treeData}
-        />
-      </div>
-    );
+  const onConfirm = () => {
+    getItem(userInfo.host, rootId).then((response) => {
+      setTreeData([
+        {
+          title: response.data["o:title"] ? response.data["o:title"] : "untitled",
+          key: response.data["o:id"],
+          isLeaf: false,
+        },
+      ]);
+      setHasRoot(true);
+    })
   }
+
+  return !hasRoot ? (
+    <>
+      <Input
+        addonBefore="Root Item ID"
+        placeholder="Please identify your root item id.(103719)"
+        value={rootId}
+        onChange={({ target: { value } }) => {
+          setRootId(value);
+        }}
+      />
+      <Button type="primary" onClick={onConfirm}>
+        Confirm
+      </Button>
+    </>) : (
+      <DirectoryTree
+        multiple
+        blockNode={true}
+        loadData={onLoadData}
+        onCheck={(checkedKeys) => {
+          props.updateSelectedFiles(checkedKeys)
+        }}
+        checkable
+        treeData={treeData}
+      />
+    );
 }
+
+export default Archive;

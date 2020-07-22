@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Card, Col, Row } from "antd";
 import axios from "axios";
-import { HOST_ADDRESS } from "./Mainpage";
+import { HOST_ADDRESS } from "../components/Mainpage";
 const { Meta } = Card;
 
 export default class Filmstrip extends Component {

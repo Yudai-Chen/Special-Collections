@@ -1,18 +1,23 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   Switch,
   BrowserRouter as Router,
   Route,
   Redirect,
 } from "react-router-dom";
-import MainPage from "../pages/Mainpage";
+import MainPage from "../components/Mainpage";
 import ImageDetails from "../pages/ImageDetails";
 import NewNote from "../pages/NewNote";
-import Welcome from "../pages/Welcome";
+import Welcome from "../containers/Welcome";
+import SearchPage from "../containers/SearchPage";
+import Home from "../containers/Home";
 import { useCookies } from "react-cookie";
+import { PATH_PREFIX } from "../utils/Utils"
+
 
 function PrivateRoute({ component: Component, authed, ...rest }) {
   const [cookies] = useCookies(["userInfo"]);
+  console.log(cookies.userInfo);
   return (
     <Route
       {...rest}
@@ -20,30 +25,41 @@ function PrivateRoute({ component: Component, authed, ...rest }) {
         cookies.userInfo !== undefined ? (
           <Component {...props} />
         ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: props.location },
-            }}
-          />
-        )
+            <Redirect
+              to={{
+                pathname: PATH_PREFIX + "/login",
+                state: { from: props.location },
+              }}
+            />
+          )
       }
     />
   );
 }
 
-export class MainRouter extends Component {
-  render() {
-    return (
-      <Router>
-        <Switch>
-          <PrivateRoute path="/media/:mediaId" component={ImageDetails} />
-          <PrivateRoute path="/note/:targetList" component={NewNote} />
-          <PrivateRoute path="/main" component={MainPage} />
-          <Route path="/login" component={Welcome} />
-          <Redirect from="/" to="/login" />
-        </Switch>
-      </Router>
-    );
-  }
+export const MainpageRouter = () => {
+  return (
+    <Router>
+      <Switch>
+        <Route path="items" component={ProjectsPage} />
+        <Route path="search" component={SearchPage} />
+        <Route path="home" component={Home} />
+        <Redirect to="home" />
+      </Switch>
+    </Router>
+  );
+}
+
+export const MainRouter = () => {
+  return (
+    <Router>
+      <Switch>
+        <PrivateRoute path={PATH_PREFIX + "/media/:mediaId"} component={ImageDetails} />
+        <PrivateRoute path={PATH_PREFIX + "/note/:targetList"} component={NewNote} />
+        <PrivateRoute path={PATH_PREFIX + "/main"} component={MainPage} />
+        <Route path={PATH_PREFIX + "/login"} component={Welcome} />
+        <Redirect from={PATH_PREFIX + "/"} to={PATH_PREFIX + "/login"} />
+      </Switch>
+    </Router>
+  );
 }

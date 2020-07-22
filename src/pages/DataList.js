@@ -3,7 +3,7 @@ import { Spin, Input, Modal, Button, Table, Space, Menu, Dropdown } from "antd";
 import { withRouter, Link } from "react-router-dom";
 import { DownOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { HOST_ADDRESS, key_credential, key_identity } from "./Mainpage";
+import { HOST_ADDRESS, key_credential, key_identity } from "../components/Mainpage";
 import { PlaceHolder } from "../utils/Utils";
 
 const headers = {
@@ -225,8 +225,8 @@ class DataList extends Component {
             return axios
               .get(
                 HOST_ADDRESS +
-                  "/api/media/" +
-                  response.data["o:media"][0]["o:id"]
+                "/api/media/" +
+                response.data["o:media"][0]["o:id"]
               )
               .then((response_1) => {
                 return response_1.data["o:thumbnail_urls"]["square"];
@@ -268,7 +268,7 @@ class DataList extends Component {
             this.setState({ updated: "true" });
           })
         )
-        .catch((errors) => {});
+        .catch((errors) => { });
     }
   };
 
@@ -348,7 +348,7 @@ class DataList extends Component {
     try {
       let project = this.state.projects.filter((each) => each["key"] == key);
       this.setState({ menuDisplay: project[0]["title"], addProjectId: key });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   expandedRowRender = (record) => {
@@ -400,10 +400,10 @@ class DataList extends Component {
         {this.state.projectLoading ? (
           <Spin></Spin>
         ) : (
-          this.state.projects.map((each) => (
-            <Menu.Item key={each["key"]}>{each["title"]}</Menu.Item>
-          ))
-        )}
+            this.state.projects.map((each) => (
+              <Menu.Item key={each["key"]}>{each["title"]}</Menu.Item>
+            ))
+          )}
       </Menu>
     );
     return (

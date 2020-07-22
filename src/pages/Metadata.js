@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Table, Spin } from "antd";
 import axios from "axios";
-import { HOST_ADDRESS } from "./Mainpage";
+import { HOST_ADDRESS } from "../components/Mainpage";
 
 const columns = [
   {
@@ -68,13 +68,13 @@ export default class Metadata extends Component {
     return this.state.loading ? (
       <Spin tip="loading..."></Spin>
     ) : (
-      <div>
-        <Table
-          loading={this.state.length !== 0 && this.state.updated === true}
-          columns={columns}
-          dataSource={this.state.data}
-        />
-      </div>
-    );
+        <div>
+          <Table
+            loading={this.state.length !== 0 && this.state.updated === true}
+            columns={columns}
+            dataSource={this.state.data}
+          />
+        </div>
+      );
   }
 }
