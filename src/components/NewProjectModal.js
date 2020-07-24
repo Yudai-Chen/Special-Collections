@@ -11,8 +11,8 @@ const NewProjectModal = (props) => {
 
   const onCreateProject = () => {
     if (
-      this.state.projectName === undefined ||
-      this.state.projectName.length === 0
+      projectName === undefined ||
+      projectName.length === 0
     ) {
       Modal.error({
         title: "Fail to create project!",
@@ -27,7 +27,7 @@ const NewProjectModal = (props) => {
           type: "literal",
           property_id: 1,
           property_label: "Title",
-          "@value": this.state.projectName,
+          "@value": projectName,
         },
       ],
       "dcterms: description": [
@@ -35,7 +35,7 @@ const NewProjectModal = (props) => {
           type: "literal",
           property_id: 4,
           property_label: "Description",
-          "@value": this.state.projectNote,
+          "@value": projectDescribe,
         },
       ],
     };
