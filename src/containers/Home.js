@@ -1,39 +1,102 @@
 import React, { useState } from "react";
 import { Layout, Tabs, Divider } from "antd";
-import Preview from "../pages/Preview";
-import Datalist from "../pages/DataList";
-import Filmstrip from "../pages/Filmstrip";
-import Metadata from "../pages/Metadata";
-import Archive from "../pages/Archive";
-import { TableOutlined, VideoCameraAddOutlined } from "@ant-design/icons";
+import Preview from "../components/Preview";
+import Datalist from "../components/DataList";
+import Filmstrip from "../components/Filmstrip";
+import Metadata from "../components/Metadata";
+import Archive from "../components/Archive";
+import ItemSearchForm from "../components/ItemSearchForm";
+import MediumSearchForm from "../components/MediumSearchForm";
+
+import {
+  TableOutlined,
+  VideoCameraAddOutlined,
+  SearchOutlined,
+  ApartmentOutlined,
+} from "@ant-design/icons";
+import { useCookies } from "react-cookie";
+import axios from "axios";
+import { getItems } from "../utils/Utils";
 
 const { Sider, Content } = Layout;
 const { TabPane } = Tabs;
 
 const Home = () => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [rowRecord, setRowRecord] = useState({});
+  const [cookies] = useCookies(["userInfo"]);
+  const [dataLoading, setDataLoading] = useState(false);
 
-  render = () => (
+  const onArchiveCheck = (keys) => {
+    if (keys.length > 0) {
+      setDataLoading(true);
+      getItems(cookies.userInfo.host, keys)
+        .then(
+          axios.spread((...responses) => {
+            let data = responses
+              .filter((each) => !each.data["dcterms:hasPart"])
+              .map((each) => ({ ...each.data, key: each.data["o:id"] }));
+            setSelectedItems(data);
+            setDataLoading(false);
+          })
+        )
+        .catch((errors) => {});
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  return (
     <Layout>
       <Sider
         style={{
-          overflow: "scroll",
-          minHeight: "100vh",
-          width: "20vw",
+          overflow: "auto",
+          height: "100vh",
+          width: "280",
           left: 0,
         }}
+        width="280"
         theme="light"
       >
-        <div>
-          <Archive updateSelectedFiles={(files) => {
-            setSelectedFiles(files);
-          }} />
-        </div>
+        <Tabs defaultActiveKey={1}>
+          <TabPane
+            tab={
+              <span>
+                <ApartmentOutlined />
+                Tree
+              </span>
+            }
+            key={1}
+          >
+            <div>
+              <Archive
+                updateSelectedItems={(keys) => {
+                  onArchiveCheck(keys);
+                }}
+              />
+            </div>
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <SearchOutlined />
+                Search
+              </span>
+            }
+            key={2}
+          >
+            <ItemSearchForm
+              handleSearchResults={(items) => {
+                setSelectedItems(items);
+              }}
+            />
+            <MediumSearchForm />
+          </TabPane>
+        </Tabs>
       </Sider>
       <Layout>
         <Content>
-          <Tabs defaultActiveKey="1">
+          <Tabs defaultActiveKey={1}>
             <TabPane
               tab={
                 <span>
@@ -41,14 +104,15 @@ const Home = () => {
                   List
                 </span>
               }
-              key="1"
+              key={1}
             >
               <Datalist
-                shownFiles={selectedFiles}
+                hasMediaData={false}
+                dataSource={selectedItems}
                 handleRowClick={(record) => {
                   setRowRecord(record);
                 }}
-                type={false}
+                loading={dataLoading}
               />
             </TabPane>
             <TabPane
@@ -58,20 +122,20 @@ const Home = () => {
                   Filmstrip
                 </span>
               }
-              key="2"
+              key={2}
             >
-              <Filmstrip shownFiles={selectedFiles} />
+              <Filmstrip dataSource={selectedItems} />
             </TabPane>
           </Tabs>
         </Content>
         <Sider theme="light" collapsible={false}>
-          <Preview target={rowRecord} />
+          <Preview dataSource={rowRecord} displayNum={5} />
           <Divider style={{ height: "20" }} />
-          <Metadata target={rowRecord} />
+          <Metadata dataSource={rowRecord} />
         </Sider>
       </Layout>
     </Layout>
   );
-}
+};
 
 export default Home;

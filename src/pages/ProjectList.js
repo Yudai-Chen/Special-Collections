@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Spin, Tree } from "antd";
-import { Redirect, withRouter } from "react-router-dom";
-import axios from "axios";
-import { HOST_ADDRESS } from "./Mainpage";
+import { getItemSetList, getItemsInItemSet } from "../utils/Utils";
+import { useCookies } from "react-cookie";
+
 const { DirectoryTree } = Tree;
 
 function updateTreeData(list, key, children) {
@@ -21,87 +21,75 @@ function updateTreeData(list, key, children) {
   });
 }
 
-class ProjectList extends Component {
-  state = {
-    projects: [],
-    loading: false,
-  };
+const ProjectList = () => {
+  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [cookies] = useCookies(["userInfo"]);
 
-  constructor(props) {
-    super(props);
-    try {
-      this.loadProjectList();
-    } catch (error) {}
-  }
+  useEffect(() => {
+    const loadProjectList = () => {
+      getItemSetList(cookies.userInfo.host).then((response) => {
+        setProjects(
+          response.data.map((each) => ({
+            key: each["o:id"],
+            title: each["o:title"],
+            isLeaf: false,
+          }))
+        );
+      });
+    };
 
-  onLoadData = async (treeNode) => {
-    let item_set_id = treeNode.key;
-    const response = await axios.get(
-      HOST_ADDRESS + "/api/items?item_set_id=" + item_set_id
+    setLoading(true);
+    loadProjectList();
+  }, [cookies.userInfo]);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [projects]);
+
+  const onLoadData = async (treeNode) => {
+    const response = await getItemsInItemSet(
+      cookies.userInfo.host,
+      treeNode.key
     );
     let thisChildren = response.data.map((each) => ({
-      key: item_set_id + "-" + each["o:id"],
+      key: treeNode.key + "-" + each["o:id"],
       title: each["o:title"],
       isLeaf: true,
     }));
-
-    return new Promise(async (resolve) => {
-      if (!thisChildren || thisChildren.length === 0) {
-        resolve();
-        return;
-      }
-      let data = this.state.projects;
-      data = updateTreeData(data, treeNode.key, thisChildren);
-      this.setState({
-        projects: data,
-      });
-      resolve();
-    });
-  };
-
-  loadProjectList = () => {
-    this.state.projectLoading = true;
-    axios.get(HOST_ADDRESS + "/api/item_sets").then((response) => {
-      let item_sets = response.data.map((each) => ({
-        key: each["o:id"],
-        title: each["o:title"],
-        isLeaf: false,
-      }));
-      this.setState({ projects: item_sets }, () => {
-        this.setState({ projectLoading: false });
-      });
-    });
-  };
-
-  componentDidMount() {}
-
-  onSelect = (itemKey) => {
-    let itemId;
-    if (String(itemKey[0]).indexOf("-") != -1) {
-      itemId = itemKey[0].substring(
-        itemKey[0].indexOf("-") + 1,
-        itemKey[0].length
-      );
-      this.props.history.push("/items/" + itemId);
+    if (!thisChildren || thisChildren.length === 0) {
+      return;
     }
+    setProjects((projects) =>
+      updateTreeData(projects, treeNode.key, thisChildren)
+    );
+  };
+  //TODO
+  const onSelect = (itemKey) => {
+    // let itemId;
+    // if (String(itemKey[0]).indexOf("-") !== -1) {
+    //   itemId = itemKey[0].substring(
+    //     itemKey[0].indexOf("-") + 1,
+    //     itemKey[0].length
+    //   );
+    //   this.props.history.push("/items/" + itemId);
+    // }
   };
 
-  render() {
-    return this.state.projectLoading || this.state.loading ? (
-      <div>
-        <Spin tip="Loading..."></Spin>
-      </div>
-    ) : (
-      <div className="project-list-container">
-        <DirectoryTree
-          blockNode={true}
-          treeData={this.state.projects}
-          loadData={this.onLoadData}
-          onSelect={this.onSelect}
-        />
-      </div>
-    );
-  }
-}
+  return loading ? (
+    <div>
+      <Spin tip="Loading..."></Spin>
+    </div>
+  ) : (
+    <div className="project-list-container">
+      <DirectoryTree
+        blockNode={true}
+        treeData={projects}
+        loadData={onLoadData}
+        onSelect={onSelect}
+      />
+    </div>
+  );
+};
 
-export default withRouter(ProjectList);
+export default ProjectList;

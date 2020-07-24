@@ -2,20 +2,21 @@ import React, { useState } from "react";
 import { Modal, Input, Space, Button } from "antd";
 import axios from "axios";
 import { useCookies } from "react-cookie";
-import { useHistory, useLocation } from "react-router-dom";
-import { PATH_PREFIX } from "../utils/Utils"
+import { useHistory, useLocation, withRouter } from "react-router-dom";
+import { PATH_PREFIX } from "../utils/Utils";
 
 const headers = {
   "Content-Type": "application/json",
 };
 
-
 const Welcome = (props) => {
-  const [config, setConfig] = useState({});
+  let [config, setConfig] = useState({});
   let [cookies, setCookie, removeCookie] = useCookies(["userInfo"]);
   let history = useHistory();
   let location = useLocation();
-  let { from } = location.state || { from: { pathname: PATH_PREFIX + "/main" } };
+  let { from } = location.state || {
+    from: { pathname: PATH_PREFIX + "/admin" },
+  };
 
   const sendTest = () => {
     let payload = {
@@ -47,18 +48,9 @@ const Welcome = (props) => {
         headers: headers,
       })
       .then((response) => {
-        setConfig({
-          ...config,
-          key_identity: "",
-          key_credential: "",
-        });
-
         setCookie("userInfo", config, { path: "/" });
         axios.delete(
-          "http://" +
-          config.host +
-          "/api/items/" +
-          response.data["o:id"],
+          "http://" + config.host + "/api/items/" + response.data["o:id"],
           {
             params: {
               key_identity: config.key_identity,
@@ -67,6 +59,11 @@ const Welcome = (props) => {
             headers: headers,
           }
         );
+        setConfig({
+          ...config,
+          key_identity: "",
+          key_credential: "",
+        });
         history.replace(from);
       })
       .catch((error) => {
@@ -84,11 +81,18 @@ const Welcome = (props) => {
           });
         }
       });
-  }
+  };
+
+  const unsafeLogIn = () => {
+    setCookie("userInfo", config, { path: "/" });
+    console.log("logged in with configs");
+    console.log(config);
+    history.replace(from);
+  };
 
   const onLogOut = () => {
     removeCookie("userInfo", { path: "/" });
-  }
+  };
 
   return (
     <Space direction="vertical" style={{ width: "100%" }}>
@@ -98,7 +102,8 @@ const Welcome = (props) => {
         value={config.host}
         onChange={({ target: { value } }) => {
           setConfig({
-            ...config, host: value
+            ...config,
+            host: value,
           });
         }}
       />
@@ -108,7 +113,8 @@ const Welcome = (props) => {
         value={config.key_identity}
         onChange={({ target: { value } }) => {
           setConfig({
-            ...config, key_identity: value
+            ...config,
+            key_identity: value,
           });
         }}
       />
@@ -118,18 +124,30 @@ const Welcome = (props) => {
         value={config.key_credential}
         onChange={({ target: { value } }) => {
           setConfig({
-            ...config, key_credential: value
+            ...config,
+            key_credential: value,
           });
         }}
       />
+      <Button type="primary" onClick={unsafeLogIn}>
+        Guest Log in
+      </Button>
       <Button type="primary" onClick={sendTest}>
-        Log in
+        Editor Log in
       </Button>
       <Button type="primary" onClick={onLogOut}>
         Log out
       </Button>
+      <Button
+        type="primary"
+        onClick={() => {
+          console.log(cookies);
+        }}
+      >
+        Current cookie
+      </Button>
     </Space>
   );
-}
+};
 
-export default Welcome;
+export default withRouter(Welcome);
