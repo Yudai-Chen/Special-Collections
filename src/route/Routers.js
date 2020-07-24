@@ -11,7 +11,7 @@ import NewNote from "../containers/NewNote";
 import Welcome from "../containers/Welcome";
 import Home from "../containers/Home";
 import ProjectsPage from "../containers/ProjectsPage";
-import Item from "../pages/Item";
+import ItemView from "../pages/ItemView";
 import { useCookies } from "react-cookie";
 import { PATH_PREFIX } from "../utils/Utils";
 
@@ -24,13 +24,13 @@ function PrivateRoute({ children, ...rest }) {
         cookies.userInfo !== undefined ? (
           children
         ) : (
-          <Redirect
-            to={{
-              pathname: PATH_PREFIX + "/login",
-              state: { from: props.location },
-            }}
-          />
-        )
+            <Redirect
+              to={{
+                pathname: PATH_PREFIX + "/login",
+                state: { from: props.location },
+              }}
+            />
+          )
       }
     />
   );
@@ -41,9 +41,12 @@ export const MainpageRouter = () => {
     <Switch>
       <PrivateRoute
         path={PATH_PREFIX + "/admin/items"}
-        component={ProjectsPage}
-      />
-      <PrivateRoute path={PATH_PREFIX + "/admin/home"} component={Home} />
+      >
+        <ProjectsPage />
+      </PrivateRoute>
+      <PrivateRoute path={PATH_PREFIX + "/admin/home"} >
+        <Home />
+      </PrivateRoute>
       <Redirect to={PATH_PREFIX + "/admin/home"} />
     </Switch>
   );
@@ -54,8 +57,9 @@ export const ProjectpageRouter = () => {
     <Router>
       <PrivateRoute
         path={PATH_PREFIX + "/admin/items/:itemId"}
-        component={Item}
-      />
+      >
+        <ItemView />
+      </PrivateRoute>
     </Router>
   );
 };
@@ -66,15 +70,21 @@ export const MainRouter = () => {
       <Switch>
         <PrivateRoute
           path={PATH_PREFIX + "/media/:mediaId"}
-          component={ImageDetails}
-        />
+        >
+          <ImageDetails />
+        </PrivateRoute>
         <PrivateRoute
           path={PATH_PREFIX + "/note/:targetList"}
-          component={NewNote}
-        />
-        <PrivateRoute path={PATH_PREFIX + "/admin"} component={MainPage} />
-        <Route path={PATH_PREFIX + "/login"} component={Welcome} />
-        <Redirect to={PATH_PREFIX + "/login"} />
+        >
+          <NewNote />
+        </PrivateRoute>
+        <PrivateRoute path={PATH_PREFIX + "/admin"} >
+          <MainPage />
+        </PrivateRoute>
+        <Route path={PATH_PREFIX + "/login"}>
+          <Welcome />
+        </Route>
+        <Redirect to={PATH_PREFIX + "/admin"} />
       </Switch>
     </Router>
   );

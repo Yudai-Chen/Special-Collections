@@ -106,3 +106,17 @@ export const getResourceClassList = (baseAddress) => {
     "http://" + baseAddress + "/api/resource_classes?per_page=1000"
   );
 };
+
+export const getItemPath = (baseAddress, itemId, path = []) => {
+  return getItem(baseAddress, itemId).then((response) => {
+    if (response.data["dcterms:isPartOf"]) {
+      path.push(...response.data["dcterms:isPartOf"]);
+      return getItemPath(
+        response.data["dcterms:isPartOf"][0]["value_resource_id"],
+        path
+      );
+    } else {
+      return path;
+    }
+  });
+}

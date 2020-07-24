@@ -71,7 +71,7 @@ const viewColumn = {
   dataIndex: "View",
   render: (text, record) => (
     <Space size="middle">
-      <Link to={PATH_PREFIX + "/items/" + record["o:id"]} target="_blank">
+      <Link to={PATH_PREFIX + "/admin/items/" + record["o:id"]} target="_blank">
         View
       </Link>
     </Space>
