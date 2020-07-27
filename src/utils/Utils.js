@@ -40,7 +40,7 @@ export const getItemsInItemSet = (baseAddress, itemSetId) => {
 };
 
 export const createItemSet = (userInfo, payload) => {
-  return axios.post(userInfo.host + "/api/item_sets", payload, {
+  return axios.post("http://" + userInfo.host + "/api/item_sets", payload, {
     params: {
       key_identity: userInfo.key_identity,
       key_credential: userInfo.key_credential,
@@ -54,14 +54,14 @@ export const addItemsToItemSet = (userInfo, itemSetId, items) => {
     return;
   }
   let requests = items.map((each) => {
-    return axios.get(userInfo.host + "/api/items/" + each).then((response) => {
+    return axios.get("http://" + userInfo.host + "/api/items/" + each).then((response) => {
       let originItemSets = response.data["o:item_set"]
         ? response.data["o:item_set"]
         : [];
       originItemSets.push({ "o:id": itemSetId });
 
       return axios.patch(
-        userInfo.host + "/api/items/" + each,
+        "http://" + userInfo.host + "/api/items/" + each,
         { "o:item_set": originItemSets },
         {
           params: {
@@ -106,3 +106,17 @@ export const getResourceClassList = (baseAddress) => {
     "http://" + baseAddress + "/api/resource_classes?per_page=1000"
   );
 };
+
+export const getItemPath = (baseAddress, itemId, path = []) => {
+  return getItem(baseAddress, itemId).then((response) => {
+    if (response.data["dcterms:isPartOf"]) {
+      path.push(...response.data["dcterms:isPartOf"]);
+      return getItemPath(
+        response.data["dcterms:isPartOf"][0]["value_resource_id"],
+        path
+      );
+    } else {
+      return path;
+    }
+  });
+}
