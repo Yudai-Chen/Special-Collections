@@ -98,7 +98,7 @@ const Archive = (props) => {
     <Space direction="vertical" style={{ width: "100%" }}>
       <h3>Root Item ID:</h3>
       <Input
-        placeholder="Identify your root itemId.(103719)"
+        placeholder="Identify your root itemId. (16792)"
         value={rootId}
         onChange={({ target: { value } }) => {
           setRootId(value);

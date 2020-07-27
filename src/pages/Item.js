@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import { Button, Divider, Row, Col, Spin, Layout, Breadcrumb } from "antd";
-import { Link } from "react-router-dom";
-import ImageView from "./ImageView";
-import Metadata from "../components/Metadata";
-import RelationGraph from "./RelationGraph";
-import axios from "axios";
-const { Content } = Layout;
+// import React, { Component } from "react";
+// import { Button, Divider, Row, Col, Spin, Layout, Breadcrumb } from "antd";
+// import { Link } from "react-router-dom";
+// import ImageView from "./ImageView";
+// import Metadata from "../components/Metadata";
+// import RelationGraph from "./RelationGraph";
+// import axios from "axios";
+// const { Content } = Layout;
 
-function openInNewWindow(url) {
-  const win = window.open(url, "_blank");
-  if (win != null) {
-    win.focus();
-  }
-}
+// function openInNewWindow(url) {
+//   const win = window.open(url, "_blank");
+//   if (win != null) {
+//     win.focus();
+//   }
+// }
 
 // const Item = () => {
 //   state = {
@@ -204,7 +204,7 @@ function openInNewWindow(url) {
 //   }
 // }
 
-const Item = () => {
-  return <></>;
-};
-export default Item;
+// // const Item = () => {
+// //   return <></>;
+// // };
+// export default Item;

@@ -46,6 +46,13 @@ const itemSetColumn = {
         ))}
       </Space>
     ),
+  sorter: {
+    compare: (a, b) => {
+      let str1 = a["o:item_set"].toString();
+      let str2 = b["o:item_set"].toString();
+      return str1.localeCompare(str2);
+    },
+  },
 };
 
 const idProperty = {
@@ -178,6 +185,20 @@ const DataList = (props) => {
           dataIndex: each,
           render: (text, record) =>
             record[each] ? <PropertyValue values={record[each]} /> : null,
+          sorter: {
+            compare: (a, b) => {
+              if (
+                a[each] &&
+                a[each][0] &&
+                a[each][0].type === "literal" &&
+                b[each] &&
+                b[each][0] &&
+                b[each][0].type === "literal"
+              )
+                return a[each][0]["@value"].localeCompare(b[each][0]["@value"]);
+              else return 0;
+            },
+          },
         });
       }
       return each;

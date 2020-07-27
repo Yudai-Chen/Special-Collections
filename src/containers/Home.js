@@ -119,7 +119,7 @@ const Home = () => {
               tab={
                 <span>
                   <VideoCameraAddOutlined />
-                  Filmstrip
+                  Card
                 </span>
               }
               key={2}
