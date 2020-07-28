@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Spin, Tree } from "antd";
-import { getItemSetList, getItemsInItemSet } from "../utils/Utils";
+import { getItemSetList, getItemsInItemSet, PATH_PREFIX } from "../utils/Utils";
 import { useCookies } from "react-cookie";
+import { withRouter, useHistory } from "react-router-dom";
 
 const { DirectoryTree } = Tree;
 
@@ -25,6 +26,8 @@ const ProjectList = () => {
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [cookies] = useCookies(["userInfo"]);
+
+  let history = useHistory();
 
   useEffect(() => {
     const loadProjectList = () => {
@@ -64,16 +67,16 @@ const ProjectList = () => {
       updateTreeData(projects, treeNode.key, thisChildren)
     );
   };
-  //TODO
+
   const onSelect = (itemKey) => {
-    // let itemId;
-    // if (String(itemKey[0]).indexOf("-") !== -1) {
-    //   itemId = itemKey[0].substring(
-    //     itemKey[0].indexOf("-") + 1,
-    //     itemKey[0].length
-    //   );
-    //   this.props.history.push("/items/" + itemId);
-    // }
+    let itemId;
+    if (String(itemKey[0]).indexOf("-") !== -1) {
+      itemId = itemKey[0].substring(
+        itemKey[0].indexOf("-") + 1,
+        itemKey[0].length
+      );
+      history.push(PATH_PREFIX + "/admin/items/" + itemId);
+    }
   };
 
   return loading ? (
@@ -92,4 +95,4 @@ const ProjectList = () => {
   );
 };
 
-export default ProjectList;
+export default withRouter(ProjectList);

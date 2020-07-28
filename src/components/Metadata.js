@@ -1,22 +1,59 @@
-import React from "react";
-import { Table } from "antd";
+import React, { useState, useEffect } from "react";
+import { List } from "antd";
+import { PropertySingleValue } from "./PropertyValue";
 
 // dataSource
-const columns = [
-  {
-    title: "Label",
-    dataIndex: "label",
-    width: "30%",
-  },
-  {
-    title: "Value",
-    dataIndex: "value",
-    width: "70%",
-  },
-];
-
 const Metadata = (props) => {
-  return <Table columns={columns} dataSource={[props.dataSource]} />;
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    setList(
+      Object.keys(props.dataSource)
+        .filter((each) => each !== "key")
+        .filter((each) => each.charAt(0) !== "o" && each.charAt(0) !== "@")
+        .map((property, index) => ({
+          key: property,
+          value: props.dataSource[property],
+        }))
+    );
+  }, [props.dataSource]);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [list]);
+
+  return loading ? null : (
+    <div>
+      <div align="center" className="ant-descriptions-title">
+        Metadata
+      </div>
+      <List
+        bordered={true}
+        itemLayout="vertical"
+        size="large"
+        pagination={{
+          onChange: (page) => {
+            console.log(page);
+          },
+          pageSize: 10,
+        }}
+        dataSource={list}
+        renderItem={(item) => (
+          <List.Item key={item.key}>
+            <List.Item.Meta title={item.value[0].property_label} />
+            {typeof item.value === "string"
+              ? item.value
+              : Array.isArray(item.value)
+              ? item.value.map((each, index) => (
+                  <PropertySingleValue value={each} i={index} />
+                ))
+              : null}
+          </List.Item>
+        )}
+      />
+    </div>
+  );
 };
 
 export default Metadata;

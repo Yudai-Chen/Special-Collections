@@ -146,7 +146,7 @@ const DataList = (props) => {
         dataIndex: "view",
         render: (text, record) => (
           <Space size="middle">
-            <Link to={"/media/" + record.mediaId} target="_blank">
+            <Link to={PATH_PREFIX + "/media/" + record.mediaId} target="_blank">
               View
             </Link>
           </Space>

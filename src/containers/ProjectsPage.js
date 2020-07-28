@@ -19,11 +19,9 @@ const ProjectsPage = () => {
       >
         <ProjectList />
       </Sider>
-      <Layout>
-        <Content>
-          <ProjectpageRouter />
-        </Content>
-      </Layout>
+      <Content>
+        <ProjectpageRouter />
+      </Content>
     </Layout>
   );
 };

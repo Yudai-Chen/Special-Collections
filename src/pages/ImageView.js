@@ -1,86 +1,78 @@
-// import React, { Component } from "react";
-// import Viewer from "react-viewer";
-// import { Link } from "react-router-dom";
-// import { Layout } from "antd";
+import React, { useState, useEffect } from "react";
+import Viewer from "react-viewer";
+import { Link } from "react-router-dom";
+import { Layout } from "antd";
+import { PATH_PREFIX } from "../utils/Utils";
 
-// const { Content } = Layout;
-// export default class ImageView extends Component {
-//   constructor(props) {
-//     super(props);
+const { Content } = Layout;
 
-//     this.state = {
-//       visible: true,
-//       activeIndex: 0,
-//     };
-//   }
+// dataSource, loading
+const ImageView = (props) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [images, setImages] = useState([]);
+  useEffect(() => {
+    setImages(
+      props.dataSource.map((each) => ({
+        key: each["o:id"],
+        src: each["o:original_url"],
+        alt: each["o:title"],
+      }))
+    );
+  }, [props.dataSource]);
 
-//   componentDidMount() {
-//     this.setState({
-//       loading: true,
-//     });
-//   }
+  return (
+    <Layout>
+      <Content>
+        <div
+          id={"image-view-container-" + 1}
+          className="image-view-container"
+          //   style={
+          //     this.props.viewerHeight ? { height: this.props.viewerHeight } : {}
+          //   }
+        >
+          <Viewer
+            zIndex={0}
+            className={"image-view-container" + 1}
+            visible={true}
+            noClose={true}
+            container={document.getElementById("image-view-container-" + 1)}
+            images={images}
+            activeIndex={activeIndex}
+            defaultScale={1.5}
+            // noNavbar={this.props.separate}
+            noImgDetails={true}
+            attribute={false}
+            // showTotal={!this.props.separate}
+            customToolbar={(toolbars) => {
+              return toolbars.concat([
+                {
+                  key: "detail",
+                  render: (
+                    <div>
+                      <Link
+                        to={
+                          PATH_PREFIX +
+                          "/media/" +
+                          props.dataSource[activeIndex]["o:id"]
+                        }
+                        target="_blank"
+                      >
+                        L
+                      </Link>
+                    </div>
+                  ),
+                },
+              ]);
+            }}
+            onChange={(activeImage, index) => {
+              setActiveIndex(index);
+            }}
+            zoomSpeed={0.1}
+          />
+        </div>
+      </Content>
+    </Layout>
+  );
+};
 
-//   componentWillReceiveProps(nextProps) {
-//     this.setState({ activeIndex: nextProps["active"] });
-//   }
-
-//   onChange = (activeImage, index) => {
-//     this.setState({ activeIndex: index });
-//   };
-
-//   render() {
-//     let images = this.props.imgs;
-
-//     return (
-//       <Layout>
-//         <Content>
-//           <div
-//             id={"image-view-container-" + this.props.id}
-//             className="image-view-container"
-//             style={
-//               this.props.viewerHeight ? { height: this.props.viewerHeight } : {}
-//             }
-//           >
-//             <Viewer
-//               zIndex={this.props.separate ? -1 : 0}
-//               className={"image-view-container" + this.props.id}
-//               visible={this.props.visible}
-//               noClose={true}
-//               container={document.getElementById(
-//                 "image-view-container-" + this.props.id
-//               )}
-//               images={images}
-//               activeIndex={this.state.activeIndex}
-//               defaultScale={1.5}
-//               noNavbar={this.props.separate}
-//               noImgDetails={this.props.separate}
-//               showTotal={!this.props.separate}
-//               customToolbar={(toolbars) => {
-//                 return toolbars.concat([
-//                   {
-//                     key: "detail",
-//                     render: (
-//                       <div>
-//                         <Link
-//                           to={
-//                             "/media/" +
-//                             this.props.imgs[this.state.activeIndex]["key"]
-//                           }
-//                           target="_blank"
-//                         >
-//                           L
-//                         </Link>
-//                       </div>
-//                     ),
-//                   },
-//                 ]);
-//               }}
-//               onChange={this.onChange}
-//               zoomSpeed={0.1}
-//             />
-//           </div>
-//         </Content>
-//       </Layout>
-//     );
-//   }
-// }
+export default ImageView;
