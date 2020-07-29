@@ -6,8 +6,8 @@ import {
   Redirect,
 } from "react-router-dom";
 import MainPage from "../containers/Mainpage";
-import ImageDetails from "../containers/ImageDetails";
-import NewNote from "../containers/NewNote";
+import TranscriptView from "../pages/TranscriptView";
+import NoteView from "../pages/NoteView";
 import Welcome from "../containers/Welcome";
 import Home from "../containers/Home";
 import ProjectsPage from "../containers/ProjectsPage";
@@ -50,16 +50,6 @@ export const MainpageRouter = () => {
   );
 };
 
-export const ProjectpageRouter = () => {
-  return (
-    <Router>
-      <PrivateRoute path={PATH_PREFIX + "/admin/items/:itemId"}>
-        <ItemView />
-      </PrivateRoute>
-    </Router>
-  );
-};
-
 export const MainRouter = () => {
   return (
     <Router>
@@ -67,13 +57,16 @@ export const MainRouter = () => {
         {/* <PrivateRoute
           path={PATH_PREFIX + "/media/:mediaId"}
         >
-          <ImageDetails />
+          <TranscriptView />
         </PrivateRoute>
         <PrivateRoute
           path={PATH_PREFIX + "/note/:targetList"}
         >
-          <NewNote />
+          <NoteView />
         </PrivateRoute> */}
+        <PrivateRoute path={PATH_PREFIX + "/items/:itemId"}>
+          <ItemView />
+        </PrivateRoute>
         <PrivateRoute path={PATH_PREFIX + "/admin"}>
           <MainPage />
         </PrivateRoute>

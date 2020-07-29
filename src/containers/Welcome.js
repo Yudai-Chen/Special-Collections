@@ -9,7 +9,7 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-const Welcome = (props) => {
+const Welcome = () => {
   let [config, setConfig] = useState({});
   let [cookies, setCookie, removeCookie] = useCookies(["userInfo"]);
   let history = useHistory();

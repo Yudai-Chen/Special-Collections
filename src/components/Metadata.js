@@ -33,9 +33,6 @@ const Metadata = (props) => {
         itemLayout="vertical"
         size="large"
         pagination={{
-          onChange: (page) => {
-            console.log(page);
-          },
           pageSize: 10,
         }}
         dataSource={list}
@@ -46,7 +43,7 @@ const Metadata = (props) => {
               ? item.value
               : Array.isArray(item.value)
               ? item.value.map((each, index) => (
-                  <PropertySingleValue value={each} i={index} />
+                  <PropertySingleValue key={index} value={each} index={index} />
                 ))
               : null}
           </List.Item>

@@ -22,7 +22,10 @@ const ItemBreadcrumb = (props) => {
     <Breadcrumb>
       {path.map((each, key) => (
         <Breadcrumb.Item key={key}>
-          <Link to={PATH_PREFIX + "/admin/items/" + each["value_resource_id"]}>
+          <Link
+            to={PATH_PREFIX + "/items/" + each["value_resource_id"]}
+            target="_blank"
+          >
             {each["display_title"]}
           </Link>
         </Breadcrumb.Item>

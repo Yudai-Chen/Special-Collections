@@ -78,7 +78,7 @@ const viewColumn = {
   dataIndex: "View",
   render: (text, record) => (
     <Space size="middle">
-      <Link to={PATH_PREFIX + "/admin/items/" + record["o:id"]} target="_blank">
+      <Link to={PATH_PREFIX + "/items/" + record["o:id"]} target="_blank">
         View
       </Link>
     </Space>
@@ -238,7 +238,7 @@ const DataList = (props) => {
           }}
         >
           <div style={{ margin: "5px" }}>
-            <AddNoteButton />
+            <AddNoteButton targets={selectedRowKeys} />
           </div>
           <div style={{ margin: "5px" }}>
             <Button onClick={() => setModalsVisible(2)}>Add To Project</Button>
