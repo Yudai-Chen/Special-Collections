@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Viewer from "react-viewer";
 import { Link } from "react-router-dom";
-import { Layout } from "antd";
 import { PATH_PREFIX } from "../utils/Utils";
-
-const { Content } = Layout;
 
 // dataSource
 const ImageView = (props) => {

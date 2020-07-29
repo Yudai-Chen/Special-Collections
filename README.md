@@ -1,10 +1,28 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#  Special Collections 
 
-## Available Scripts
+![](https://img.shields.io/npm/v/npm) ![](https://img.shields.io/npm/v/antd?color=green&label=antd) ![](https://img.shields.io/npm/v/react?label=react)  ![](https://img.shields.io/npm/v/react-router?color=green&label=react-router) ![](https://img.shields.io/npm/v/react-cookie?label=react-cookie)
+
+> Special Collections is a data display website, which talks to APIs provided by Omeka S .
+>
+> To run this app, an Omeka S back-end should be deployed on an accessible machine.
+>
+> For more information, please have a look at  https://omeka.org/s/ 
+
+## Background
+
+The famous Omeka S platform has provided us with a pretty interface. However, it is not as convenient in some instances. This application offers a gentle way to display data already stored in Omeka S, basically for Rice University lecture use.
+
+## Install
+
+**Before you install, please clone the repository and make sure you have the latest version of node and npm**
 
 In the project directory, you can run:
 
-### `npm start`
+##### `npm install`
+
+Install all the essential dependencies of this app.<br />
+
+##### `npm start`
 
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -12,12 +30,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
-### `npm test`
+##### `npm test`
 
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+##### `npm run build`
 
 Builds the app for production to the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
@@ -27,42 +45,90 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+## Usage
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Welcome 
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Editor: full writing authorities (create projects, notes, and transcripts).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- Guest: can only view, but not modify.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- Unlogged in: can go nowhere on the site except for the log-in page.
 
-## Learn More
+- Note: only when this app is deployed on the same machine with the Omeka S back-end, and you have a valid key pair, can you log in as an editor. Otherwise, you can only log in as a guest.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Archive
 
-To learn React, check out the [React documentation](https://reactjs.org/).
++ #### Tree View
 
-### Code Splitting
+  - By typing in the item id of a root item, you can view your archives in a tree structure.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+  - By clicking on the title of each tree node, you can view all its child nodes.
+  - By checking on the box before each tree node, you can view the child items in `Dynamic Columns`.
 
-### Analyzing the Bundle Size
+  - Note: use properties `dcterms:isPartOf` and `dcterms:hasPart`  in items for identifying parent-child relationship.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
++ #### Search
 
-### Making a Progressive Web App
+  - It is a quite flexible search function, thanks to the subtle search API provided by Omeka S.
+  - If you want to search for items with specific keywords within certain property fields, please add a property.
+    - Joiner: the relationship between the current condition with the other conditions.
+    - Property: the title of the property you want to search a keyword within.
+    - Relation: whether the keyword is exactly/not exactly/contained in/not contained in/... the property's value.
+    - Keyword: the keyword itself.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+  - If you want to narrow down search range, you can run the search in certain classes and projects.
+  - Transcript search: *coming soon...*
 
-### Advanced Configuration
++ #### Dynamic Columns
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+  - It is the main area for general data display and filter.
+  - You can select whether a property should be displayed above the table. If you find the properties are too many to pick one, type the property name in the bar.
+  - You can sort the data by clicking on the name of each property.
 
-### Deployment
+  - By clicking on each row, you can preview the corresponding item's contents on the right side.
+  - If you have the `View` column, click on it, and you will open a new window with the item information in it.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+  - Note: if you generate data from `Tree View`, only child items will be displayed here.
 
-### `npm run build` fails to minify
++ #### Card View
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+  + It is another form to display the same data as `Dynamic Columns`.
+  + You can adjust the layout of the view by sliding the upper slider.
+  + Click on the lower half of each card, and you can open an `Item` window.
+
+### Project
+
++ A project is a collection of items. You can create one by clicking the `Create Project` button.
++ If you click on the button under the dynamic columns, all items you have checked will be included in your new project; and if you do it on the `Item` page, the item you are looking at will be included in your new project; `Add to Project` works similarly.
++ You can see the existed projects list when you switch to the `Project` tab. If you hover your mouse on the project's name, you'll see all the items included in it.
++ By clicking on the item's name, you'll open an `Item` tab in the middle of the page.
++ Note: a project is an item set physically, if you ask.
+
+### Item
+
++ It is a minimum carrier of information.
++ It can be displayed both in a separate window or in a tab in the `Project` page.
+
++ #### Media Viewer
+
+  - You can use either your mouse or keyboard to zoom in/out and drag the images.
+  - If you click on the rightmost icon in the toolbar, you will open the `Transcript` page.
+
++ #### Meta-data Viewer
+
+  - It displays specific data related to the item. Enjoy it.
+
+### Note
+
++ *Coming soon...*
+
+### Transcript
+
++ *Coming soon...*
+
++ Note: use property `bibo:transcriptOf` to indicate the transcript of media.
+
+## Maintainer
+
+[@Yudai Chen](https://github.com/Yudai-Chen)

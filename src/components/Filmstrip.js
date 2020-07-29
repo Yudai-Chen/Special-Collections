@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Card, Col, Row, Spin, Slider } from "antd";
-import { PlaceHolder, getMedium } from "../utils/Utils";
+import { PlaceHolder, getMedium, PATH_PREFIX } from "../utils/Utils";
 import { useCookies } from "react-cookie";
+import { Link } from "react-router-dom";
 const { Meta } = Card;
 const colCounts = {};
 [2, 3, 4, 6, 8, 12].forEach((value, i) => {
@@ -43,7 +44,12 @@ const DisplayCard = (props) => {
       bordered={false}
       loading={loading}
     >
-      <Meta title={props.item["o:title"]} description={props.item["o:title"]} />
+      <Link to={PATH_PREFIX + "/items/" + props.item["o:id"]} target="_blank">
+        <Meta
+          title={props.item["o:title"]}
+          description={props.item["o:title"]}
+        />
+      </Link>
     </Card>
   );
 };
@@ -53,7 +59,7 @@ const Filmstrip = (props) => {
   const [loading, setLoading] = useState(true);
   const [display, setDisplay] = useState([]);
   const [cookies] = useCookies(["userInfo"]);
-  const [colCountKey, setColCountKey] = useState(4);
+  const [colCountKey, setColCountKey] = useState(2);
 
   useEffect(() => {
     setLoading(true);
@@ -89,7 +95,7 @@ const Filmstrip = (props) => {
     <Spin />
   ) : (
     <>
-      <div style={{ width: "50%", marginBottom: 48 }}>
+      <div style={{ marginBottom: 48 }}>
         <Slider
           min={0}
           max={Object.keys(colCounts).length - 1}
