@@ -73,10 +73,29 @@ const ItemView = (props) => {
         }}
       >
         <div style={{ margin: "5px" }}>
+          <Button
+            onClick={() => {
+              const win = window.open(
+                "http://" +
+                  cookies.userInfo.host +
+                  "/admin/item/" +
+                  itemId +
+                  "/edit",
+                "_blank"
+              );
+              if (win != null) {
+                win.focus();
+              }
+            }}
+          >
+            Go to Edit Page
+          </Button>
+        </div>
+        <div style={{ margin: "5px" }}>
           <AddNoteButton targets={[itemId]} />
         </div>
         <div style={{ margin: "5px" }}>
-          <Button onClick={() => setModalsVisible(2)}>Add To Project</Button>
+          <Button onClick={() => setModalsVisible(2)}>Add to Project</Button>
         </div>
         <div style={{ margin: "5px" }}>
           <Button type="primary" onClick={() => setModalsVisible(1)}>

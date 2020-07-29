@@ -118,6 +118,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 + #### Meta-data Viewer
 
   - It displays specific data related to the item. Enjoy it.
+  - Yeah, there *is* an `Edit button`. But it only leads you to the original Omeka S interface for editing it (sorry, too lazy to implement it).
 
 ### Note
 
