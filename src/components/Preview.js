@@ -40,9 +40,9 @@ const Preview = (props) => {
           {loading ? (
             <Spin />
           ) : media.length > 0 ? (
-            media.map((each) => {
+            media.map((each, index) => {
               return (
-                <div>
+                <div key={index}>
                   <img
                     src={each["o:thumbnail_urls"]["square"]}
                     alt={each["dcterms:title"]["@value"]}

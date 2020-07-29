@@ -11,7 +11,7 @@ const ItemBreadcrumb = (props) => {
     getItemPath(props.baseAddress, props.itemId).then((result) =>
       setPath(result.reverse())
     );
-  }, [props.itemId]);
+  }, [props.itemId, props.baseAddress]);
 
   useEffect(() => {
     setLoading(false);

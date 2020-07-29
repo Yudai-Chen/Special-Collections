@@ -7,6 +7,7 @@
 // const { TextArea } = Input;
 // const { Header, Content } = Layout;
 
+// TODO
 // export default class ImageDetails extends Component {
 //   state = {
 //     data: [],

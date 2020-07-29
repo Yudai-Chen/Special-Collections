@@ -6,6 +6,7 @@
 
 // const { TabPane } = Tabs;
 
+// TODO: should delete
 // export default class SearchPage extends Component {
 //   state = {
 //     loading: false,

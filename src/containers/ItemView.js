@@ -73,7 +73,7 @@ const ItemView = (props) => {
         }}
       >
         <div style={{ margin: "5px" }}>
-          <AddNoteButton />
+          <AddNoteButton targets={[itemId]} />
         </div>
         <div style={{ margin: "5px" }}>
           <Button onClick={() => setModalsVisible(2)}>Add To Project</Button>
