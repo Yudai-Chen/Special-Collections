@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Divider, Row, Col, Spin, Button } from "antd";
+import { Divider, Row, Col, Spin, Button, Affix, Popover } from "antd";
 import { useParams } from "react-router-dom";
 import ImageView from "../components/ImageView";
 import Metadata from "../components/Metadata";
@@ -9,7 +9,8 @@ import { getItem, getMediaInItem } from "../utils/Utils";
 import AddNoteButton from "../components/AddNoteButton";
 import AddToProjectModal from "../components/AddToProjectModal";
 import NewProjectModal from "../components/NewProjectModal";
-
+import NoteInput from "../components/NoteInput";
+import { PlusOutlined } from "@ant-design/icons";
 //itemId
 const ItemView = (props) => {
   let { itemId } = useParams();
@@ -130,6 +131,26 @@ const ItemView = (props) => {
         selectedRowKeys={[itemId]}
         onClose={() => setModalsVisible(0)}
       />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <div style={{ position: "fixed", bottom: "16px", right: "16px" }}>
+          <Affix offsetBottom={0}>
+            <Popover
+              placement="topRight"
+              trigger="click"
+              content={<NoteInput targets={[itemId]} />}
+            >
+              <Button shape="circle" size="large" type="primary">
+                <PlusOutlined />
+              </Button>
+            </Popover>
+          </Affix>
+        </div>
+      </div>
     </>
   );
 };

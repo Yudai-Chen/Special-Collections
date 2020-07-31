@@ -131,6 +131,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ### Note
 
 + *Coming soon...*
++ Note: a note is an item with class whose local name is `Record`, and the text of the note is contained in the property whose local name is `recordNote`.
 
 ### Transcript
 

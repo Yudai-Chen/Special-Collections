@@ -1,4 +1,12 @@
-// import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import NoteInput from "../components/NoteInput";
+import { useParams } from "react-router-dom";
+import { getItems } from "../utils/Utils";
+import { useCookies } from "react-cookie";
+import axios from "axios";
+import { Spin, Row, Col, Menu } from "antd";
+
+const { SubMenu } = Menu;
 // import { Button, Input, Row, Col, Spin, Tree } from "antd";
 // import { withRouter } from "react-router";
 // import { HOST_ADDRESS, key_credential, key_identity } from "../components/Mainpage";
@@ -13,7 +21,53 @@
 // };
 
 // TODO
-// class NewNote extends Component {
+const NoteView = () => {
+  const [cookies] = useCookies(["userInfo"]);
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  let { targetList } = useParams();
+  let targets = JSON.parse(targetList);
+
+  useEffect(() => {
+    setLoading(true);
+    getItems(cookies.userInfo.host, targets).then(
+      axios.spread((...responses) => {
+        let data = responses.map((each) => each.data);
+        setData(data);
+      })
+    );
+  }, [cookies.userInfo, targets]);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [data]);
+
+  return loading ? (
+    <Spin />
+  ) : (
+    <Row gutter={16}>
+      <Col span={8}>
+        <h2>Targets:</h2>
+        <Menu
+          // onClick={({ item, key }) => {
+          //   props.handleClickItem(key, item.props.title);
+          //   return;
+          // }}
+          selectable={false}
+          mode="vertical"
+        >
+          {data.map((item) => (
+            <SubMenu key={item["o:id"]} title={item["o:title"]}></SubMenu>
+          ))}
+        </Menu>
+      </Col>
+      <Col span={16}>
+        <NoteInput targets={targets} />
+      </Col>
+    </Row>
+  );
+};
+
 //   state = {
 //     input: "",
 //     targets: [],
@@ -229,4 +283,4 @@
 //   }
 // }
 
-// export default withRouter(NewNote);
+export default NoteView;

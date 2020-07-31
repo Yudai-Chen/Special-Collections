@@ -1,4 +1,4 @@
-// import React, { Component } from "react";
+import React, { Component } from "react";
 // import ImageView from "./ImageView";
 // import axios from "axios";
 // import { Button, Layout, Row, Col, Spin, Input } from "antd";
@@ -8,6 +8,10 @@
 // const { Header, Content } = Layout;
 
 // TODO
+const TranscriptView = () => {
+  return <h1>Transcript View</h1>;
+};
+export default TranscriptView;
 // export default class ImageDetails extends Component {
 //   state = {
 //     data: [],

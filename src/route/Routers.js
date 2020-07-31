@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import MainPage from "../containers/Mainpage";
 import TranscriptView from "../pages/TranscriptView";
-import NoteView from "../pages/NoteView";
+import NoteView from "../containers/NoteView";
 import Welcome from "../containers/Welcome";
 import Home from "../containers/Home";
 import ProjectsPage from "../containers/ProjectsPage";
@@ -54,16 +54,12 @@ export const MainRouter = () => {
   return (
     <Router>
       <Switch>
-        {/* <PrivateRoute
-          path={PATH_PREFIX + "/media/:mediaId"}
-        >
+        <PrivateRoute path={PATH_PREFIX + "/media/:mediaId"}>
           <TranscriptView />
         </PrivateRoute>
-        <PrivateRoute
-          path={PATH_PREFIX + "/note/:targetList"}
-        >
+        <PrivateRoute path={PATH_PREFIX + "/note/:targetList"}>
           <NoteView />
-        </PrivateRoute> */}
+        </PrivateRoute>
         <PrivateRoute path={PATH_PREFIX + "/items/:itemId"}>
           <ItemView />
         </PrivateRoute>
