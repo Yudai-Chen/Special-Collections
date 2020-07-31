@@ -87,7 +87,11 @@ const ItemSearchForm = (props) => {
         });
     }
     searchItems(cookies.userInfo.host, params).then((response) => {
-      props.handleSearchResults(response.data);
+      let data = response.data.map((each) => ({
+        ...each,
+        key: each["o:id"],
+      }));
+      props.handleSearchResults(data);
     });
   };
 
@@ -107,7 +111,7 @@ const ItemSearchForm = (props) => {
             <div>
               {fields.map((field, index) => (
                 <Space
-                  key={field.key}
+                  key={index}
                   style={{
                     display: "flex",
                     marginBottom: 8,
@@ -125,9 +129,7 @@ const ItemSearchForm = (props) => {
                       >
                         <Select placeholder="joiner">
                           <Option value="and">AND</Option>
-                          {field.key > 0 ? (
-                            <Option value="or">OR</Option>
-                          ) : null}
+                          {index > 0 ? <Option value="or">OR</Option> : null}
                         </Select>
                       </Form.Item>
 
@@ -194,7 +196,6 @@ const ItemSearchForm = (props) => {
                   onClick={() => {
                     add();
                   }}
-                  style={{ width: "60%" }}
                 >
                   <PlusOutlined /> Add property
                 </Button>

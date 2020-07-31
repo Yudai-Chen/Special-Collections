@@ -6,7 +6,7 @@ import AddToProjectModal from "./AddToProjectModal";
 import AddNoteButton from "./AddNoteButton";
 import PropertyListMenu from "./PropertyListMenu";
 import PropertyValue from "./PropertyValue";
-import { PATH_PREFIX } from "../utils/Utils";
+import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
 
 const typeProperty = {
   "o:label": "Class",
@@ -16,14 +16,33 @@ const typeProperty = {
 const typeColumn = {
   title: "Class",
   dataIndex: "@type",
-  render: (text, record) => (record["@type"][1] ? record["@type"][1] : null),
+  render: (text, record) =>
+    Array.isArray(record["@type"]) && record["@type"][1]
+      ? record["@type"][1]
+      : null,
   sorter: {
     compare: (a, b) => {
-      let value1 = a["@type"][1] ? a["@type"][1] : "";
-      let value2 = b["@type"][1] ? b["@type"][1] : "";
+      let value1 =
+        Array.isArray(a["@type"]) && a["@type"][1] ? a["@type"][1] : "";
+      let value2 =
+        Array.isArray(b["@type"]) && b["@type"][1] ? b["@type"][1] : "";
       return value1 - value2;
     },
   },
+};
+
+const titleProperty = {
+  "o:label": "Title",
+  "o:term": "o:title",
+};
+
+const titleColumn = {
+  title: "Title",
+  dataIndex: "o:title",
+  sorter: {
+    compare: (a, b) => a["o:title"].localeCompare(b["o:title"]),
+  },
+  ellipsis: true,
 };
 
 const itemSetProperty = {
@@ -56,12 +75,12 @@ const itemSetColumn = {
 };
 
 const idProperty = {
-  "o:label": "ItemId",
+  "o:label": "Id",
   "o:term": "o:id",
 };
 
 const idColumn = {
-  title: "ItemId",
+  title: "Id",
   dataIndex: "o:id",
   sorter: {
     compare: (a, b) => a["o:id"] - b["o:id"],
@@ -107,10 +126,16 @@ const createdColumn = {
 const DataList = (props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [modalsVisible, setModalsVisible] = useState(0);
-  const defaultProperties = [idProperty, viewProperty, typeProperty];
-  const defaultColumns = [idColumn, viewColumn, typeColumn];
+  const defaultProperties = [
+    idProperty,
+    titleProperty,
+    typeProperty,
+    viewProperty,
+  ];
+  const defaultColumns = [idColumn, titleColumn, typeColumn, viewColumn];
   const extraProperties = [
     idProperty,
+    titleProperty,
     viewProperty,
     createdProperty,
     typeProperty,
@@ -118,6 +143,7 @@ const DataList = (props) => {
   ];
   const extraColumns = [
     idColumn,
+    titleColumn,
     viewColumn,
     createdColumn,
     typeColumn,
@@ -127,18 +153,26 @@ const DataList = (props) => {
 
   const expandedRowRender = (record) => {
     const innerColumns = [
+      idColumn,
       {
         title: "Thumbnail",
         dataIndex: "thumbnail",
-        key: "thumbnail",
-        render: (record) => <img src={record} width="20px" alt="" />,
+        render: (text, record) =>
+          record["o:thumbnail_urls"] ? (
+            <img
+              src={record["o:thumbnail_urls"]["square"]}
+              alt={record["o:title"]}
+              width="20px"
+            />
+          ) : (
+            <img src={PlaceHolder} alt="PlaceHolder" width="20px" />
+          ),
       },
-      { title: "Media Id", dataIndex: "mediaId", key: "mediaId" },
-      { title: "Media Title", dataIndex: "mediaTitle", key: "mediaTitle" },
+      titleColumn,
       {
         title: "Transcript",
         dataIndex: "transcript",
-        key: "transcript",
+        render: (text, record) => record["bibo:transcriptOf"][0]["@value"],
         ellipsis: true,
       },
       {
@@ -146,7 +180,7 @@ const DataList = (props) => {
         dataIndex: "view",
         render: (text, record) => (
           <Space size="middle">
-            <Link to={PATH_PREFIX + "/media/" + record.mediaId} target="_blank">
+            <Link to={PATH_PREFIX + "/media/" + record["o:id"]} target="_blank">
               View
             </Link>
           </Space>
@@ -156,7 +190,7 @@ const DataList = (props) => {
     return (
       <Table
         columns={innerColumns}
-        dataSource={record["media"]}
+        dataSource={record.media}
         pagination={<Pagination size="small" />}
       />
     );

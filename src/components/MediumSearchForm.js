@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Button, Space, Input, Spin } from "antd";
 import { useCookies } from "react-cookie";
 import { searchMedia, getItems, searchProperties } from "../utils/Utils";
+import axios from "axios";
 
-// TODO
-const MediumSearchForm = () => {
+// handleSearchResults
+const MediumSearchForm = (props) => {
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState("");
   const [transcriptPropertyId, setTranscriptPropertyId] = useState();
-  const [processingResult, setProcessingResult] = useState(false);
   const [cookies] = useCookies(["userInfo"]);
 
   useEffect(() => {
@@ -26,7 +26,6 @@ const MediumSearchForm = () => {
   }, [transcriptPropertyId]);
 
   const onFinish = () => {
-    setProcessingResult(true);
     let params = {
       fulltext_search: "",
       "property[0][joiner]": "and",
@@ -39,7 +38,17 @@ const MediumSearchForm = () => {
       let containerItems = new Set(
         response.data.map((record) => record["o:item"]["o:id"])
       );
-      getItems(cookies.userInfo.host, [...containerItems]);
+      getItems(cookies.userInfo.host, [...containerItems]).then(
+        axios.spread((...responses) => {
+          let data = responses.map((each) => {
+            let media = response.data
+              .filter((media) => media["o:item"]["o:id"] === each.data["o:id"])
+              .map((medium) => ({ ...medium, key: medium["o:id"] }));
+            return { ...each.data, media: media, key: each.data["o:id"] };
+          });
+          props.handleSearchResults(data);
+        })
+      );
     });
   };
 

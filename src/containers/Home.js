@@ -26,6 +26,7 @@ const Home = () => {
   const [rowRecord, setRowRecord] = useState({});
   const [cookies] = useCookies(["userInfo"]);
   const [dataLoading, setDataLoading] = useState(false);
+  const [hasMediaData, setHasMediaData] = useState(false);
 
   const onArchiveCheck = (keys) => {
     if (keys.length > 0) {
@@ -88,9 +89,15 @@ const Home = () => {
             <ItemSearchForm
               handleSearchResults={(items) => {
                 setSelectedItems(items);
+                setHasMediaData(false);
               }}
             />
-            <MediumSearchForm />
+            <MediumSearchForm
+              handleSearchResults={(items) => {
+                setSelectedItems(items);
+                setHasMediaData(true);
+              }}
+            />
           </TabPane>
         </Tabs>
       </Sider>
@@ -107,7 +114,7 @@ const Home = () => {
               key={1}
             >
               <Datalist
-                hasMediaData={false}
+                hasMediaData={hasMediaData}
                 dataSource={selectedItems}
                 handleRowClick={(record) => {
                   setRowRecord(record);
