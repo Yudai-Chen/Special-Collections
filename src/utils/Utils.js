@@ -6,7 +6,7 @@ const headers = {
 
 export const PlaceHolder = require("../resources/image-placeholder.png");
 
-export const Logo = require("../resources/logo.png");
+export const Logo = require("../resources/SClogo.png");
 
 export const PATH_PREFIX = "/react";
 

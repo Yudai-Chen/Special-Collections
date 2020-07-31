@@ -14,9 +14,29 @@ const MainPage = () => {
 
   return (
     <Layout>
-      <Header>
+      <Header style={{ background: "#EEE", height: "auto" }}>
         <div className="logo">
-          <img src={Logo} alt="logo.png" width="200" height="50" />
+          <div
+            style={{
+              float: "left",
+            }}
+          >
+            <img src={Logo} alt="logo.png" width="100" height="100" />
+          </div>
+          <div
+            style={{
+              float: "right",
+            }}
+          >
+            <li>
+              <a
+                href="https://github.com/Yudai-Chen/Special-Collections/"
+                target="_blank"
+              >
+                Learn More
+              </a>
+            </li>
+          </div>
         </div>
       </Header>
       <Menu

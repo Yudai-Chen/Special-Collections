@@ -76,9 +76,10 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
     - Property: the title of the property you want to search a keyword within.
     - Relation: whether the keyword is exactly/not exactly/contained in/not contained in/... the property's value.
     - Keyword: the keyword itself.
-
   - If you want to narrow down search range, you can run the search in certain classes and projects.
-  - Transcript search: *coming soon...*
+  - Transcript search: you can search a certain keyword in the transcripts of media.
+  - Note: it does not support searching in a search result yet.
+  - Note: it does not support searching items and media at the same time yet.
 
 + #### Dynamic Columns
 
@@ -108,16 +109,23 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ### Item
 
 + It is a minimum carrier of information.
+
 + It can be displayed both in a separate window or in a tab in the `Project` page.
+
++ On the top of this page, you can use the parent-child path to navigate.
 
 + #### Media Viewer
 
-  - You can use either your mouse or keyboard to zoom in/out and drag the images.
+  - You can use either your mouse or keyboard to zoom in/out, rotate, flip and drag the images.
+  - If you click on the second to last icon in the toolbar, you will download the media.
   - If you click on the rightmost icon in the toolbar, you will open the `Transcript` page.
+  - If you have Universal Viewer installed on your site, you can click `Go to Universal Viewer` button and view those media using UV.
+  - Note: it cannot fully support all kinds of media formats, so if the media do not display correctly, please try to download it.
 
 + #### Meta-data Viewer
 
   - It displays specific data related to the item. Enjoy it.
+  - It can identify the links to other items and other web links, you can click on it to open it in new window.
   - Yeah, there *is* an `Edit button`. But it only leads you to the original Omeka S interface for editing it (sorry, too lazy to implement it).
 
 ### Note
