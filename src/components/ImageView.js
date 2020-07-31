@@ -13,6 +13,7 @@ const ImageView = (props) => {
         key: each["o:id"],
         src: each["o:original_url"],
         alt: each["o:title"],
+        downloadUrl: each["o:original_url"],
       }))
     );
   }, [props.dataSource]);
@@ -26,6 +27,8 @@ const ImageView = (props) => {
         container={document.getElementById(
           "image-view-container-" + props.dataSource[0]["o:item"]["o:id"]
         )}
+        downloadable={true}
+        downloadInNewWindow={true}
         images={images}
         activeIndex={activeIndex}
         defaultScale={1.5}

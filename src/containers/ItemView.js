@@ -60,6 +60,23 @@ const ItemView = (props) => {
               className="image-view-container"
             />
             <ImageView dataSource={media} />
+            <Button
+              onClick={() => {
+                const win = window.open(
+                  "http://" +
+                    cookies.userInfo.host +
+                    "/item/" +
+                    itemId +
+                    "/play",
+                  "_blank"
+                );
+                if (win != null) {
+                  win.focus();
+                }
+              }}
+            >
+              Go to Universal Viewer
+            </Button>
           </Col>
         ) : null}
         <Col span={containMedia ? 16 : 24}>
