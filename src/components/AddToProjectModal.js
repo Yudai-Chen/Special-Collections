@@ -21,14 +21,14 @@ const AddToProjectModal = (props) => {
       .then(() => {
         Modal.success({
           title: "Success!",
-          content: "Create project successes.",
+          content: "Add to project successes.",
         });
         props.onClose();
       })
       .catch((error) => {
         Modal.error({
           title: "Failed!",
-          content: "Create project fails.",
+          content: "Add to project fails.",
         });
         props.onClose();
       });

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Viewer from "react-viewer";
 import { Link } from "react-router-dom";
+import { ExpandOutlined } from "@ant-design/icons";
 import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
 
-// dataSource
+// dataSource, containerId
 const ImageView = (props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [images, setImages] = useState([]);
+  const [inline, setInline] = useState(true);
   useEffect(() => {
     setImages(
       props.dataSource.map((each) => ({
@@ -23,10 +25,14 @@ const ImageView = (props) => {
       <Viewer
         zIndex={0}
         visible={true}
-        noClose={true}
-        container={document.getElementById(
-          "image-view-container-" + props.dataSource[0]["o:item"]["o:id"]
-        )}
+        noClose={inline}
+        container={
+          inline
+            ? document.getElementById(
+                "image-view-container-" + props.containerId
+              )
+            : null
+        }
         downloadable={true}
         downloadInNewWindow={true}
         images={images}
@@ -35,8 +41,16 @@ const ImageView = (props) => {
         defaultImg={<img src={PlaceHolder} alt="PlaceHolder" />}
         noImgDetails={true}
         attribute={false}
+        onClose={() => {
+          setInline(true);
+        }}
         customToolbar={(toolbars) => {
           return toolbars.concat([
+            {
+              key: "expand",
+              render: <ExpandOutlined />,
+              onClick: () => setInline(false),
+            },
             {
               key: "detail",
               render: (
@@ -45,7 +59,7 @@ const ImageView = (props) => {
                     to={
                       PATH_PREFIX +
                       "/media/" +
-                      props.dataSource[activeIndex]["o:id"]
+                      JSON.stringify([props.dataSource[activeIndex]["o:id"]])
                     }
                     target="_blank"
                   >

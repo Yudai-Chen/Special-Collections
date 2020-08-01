@@ -5,7 +5,7 @@ import ImageView from "../components/ImageView";
 import Metadata from "../components/Metadata";
 import ItemBreadcrumb from "../components/ItemBreadcrumb";
 import { useCookies } from "react-cookie";
-import { getItem, getMediaInItem } from "../utils/Utils";
+import { getItem, getMediaInItem, PATH_PREFIX } from "../utils/Utils";
 import AddNoteButton from "../components/AddNoteButton";
 import AddToProjectModal from "../components/AddToProjectModal";
 import NewProjectModal from "../components/NewProjectModal";
@@ -79,29 +79,54 @@ const ItemView = (props) => {
           </Col>
           <Col span={12}></Col>
           <Col span={colCounts[colCountKey]}>
-            <div
-              id={"image-view-container-" + itemId}
-              className="image-view-container"
-              style={{ height: "100vh" }}
-            />
-            <ImageView dataSource={media} />
-            <Button
-              onClick={() => {
-                const win = window.open(
-                  "http://" +
-                    cookies.userInfo.host +
-                    "/item/" +
-                    itemId +
-                    "/play",
-                  "_blank"
-                );
-                if (win != null) {
-                  win.focus();
-                }
-              }}
-            >
-              Go to Universal Viewer
-            </Button>
+            <Row gutter={[16, 24]}>
+              <Col span={24}>
+                <div
+                  id={"image-view-container-" + itemId}
+                  className="image-view-container"
+                  style={{ height: "100vh" }}
+                />
+                <ImageView dataSource={media} containerId={itemId} />
+              </Col>
+              <Row gutter={16}>
+                <Col flex="auto">
+                  <Button
+                    onClick={() => {
+                      const win = window.open(
+                        "http://" +
+                          cookies.userInfo.host +
+                          "/item/" +
+                          itemId +
+                          "/play",
+                        "_blank"
+                      );
+                      if (win != null) {
+                        win.focus();
+                      }
+                    }}
+                  >
+                    Go to Universal Viewer
+                  </Button>
+                </Col>
+                <Col flex="auto">
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      const win = window.open(
+                        PATH_PREFIX +
+                          "/media/" +
+                          JSON.stringify(media.map((each) => each["o:id"]))
+                      );
+                      if (win != null) {
+                        win.focus();
+                      }
+                    }}
+                  >
+                    Transcript All
+                  </Button>
+                </Col>
+              </Row>
+            </Row>
           </Col>
           <Col span={24 - colCounts[colCountKey]}>
             <Metadata dataSource={data} />

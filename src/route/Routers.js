@@ -6,7 +6,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import MainPage from "../containers/Mainpage";
-import TranscriptView from "../pages/TranscriptView";
+import TranscriptView from "../containers/TranscriptView";
 import NoteView from "../containers/NoteView";
 import Welcome from "../containers/Welcome";
 import Home from "../containers/Home";
@@ -54,7 +54,7 @@ export const MainRouter = () => {
   return (
     <Router>
       <Switch>
-        <PrivateRoute path={PATH_PREFIX + "/media/:mediaId"}>
+        <PrivateRoute path={PATH_PREFIX + "/media/:mediaList"}>
           <TranscriptView />
         </PrivateRoute>
         <PrivateRoute path={PATH_PREFIX + "/note/:targetList"}>
