@@ -15,7 +15,9 @@ const TemplateDropdown = (props) => {
 
   const onMenuClick = ({ key }) => {
     try {
-      let template = templateList.filter((each) => each["o:id"] === key);
+      let template = templateList.filter(
+        (each) => String(each["o:id"]) === key
+      );
       setMenuSelected(template[0]);
       props.onMenuSelect(template[0][["o:id"]]);
     } catch (error) {}

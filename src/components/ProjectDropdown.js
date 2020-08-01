@@ -15,7 +15,7 @@ const ProjectDropdown = (props) => {
 
   const onMenuClick = ({ key }) => {
     try {
-      let project = projectList.filter((each) => each["o:id"] === key);
+      let project = projectList.filter((each) => String(each["o:id"]) === key);
       setMenuSelected(project[0]);
       props.onMenuSelect(project[0][["o:id"]]);
     } catch (error) {}
