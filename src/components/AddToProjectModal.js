@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal } from "antd";
 import { addItemsToItemSet } from "../utils/Utils";
 import { useCookies } from "react-cookie";
-import ProjectListMenu from "./ProjectListMenu";
+import ProjectDropdown from "./ProjectDropdown";
 
 // visible, selectedRowKeys
 const AddToProjectModal = (props) => {
@@ -44,7 +44,7 @@ const AddToProjectModal = (props) => {
         props.onClose();
       }}
     >
-      <ProjectListMenu
+      <ProjectDropdown
         onMenuSelect={(projectId) => {
           setReceiveProject(projectId);
         }}

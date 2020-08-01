@@ -134,6 +134,27 @@ export const searchResourceClasses = (baseAddress, params) => {
   );
 };
 
+export const getResourceTemplateList = (baseAddress) => {
+  return axios.get(
+    "http://" + baseAddress + "/api/resource_templates?per_page=1000"
+  );
+};
+
+export const getResourceTemplate = (baseAddress, templateId) => {
+  return axios.get(
+    "http://" + baseAddress + "/api/resource_templates/" + templateId
+  );
+};
+
+export const getPropertiesInResourceTemplate = (baseAddress, templateId) => {
+  return getResourceTemplate(baseAddress, templateId).then((response) => {
+    let requests = response.data[
+      "o:resource_template_property"
+    ].map((property) => axios.get(property["o:property"]["@id"]));
+    return axios.all(requests);
+  });
+};
+
 export const getItemPath = (baseAddress, itemId, path = []) => {
   return getItem(baseAddress, itemId).then((response) => {
     if (response.data["dcterms:isPartOf"]) {

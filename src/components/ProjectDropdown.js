@@ -5,7 +5,7 @@ import { useCookies } from "react-cookie";
 import { DownOutlined } from "@ant-design/icons";
 
 // onMenuSelect
-const ProjectListMenu = (props) => {
+const ProjectDropdown = (props) => {
   const [loading, setLoading] = useState(true);
   const [projectList, setProjectList] = useState([]);
   const [cookies] = useCookies(["userInfo"]);
@@ -53,4 +53,4 @@ const ProjectListMenu = (props) => {
   );
 };
 
-export default ProjectListMenu;
+export default ProjectDropdown;
