@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Divider, Row, Col, Spin, Button, Affix, Popover } from "antd";
+import { Divider, Row, Col, Spin, Button, Affix, Popover, Slider } from "antd";
 import { useParams } from "react-router-dom";
 import ImageView from "../components/ImageView";
 import Metadata from "../components/Metadata";
@@ -11,6 +11,12 @@ import AddToProjectModal from "../components/AddToProjectModal";
 import NewProjectModal from "../components/NewProjectModal";
 import NoteInput from "../components/NoteInput";
 import { PlusOutlined } from "@ant-design/icons";
+
+const colCounts = {};
+[4, 6, 8, 12, 16, 18, 20].forEach((value, i) => {
+  colCounts[i] = value;
+});
+
 //itemId
 const ItemView = (props) => {
   let { itemId } = useParams();
@@ -20,6 +26,7 @@ const ItemView = (props) => {
   const [data, setData] = useState([]);
   const [media, setMedia] = useState([]);
   const [cookies] = useCookies(["userInfo"]);
+  const [colCountKey, setColCountKey] = useState(4);
 
   if (itemId === undefined) itemId = props.itemId;
 
@@ -51,14 +58,31 @@ const ItemView = (props) => {
         itemTitle={data["o:title"]}
       />
       <Divider>{data["o:title"]}</Divider>
-      <Row gutter={16}>
-        {mediaLoading ? (
-          <Spin />
-        ) : containMedia ? (
-          <Col span={8}>
+
+      {mediaLoading ? (
+        <Spin />
+      ) : containMedia ? (
+        <Row gutter={16}>
+          <Col span={12}>
+            Width:
+            <Slider
+              min={0}
+              max={Object.keys(colCounts).length - 1}
+              value={colCountKey}
+              onChange={(colCountKey) => {
+                setColCountKey(colCountKey);
+              }}
+              marks={colCounts}
+              step={null}
+              tipFormatter={(value) => colCounts[value]}
+            />
+          </Col>
+          <Col span={12}></Col>
+          <Col span={colCounts[colCountKey]}>
             <div
               id={"image-view-container-" + itemId}
               className="image-view-container"
+              style={{ height: "100vh" }}
             />
             <ImageView dataSource={media} />
             <Button
@@ -79,11 +103,18 @@ const ItemView = (props) => {
               Go to Universal Viewer
             </Button>
           </Col>
-        ) : null}
-        <Col span={containMedia ? 16 : 24}>
-          <Metadata dataSource={data} />
-        </Col>
-      </Row>
+          <Col span={24 - colCounts[colCountKey]}>
+            <Metadata dataSource={data} />
+          </Col>
+        </Row>
+      ) : (
+        <Row gutter={16}>
+          <Col span={24}>
+            <Metadata dataSource={data} />
+          </Col>
+        </Row>
+      )}
+
       <div
         style={{
           display: "flex",

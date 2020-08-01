@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Viewer from "react-viewer";
 import { Link } from "react-router-dom";
-import { PATH_PREFIX } from "../utils/Utils";
+import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
 
 // dataSource
 const ImageView = (props) => {
@@ -32,6 +32,7 @@ const ImageView = (props) => {
         images={images}
         activeIndex={activeIndex}
         defaultScale={1.5}
+        defaultImg={<img src={PlaceHolder} alt="PlaceHolder" />}
         noImgDetails={true}
         attribute={false}
         customToolbar={(toolbars) => {
