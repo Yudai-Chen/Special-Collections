@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Table, Space, Pagination, Tag } from "antd";
+import { Resizable } from "react-resizable";
 import { withRouter, Link } from "react-router-dom";
 import NewProjectModal from "./NewProjectModal";
 import AddToProjectModal from "./AddToProjectModal";
@@ -7,6 +8,40 @@ import AddNoteButton from "./AddNoteButton";
 import PropertyListMenu from "./PropertyListMenu";
 import PropertyValue from "./PropertyValue";
 import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
+import "./DataList.css";
+
+const ResizableTitle = (props) => {
+  const { onResize, width, ...restProps } = props;
+
+  if (!width) {
+    return <th {...restProps} />;
+  }
+
+  return (
+    <Resizable
+      width={width}
+      height={0}
+      handle={
+        <span
+          className="react-resizable-handle"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        />
+      }
+      onResize={onResize}
+      draggableOpts={{ enableUserSelectHack: false }}
+    >
+      <th {...restProps} />
+    </Resizable>
+  );
+};
+
+const components = {
+  header: {
+    cell: ResizableTitle,
+  },
+};
 
 const typeProperty = {
   "o:label": "Class",
@@ -29,6 +64,7 @@ const typeColumn = {
       return value1 - value2;
     },
   },
+  width: 200,
 };
 
 const titleProperty = {
@@ -43,6 +79,7 @@ const titleColumn = {
     compare: (a, b) => a["o:title"].localeCompare(b["o:title"]),
   },
   ellipsis: true,
+  width: 200,
 };
 
 const itemSetProperty = {
@@ -72,6 +109,7 @@ const itemSetColumn = {
       return str1.localeCompare(str2);
     },
   },
+  width: 200,
 };
 
 const idProperty = {
@@ -85,6 +123,7 @@ const idColumn = {
   sorter: {
     compare: (a, b) => a["o:id"] - b["o:id"],
   },
+  width: 100,
 };
 
 const viewProperty = {
@@ -102,6 +141,7 @@ const viewColumn = {
       </Link>
     </Space>
   ),
+  width: 100,
 };
 
 const createdProperty = {
@@ -120,6 +160,7 @@ const createdColumn = {
       return date1 - date2;
     },
   },
+  width: 200,
 };
 
 // hasMediaData, dataSource, handleRowClick, loading
@@ -167,6 +208,7 @@ const DataList = (props) => {
           ) : (
             <img src={PlaceHolder} alt="PlaceHolder" width="20px" />
           ),
+        width: 120,
       },
       titleColumn,
       {
@@ -188,6 +230,7 @@ const DataList = (props) => {
             </Link>
           </Space>
         ),
+        width: 100,
       },
     ];
     return (
@@ -236,12 +279,32 @@ const DataList = (props) => {
               else return 0;
             },
           },
+          width: 200,
         });
       }
       return each;
     });
     setColumns(newColumns);
   };
+
+  const handleResize = (index) => (e, { size }) => {
+    setColumns((columns) => {
+      const nextColumns = [...columns];
+      nextColumns[index] = {
+        ...nextColumns[index],
+        width: size.width,
+      };
+      return nextColumns;
+    });
+  };
+
+  const resizableColumns = columns.map((col, index) => ({
+    ...col,
+    onHeaderCell: (column) => ({
+      width: column.width,
+      onResize: handleResize(index),
+    }),
+  }));
 
   return (
     <div>
@@ -252,6 +315,7 @@ const DataList = (props) => {
           defaultProperties={defaultProperties}
         />
         <Table
+          bordered
           loading={props.loading}
           onRow={(record) => {
             return {
@@ -261,7 +325,8 @@ const DataList = (props) => {
             };
           }}
           rowSelection={rowSelection}
-          columns={columns}
+          components={components}
+          columns={resizableColumns}
           dataSource={props.dataSource}
           expandable={{
             expandedRowRender:
