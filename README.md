@@ -81,7 +81,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
     - Relation: whether the keyword is exactly/not exactly/contained in/not contained in/... the property's value.
     - Keyword: the keyword itself.
   - If you want to narrow down search range, you can run the search in certain classes and projects.
-  - Transcript search: you can search a certain keyword in the transcripts of media.
+  - `Transcript search`: you can search a certain keyword in the transcripts of media.
   - Note: it does not support searching in a search result yet.
   - Note: it does not support searching items and media at the same time yet.
 
@@ -90,12 +90,11 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
   - It is the main area for general data display and filter.
   - You can select whether a property should be displayed above the table. If you find the properties are too many to pick one, type the property name in the bar.
   - You can sort the data by clicking on the name of each property.
-
-  - By clicking on each row, you can preview the corresponding item's contents on the right side.
+- By clicking on each row, you can preview the corresponding item's contents on the right side.
   - If you have the `View` column, click on it, and you will open a new window with the item information in it.
-
-  - Note: if you generate data from `Tree View`, only child items will be displayed here.
-
+  - Resizable: you can adjust the width of each column by dragging the divider line of adjacent headers
+- Note: if you generate data from `Tree View`, only child items will be displayed here.
+  
 + #### Card View
 
   + It is another form to display the same data as `Dynamic Columns`.
@@ -118,10 +117,13 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 + On the top of this page, you can use the parent-child path to navigate.
 
++ You can use the slider to adjust the width of the Media Viewer part.
+
 + #### Media Viewer
 
   - You can use either your mouse or keyboard to zoom in/out, rotate, flip and drag the images.
-  - If you click on the second to last icon in the toolbar, you will download the media.
+  - If you click on the third to last icon in the toolbar, you will download the media.
+  - `Focus mode`: if you click on the second to last icon in the toolbar, you can display the image in full screen.
   - If you click on the rightmost icon in the toolbar, you will open the `Transcript` page.
   - If you have Universal Viewer installed on your site, you can click `Go to Universal Viewer` button and view those media using UV.
   - Note: it cannot fully support all kinds of media formats, so if the media do not display correctly, please try to download it.
@@ -140,8 +142,9 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### Transcript
 
-+ *Coming soon...*
-
++ By clicking the last icon (blue *L*) in the `Media Viewer`, or `View` column of `Dynamic Columns` in the result of  `Transcript search`, or `Transcript All` button in the `Item View`, you'll open a new window for media transcript.
++ If you are trying to transcript all media in an item, you can press left/right arrow keys on your keyboard to transcript the previous/next image.
++ Do not forget to `Submit` your change when you're done with **each image**.
 + Note: use property `bibo:transcriptOf` to indicate the transcript of media.
 
 ## Maintainer
