@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Spin, Slider, Input, Button } from "antd";
+import { Row, Col, Spin, Slider, Input, Button, Modal } from "antd";
 import { ExpandOutlined } from "@ant-design/icons";
 import Viewer from "react-viewer";
 import { useCookies } from "react-cookie";
-import { PlaceHolder, getMedia } from "../utils/Utils";
+import { PlaceHolder, getMedia, patchItem } from "../utils/Utils";
 import axios from "axios";
 
 const { TextArea } = Input;
@@ -22,6 +22,7 @@ const TranscriptView = () => {
   const [colCountKey, setColCountKey] = useState(4);
   const [cookies] = useCookies(["userInfo"]);
   const [inline, setInline] = useState(true);
+  const [cache, setCache] = useState([]);
   const { mediaList } = useParams();
   const container = useRef(null);
 
@@ -33,6 +34,12 @@ const TranscriptView = () => {
         axios.spread((...responses) => {
           let data = responses.map((each) => each.data);
           setData(data);
+          let copy = data.map((each) =>
+            each["bibo:transcriptOf"]
+              ? each["bibo:transcriptOf"][0]["@value"]
+              : ""
+          );
+          setCache(copy);
         })
       )
       .then(() => {
@@ -110,27 +117,118 @@ const TranscriptView = () => {
           <Row gutter={[16, 24]}>
             <Col span={24}>
               <TextArea
-                value={
-                  data[activeKey]["bibo:transcriptOf"]
-                    ? data[activeKey]["bibo:transcriptOf"][0]["@value"]
-                    : ""
-                }
-                onChange={null}
+                value={cache[activeKey]}
+                onChange={({ target: { value } }) => {
+                  setCache((cache) => {
+                    const next = [...cache];
+                    next[activeKey] = value;
+                    return next;
+                  });
+                }}
                 autoSize={{ minRows: 42, maxRows: 42 }}
               />
             </Col>
-            <Col span={12} offset={12}>
+            <Col span={16} offset={8}>
               <Row gutter={16}>
                 <Col flex="auto">
-                  <Button type="primary" danger>
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      let copy = [...cache];
+                      copy[activeKey] = data[activeKey]["bibo:transcriptOf"]
+                        ? data[activeKey]["bibo:transcriptOf"][0]["@value"]
+                        : "";
+
+                      setCache(copy);
+                    }}
+                  >
                     Discard Change
                   </Button>
                 </Col>
                 <Col flex="auto">
-                  <Button>Next</Button>
+                  <Button
+                    onClick={() => {
+                      if (activeKey !== 0) {
+                        setActiveKey((activeKey) => activeKey - 1);
+                      }
+                    }}
+                  >
+                    Previous
+                  </Button>
                 </Col>
                 <Col flex="auto">
-                  <Button type="primary">Submit</Button>
+                  <Button
+                    onClick={() => {
+                      if (activeKey !== data.length - 1) {
+                        setActiveKey((activeKey) => activeKey + 1);
+                      }
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Col>
+                <Col flex="auto">
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      let payload = {
+                        "bibo:transcriptOf": [{ "@value": cache[activeKey] }],
+                      };
+                      patchItem(
+                        cookies.userInfo,
+                        data[activeKey]["o:id"],
+                        payload
+                      )
+                        .then(() => {
+                          setData((data) => {
+                            const newData = [...data];
+                            newData[activeKey]["bibo:transcriptOf"] = [
+                              { "@value": cache[activeKey] },
+                            ];
+                            console.log(newData);
+                            return newData;
+                          });
+                        })
+                        .then(() => {
+                          Modal.success({
+                            title: "Success!",
+                            content: "Update transcript successes.",
+                          });
+                        })
+                        .catch((error) => {
+                          Modal.error({
+                            title: "Failed!",
+                            content: "Update transcript fails.",
+                          });
+                        });
+                    }}
+                  >
+                    Submit
+                  </Button>
+                  {/* <Button
+                    type="primary"
+                    onClick={() => {
+                      let payload = {
+                        "bibo:transcriptOf": [{ "@value": cache[activeKey] }],
+                      };
+                      console.log(payload);
+                      setData((data) => {
+                        const newData = [...data];
+                        newData[activeKey]["bibo:transcriptOf"] = [
+                          { "@value": cache[activeKey] },
+                        ];
+                        console.log(newData);
+                        return newData;
+                      });
+                      Modal.success({
+                        title: "Success!",
+                        content: "Update transcript successes.",
+                      });
+                    }}
+                  >
+                    Debug
+                  </Button> */}
                 </Col>
               </Row>
             </Col>

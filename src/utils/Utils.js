@@ -169,3 +169,17 @@ export const getItemPath = (baseAddress, itemId, path = []) => {
     }
   });
 };
+
+export const patchItem = (userInfo, itemId, payload) => {
+  return axios.patch(
+    "http://" + userInfo.host + "/api/items/" + itemId,
+    payload,
+    {
+      params: {
+        key_identity: userInfo.key_identity,
+        key_credential: userInfo.key_credential,
+      },
+      headers: headers,
+    }
+  );
+};
