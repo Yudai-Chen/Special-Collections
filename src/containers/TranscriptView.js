@@ -184,7 +184,13 @@ const TranscriptView = () => {
                           setData((data) => {
                             const newData = [...data];
                             newData[activeKey]["bibo:transcriptOf"] = [
-                              { "@value": cache[activeKey] },
+                              {
+                                "@value": cache[activeKey],
+                                is_public: true,
+                                property_id: 83,
+                                property_label: "transcript of",
+                                type: "literal",
+                              },
                             ];
                             return newData;
                           });
