@@ -170,9 +170,9 @@ export const getItemPath = (baseAddress, itemId, path = []) => {
   });
 };
 
-export const patchItem = (userInfo, itemId, payload) => {
+export const patchMedia = (userInfo, itemId, payload) => {
   return axios.patch(
-    "http://" + userInfo.host + "/api/items/" + itemId,
+    "http://" + userInfo.host + "/api/media/" + itemId,
     payload,
     {
       params: {

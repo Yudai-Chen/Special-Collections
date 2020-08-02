@@ -4,7 +4,7 @@ import { Row, Col, Spin, Slider, Input, Button, Modal } from "antd";
 import { ExpandOutlined } from "@ant-design/icons";
 import Viewer from "react-viewer";
 import { useCookies } from "react-cookie";
-import { PlaceHolder, getMedia, patchItem } from "../utils/Utils";
+import { PlaceHolder, getMedia, patchMedia } from "../utils/Utils";
 import axios from "axios";
 
 const { TextArea } = Input;
@@ -175,7 +175,7 @@ const TranscriptView = () => {
                       let payload = {
                         "bibo:transcriptOf": [{ "@value": cache[activeKey] }],
                       };
-                      patchItem(
+                      patchMedia(
                         cookies.userInfo,
                         data[activeKey]["o:id"],
                         payload
@@ -186,7 +186,6 @@ const TranscriptView = () => {
                             newData[activeKey]["bibo:transcriptOf"] = [
                               { "@value": cache[activeKey] },
                             ];
-                            console.log(newData);
                             return newData;
                           });
                         })
