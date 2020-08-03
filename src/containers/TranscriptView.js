@@ -172,21 +172,19 @@ const TranscriptView = () => {
                   <Button
                     type="primary"
                     onClick={() => {
-                      let payload = {
-                        "bibo:transcriptOf": [
-                          {
-                            "@value": cache[activeKey],
-                            is_public: true,
-                            property_id: 83,
-                            property_label: "transcript of",
-                            type: "literal",
-                          },
-                        ],
-                      };
+                      data[activeKey]["bibo:transcriptOf"] = [
+                        {
+                          "@value": cache[activeKey],
+                          is_public: true,
+                          property_id: 83,
+                          property_label: "transcript of",
+                          type: "literal",
+                        },
+                      ];
                       patchMedia(
                         cookies.userInfo,
                         data[activeKey]["o:id"],
-                        payload
+                        data[activeKey]
                       )
                         .then(() => {
                           setData((data) => {

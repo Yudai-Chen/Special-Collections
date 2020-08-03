@@ -64,7 +64,7 @@ const NoteInput = (props) => {
     }));
 
     let payload = {
-      "o:resource_class[o:id]": noteClassId,
+      "o:resource_class": { "o:id": noteClassId },
       [notePropertyTerm]: [
         {
           type: "literal",
@@ -75,9 +75,7 @@ const NoteInput = (props) => {
       ],
       "dcterms:references": refList,
     };
-    console.log(payload);
-    console.log(text);
-    console.log(props.targets);
+
     createItem(cookies.userInfo, payload)
       .then((response) => {
         console.log(response.data);
@@ -86,7 +84,6 @@ const NoteInput = (props) => {
           property_id: 35,
           property_label: "Is Referenced By",
           is_public: true,
-          // "@id": "http://10.134.196.53/api/items/" + response.data["o:id"],
           value_resource_id: response.data["o:id"],
           value_resource_name: "items",
         };
