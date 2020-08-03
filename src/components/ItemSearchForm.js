@@ -189,6 +189,7 @@ const ItemSearchForm = (props) => {
                           name={[field.name, "property"]}
                           fieldKey={[field.fieldKey, "property"]}
                           noStyle
+                          initialValue={1}
                         >
                           <Select
                             placeholder="[Any property]"

@@ -9,7 +9,6 @@ import {
 import { useCookies } from "react-cookie";
 const { TextArea } = Input;
 
-// TODO: submit
 // targets
 const NoteInput = (props) => {
   const [loading, setLoading] = useState(true);
