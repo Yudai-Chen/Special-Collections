@@ -14,6 +14,7 @@ const { TextArea } = Input;
 const NoteInput = (props) => {
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
+  const [title, setTitle] = useState("");
   const [cookies] = useCookies(["userInfo"]);
   const [noteClassId, setNoteClassId] = useState();
   const [notePropertyTerm, setNotePropertyTerm] = useState();
@@ -65,6 +66,13 @@ const NoteInput = (props) => {
 
     let payload = {
       "o:resource_class": { "o:id": noteClassId },
+      "dcterms:title": [
+        {
+          property_id: 1,
+          type: "literal",
+          "@value": title,
+        },
+      ],
       [notePropertyTerm]: [
         {
           type: "literal",
@@ -78,7 +86,6 @@ const NoteInput = (props) => {
 
     createItem(cookies.userInfo, payload)
       .then((response) => {
-        console.log(response.data);
         const myInfo = {
           type: "resource",
           property_id: 35,
@@ -125,6 +132,14 @@ const NoteInput = (props) => {
     <Row gutter={[16, 24]} justify="end">
       <Col span={24}>
         <h2>Note:</h2>
+        <Input
+          addonBefore="Title"
+          placeholder="Input the title of the note"
+          value={title}
+          onChange={({ target: { value } }) => {
+            setTitle(value);
+          }}
+        />
         <TextArea
           value={text}
           onChange={({ target: { value } }) => {
