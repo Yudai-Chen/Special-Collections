@@ -163,7 +163,7 @@ const createdColumn = {
   width: 200,
 };
 
-// hasMediaData, dataSource, handleRowClick, loading
+// hasMediaData, dataSource, handleRowClick, loading, selectedProperties
 const DataList = (props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [modalsVisible, setModalsVisible] = useState(0);
@@ -310,6 +310,7 @@ const DataList = (props) => {
     <div>
       <Space direction="vertical" style={{ width: "100%" }}>
         <PropertyListMenu
+          originalProperties={props.selectedProperties}
           extraProperties={extraProperties}
           handleChange={onPropertyChange}
           defaultProperties={defaultProperties}

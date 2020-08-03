@@ -27,6 +27,7 @@ const Home = () => {
   const [cookies] = useCookies(["userInfo"]);
   const [dataLoading, setDataLoading] = useState(false);
   const [hasMediaData, setHasMediaData] = useState(false);
+  const [selectedProperties, setSelectedProperties] = useState([]);
 
   const onArchiveCheck = (keys) => {
     if (keys.length > 0) {
@@ -91,6 +92,9 @@ const Home = () => {
                 setSelectedItems(items);
                 setHasMediaData(false);
               }}
+              handleSelectProperties={(properties) => {
+                setSelectedProperties(properties);
+              }}
             />
             <MediumSearchForm
               handleSearchResults={(items) => {
@@ -114,6 +118,7 @@ const Home = () => {
               key={1}
             >
               <Datalist
+                selectedProperties={selectedProperties}
                 hasMediaData={hasMediaData}
                 dataSource={selectedItems}
                 handleRowClick={(record) => {

@@ -19,7 +19,7 @@ const layout = {
   wrapperCol: { span: 18 },
 };
 
-// handleSearchResults
+// handleSearchResults, handleSelectProperties
 const ItemSearchForm = (props) => {
   const [propertyList, setPropertyList] = useState([]);
   const [classList, setClassList] = useState([]);
@@ -67,6 +67,11 @@ const ItemSearchForm = (props) => {
             title: each["o:label"],
           }));
           setPropertyList(classes);
+          let propertyData = response.data.map((each) => ({
+            "o:term": each["o:term"],
+            "o:label": each["o:label"],
+          }));
+          props.handleSelectProperties(propertyData);
         })
         .then(() => setPropertyLoading(false));
     } else {
@@ -78,6 +83,11 @@ const ItemSearchForm = (props) => {
               title: each.data["o:label"],
             }));
             setPropertyList(properties);
+            let propertyData = responses.map((each) => ({
+              "o:term": each.data["o:term"],
+              "o:label": each.data["o:label"],
+            }));
+            props.handleSelectProperties(propertyData);
           })
         )
         .then(() => {
