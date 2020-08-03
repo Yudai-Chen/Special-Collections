@@ -170,9 +170,23 @@ export const getItemPath = (baseAddress, itemId, path = []) => {
   });
 };
 
-export const patchMedia = (userInfo, itemId, payload) => {
+export const patchMedia = (userInfo, mediaId, payload) => {
   return axios.patch(
-    "http://" + userInfo.host + "/api/media/" + itemId,
+    "http://" + userInfo.host + "/api/media/" + mediaId,
+    payload,
+    {
+      params: {
+        key_identity: userInfo.key_identity,
+        key_credential: userInfo.key_credential,
+      },
+      headers: headers,
+    }
+  );
+};
+
+export const patchItem = (userInfo, itemId, payload) => {
+  return axios.patch(
+    "http://" + userInfo.host + "/api/items/" + itemId,
     payload,
     {
       params: {

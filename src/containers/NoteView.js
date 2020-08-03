@@ -1,34 +1,20 @@
 import React, { useState, useEffect } from "react";
 import NoteInput from "../components/NoteInput";
 import { useParams } from "react-router-dom";
-import { getItems } from "../utils/Utils";
+import { getItems, PATH_PREFIX } from "../utils/Utils";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 import { Spin, Row, Col, Menu } from "antd";
 
-const { SubMenu } = Menu;
-// import { Button, Input, Row, Col, Spin, Tree } from "antd";
-// import { withRouter } from "react-router";
-// import { HOST_ADDRESS, key_credential, key_identity } from "../components/Mainpage";
-// import ImageView from "./ImageView";
-// import axios from "axios";
-
-// const { DirectoryTree } = Tree;
-// const { TextArea } = Input;
-
-// const headers = {
-//   "Content-Type": "application/json",
-// };
-
-// TODO
+// In this component, I've hardcoded the property ID of "dcterms:references" as 36, "dcterms:isReferencedBy" as 35. I think it is a default configuration of Omeka S
 const NoteView = () => {
   const [cookies] = useCookies(["userInfo"]);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  let { targetList } = useParams();
-  let targets = JSON.parse(targetList);
+  const { targetList } = useParams();
 
   useEffect(() => {
+    let targets = JSON.parse(targetList);
     setLoading(true);
     getItems(cookies.userInfo.host, targets).then(
       axios.spread((...responses) => {
@@ -36,7 +22,7 @@ const NoteView = () => {
         setData(data);
       })
     );
-  }, [cookies.userInfo, targets]);
+  }, [cookies.userInfo, targetList]);
 
   useEffect(() => {
     setLoading(false);
@@ -49,20 +35,21 @@ const NoteView = () => {
       <Col span={8}>
         <h2>Targets:</h2>
         <Menu
-          // onClick={({ item, key }) => {
-          //   props.handleClickItem(key, item.props.title);
-          //   return;
-          // }}
+          onClick={({ item, key }) => {
+            let win = window.open(PATH_PREFIX + "/items/" + key, "_blank");
+            win.focus();
+            return;
+          }}
           selectable={false}
           mode="vertical"
         >
           {data.map((item) => (
-            <SubMenu key={item["o:id"]} title={item["o:title"]}></SubMenu>
+            <Menu.Item key={item["o:id"]}>{item["o:title"]}</Menu.Item>
           ))}
         </Menu>
       </Col>
       <Col span={16}>
-        <NoteInput targets={targets} />
+        <NoteInput targets={data} />
       </Col>
     </Row>
   );

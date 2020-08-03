@@ -198,7 +198,7 @@ const ItemView = (props) => {
             <Popover
               placement="topRight"
               trigger="click"
-              content={<NoteInput targets={[itemId]} />}
+              content={<NoteInput targets={[data]} />}
             >
               <Button shape="circle" size="large" type="primary">
                 <PlusOutlined />

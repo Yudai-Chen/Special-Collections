@@ -14,7 +14,7 @@ const colCounts = {};
   colCounts[i] = value;
 });
 
-// TODO
+// In this component, I've hardcoded the property ID of "bibo:transcriptOf" as 83. I think it is a default configuration of Omeka S
 const TranscriptView = () => {
   const [activeKey, setActiveKey] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -215,29 +215,6 @@ const TranscriptView = () => {
                   >
                     Submit
                   </Button>
-                  {/* <Button
-                    type="primary"
-                    onClick={() => {
-                      let payload = {
-                        "bibo:transcriptOf": [{ "@value": cache[activeKey] }],
-                      };
-                      console.log(payload);
-                      setData((data) => {
-                        const newData = [...data];
-                        newData[activeKey]["bibo:transcriptOf"] = [
-                          { "@value": cache[activeKey] },
-                        ];
-                        console.log(newData);
-                        return newData;
-                      });
-                      Modal.success({
-                        title: "Success!",
-                        content: "Update transcript successes.",
-                      });
-                    }}
-                  >
-                    Debug
-                  </Button> */}
                 </Col>
               </Row>
             </Col>

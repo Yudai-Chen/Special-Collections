@@ -4,6 +4,7 @@ import {
   searchResourceClasses,
   searchProperties,
   createItem,
+  patchItem,
 } from "../utils/Utils";
 import { useCookies } from "react-cookie";
 const { TextArea } = Input;
@@ -53,6 +54,15 @@ const NoteInput = (props) => {
       });
       return;
     }
+    let refList = props.targets.map((each) => ({
+      type: "resource",
+      property_id: 36,
+      property_label: "References",
+      is_public: true,
+      value_resource_id: each["o:id"],
+      value_resource_name: "items",
+    }));
+
     let payload = {
       "o:resource_class[o:id]": noteClassId,
       [notePropertyTerm]: [
@@ -63,10 +73,56 @@ const NoteInput = (props) => {
           "@value": text,
         },
       ],
+      "dcterms:references": refList,
     };
     console.log(payload);
     console.log(text);
     console.log(props.targets);
+    createItem(cookies.userInfo, payload)
+      .then((response) => {
+        console.log(response.data);
+        const myInfo = {
+          type: "resource",
+          property_id: 35,
+          property_label: "Is Referenced By",
+          is_public: true,
+          // "@id": "http://10.134.196.53/api/items/" + response.data["o:id"],
+          value_resource_id: response.data["o:id"],
+          value_resource_name: "items",
+        };
+        props.targets.map((each) => {
+          let newLinksToNotes = each["dcterms:isReferencedBy"]
+            ? [...each["dcterms:isReferencedBy"]]
+            : [];
+          newLinksToNotes.push(myInfo);
+          let thisPayload = {
+            "dcterms:isReferencedBy": newLinksToNotes,
+          };
+          patchItem(cookies.userInfo, each["o:id"], thisPayload).catch(
+            (error) => {
+              Modal.error({
+                title: "Fail to update item!",
+                content:
+                  "Fails to update the dcterms:isReferencedBy field of item " +
+                  each["o:id"],
+              });
+            }
+          );
+          return each;
+        });
+      })
+      .then(() => {
+        Modal.success({
+          title: "Success!",
+          content: "Add note successes.",
+        });
+      })
+      .catch((error) => {
+        Modal.error({
+          title: "Fail to create note!",
+          content: "Please check your key pair and network connection.",
+        });
+      });
   };
 
   return loading ? (
