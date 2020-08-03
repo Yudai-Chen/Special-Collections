@@ -95,19 +95,16 @@ const NoteInput = (props) => {
             ? [...each["dcterms:isReferencedBy"]]
             : [];
           newLinksToNotes.push(myInfo);
-          let thisPayload = {
-            "dcterms:isReferencedBy": newLinksToNotes,
-          };
-          patchItem(cookies.userInfo, each["o:id"], thisPayload).catch(
-            (error) => {
-              Modal.error({
-                title: "Fail to update item!",
-                content:
-                  "Fails to update the dcterms:isReferencedBy field of item " +
-                  each["o:id"],
-              });
-            }
-          );
+          each["dcterms:isReferencedBy"] = newLinksToNotes;
+
+          patchItem(cookies.userInfo, each["o:id"], each).catch((error) => {
+            Modal.error({
+              title: "Fail to update item!",
+              content:
+                "Fails to update the dcterms:isReferencedBy field of item " +
+                each["o:id"],
+            });
+          });
           return each;
         });
       })
