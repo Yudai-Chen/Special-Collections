@@ -85,7 +85,7 @@ const Archive = (props) => {
         {
           title: response.data["o:title"]
             ? response.data["o:title"]
-            : "untitled",
+            : "[Untitled]",
           key: response.data["o:id"],
           isLeaf: false,
         },

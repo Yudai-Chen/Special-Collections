@@ -46,8 +46,10 @@ const DisplayCard = (props) => {
     >
       <Link to={PATH_PREFIX + "/items/" + props.item["o:id"]} target="_blank">
         <Meta
-          title={props.item["o:title"]}
-          description={props.item["o:title"]}
+          title={props.item["o:title"] ? props.item["o:title"] : "[Untitled]"}
+          description={
+            props.item["o:title"] ? props.item["o:title"] : "[Untitled]"
+          }
         />
       </Link>
     </Card>

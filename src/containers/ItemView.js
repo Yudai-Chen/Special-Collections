@@ -55,9 +55,9 @@ const ItemView = (props) => {
       <ItemBreadcrumb
         baseAddress={cookies.userInfo.host}
         itemId={itemId}
-        itemTitle={data["o:title"]}
+        itemTitle={data["o:title"] ? data["o:title"] : "[Untitled]"}
       />
-      <Divider>{data["o:title"]}</Divider>
+      <Divider>{data["o:title"] ? data["o:title"] : "[Untitled]"}</Divider>
 
       {mediaLoading ? (
         <Spin />

@@ -44,7 +44,9 @@ const NoteView = () => {
           mode="vertical"
         >
           {data.map((item) => (
-            <Menu.Item key={item["o:id"]}>{item["o:title"]}</Menu.Item>
+            <Menu.Item key={item["o:id"]}>
+              {item["o:title"] ? item["o:title"] : "[Untitled]"}
+            </Menu.Item>
           ))}
         </Menu>
       </Col>

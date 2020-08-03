@@ -83,7 +83,7 @@ const TranscriptView = () => {
             images={data.map((each) => ({
               key: each["o:id"],
               src: each["o:original_url"],
-              alt: each["o:title"],
+              alt: each["o:title"] ? each["o:title"] : "[Untitled]",
               downloadUrl: each["o:original_url"],
             }))}
             activeIndex={activeKey}

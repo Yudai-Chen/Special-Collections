@@ -27,7 +27,9 @@ const ProjectDropdown = (props) => {
         <Spin></Spin>
       ) : (
         projectList.map((each) => (
-          <Menu.Item key={each["o:id"]}>{each["o:title"]}</Menu.Item>
+          <Menu.Item key={each["o:id"]}>
+            {each["o:title"] ? each["o:title"] : "[Untitled]"}
+          </Menu.Item>
         ))
       )}
     </Menu>
@@ -47,7 +49,8 @@ const ProjectDropdown = (props) => {
   return (
     <Dropdown overlay={menu} trigger={["click"]}>
       <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-        {menuSelected["o:title"]} <DownOutlined />
+        {menuSelected["o:title"] ? menuSelected["o:title"] : "[Untitled]"}
+        <DownOutlined />
       </a>
     </Dropdown>
   );

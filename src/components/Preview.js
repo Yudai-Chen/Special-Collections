@@ -63,8 +63,10 @@ const Preview = (props) => {
           )}
         </Carousel>
         <p>
-          {props.dataSource["o:title"]
+          {props.dataSource["o:id"]
             ? props.dataSource["o:title"]
+              ? props.dataSource["o:title"]
+              : "[Untitled]"
             : "No Item"}
         </p>
       </div>

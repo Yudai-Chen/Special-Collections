@@ -22,7 +22,7 @@ const ProjectList = (props) => {
           );
           return {
             key: each["o:id"],
-            title: each["o:title"],
+            title: each["o:title"] ? each["o:title"] : "[Untitled]",
             description: each["dcterms:description"]
               ? each["dcterms:description"][0]["@value"]
               : "",
@@ -63,12 +63,16 @@ const ProjectList = (props) => {
                 <Menu.Item
                   key={item["o:id"]}
                   title={
-                    item["o:title"].substr(0, 20) +
-                    (item["o:title"].length > 20 ? "..." : "")
+                    item["o:title"]
+                      ? item["o:title"].substr(0, 20) +
+                        (item["o:title"].length > 20 ? "..." : "")
+                      : "[Untitled]"
                   }
                 >
-                  {item["o:title"].substr(0, 20) +
-                    (item["o:title"].length > 20 ? "..." : "")}
+                  {item["o:title"]
+                    ? item["o:title"].substr(0, 20) +
+                      (item["o:title"].length > 20 ? "..." : "")
+                    : "[Untitled]"}
                 </Menu.Item>
               ))
             : null}

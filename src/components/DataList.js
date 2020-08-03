@@ -202,7 +202,7 @@ const DataList = (props) => {
           record["o:thumbnail_urls"] ? (
             <img
               src={record["o:thumbnail_urls"]["square"]}
-              alt={record["o:title"]}
+              alt={record["o:title"] ? record["o:title"] : "[Untitled]"}
               width="20px"
             />
           ) : (

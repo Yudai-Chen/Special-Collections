@@ -35,7 +35,7 @@ const ItemSearchForm = (props) => {
       getItemSetList(cookies.userInfo.host).then((response) => {
         let classes = response.data.map((each) => ({
           id: each["o:id"],
-          title: each["o:title"],
+          title: each["o:title"] ? each["o:title"] : "[Untitled]",
         }));
         setProjectList(classes);
       }),
