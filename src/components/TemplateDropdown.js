@@ -42,6 +42,13 @@ const TemplateDropdown = (props) => {
         { "o:label": "ALL Properties", "o:id": 0 },
         ...response.data,
       ]);
+      let defaultTemplate = response.data.filter(
+        (each) => each["o:label"] === "REACT"
+      );
+      if (defaultTemplate.length > 0) {
+        setMenuSelected(defaultTemplate[0]);
+        props.onMenuSelect(defaultTemplate[0][["o:id"]]);
+      }
     });
   }, [cookies.userInfo]);
 

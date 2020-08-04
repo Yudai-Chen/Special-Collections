@@ -59,6 +59,7 @@ const MainPage = () => {
             <a
               href="https://github.com/Yudai-Chen/Special-Collections/"
               target="_blank"
+              rel="noreferrer"
             >
               <LinkOutlined /> Learn More
             </a>

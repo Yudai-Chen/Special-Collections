@@ -20,6 +20,7 @@ export const PropertySingleValue = (props) => {
             value["value_resource_id"]
           }
           target="_blank"
+          rel="noreferrer"
         >
           {value["display_title"]}
         </Link>
