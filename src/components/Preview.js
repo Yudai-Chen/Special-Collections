@@ -3,7 +3,7 @@ import axios from "axios";
 import { Space, Carousel, Spin } from "antd";
 import { PlaceHolder, getMedia } from "../utils/Utils";
 import { useCookies } from "react-cookie";
-// TODO: make displayNum a dropdown list
+
 //dataSource, displayNum
 const Preview = (props) => {
   const [loading, setLoading] = useState(true);

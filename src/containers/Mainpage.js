@@ -40,16 +40,15 @@ const MainPage = () => {
           >
             <h1
               style={{
-                "font-size": "36px",
-                "font-family": "Georgia",
+                "font-family": "Goudy Old Style",
                 "font-style": "italic",
-                "font-weight": 700,
-                "line-height": "35.2px",
-                "font-variant": "small-caps",
+                "font-weight": "bolder",
+                "line-height": "26.4px",
                 color: "#093eba",
+                "font-size": "36px",
               }}
             >
-              Special Collections
+              SPECIAL COLLECTIONS
             </h1>
           </div>
           <div
