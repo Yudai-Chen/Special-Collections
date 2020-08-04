@@ -49,13 +49,17 @@ const Home = () => {
   };
 
   return (
-    <Layout>
+    <Layout
+      style={{
+        background: "#FFF",
+      }}
+    >
       <Sider
         style={{
           overflow: "auto",
           height: "100vh",
           width: "280",
-          left: 0,
+          padding: 24,
         }}
         width="280"
         theme="light"
@@ -105,7 +109,7 @@ const Home = () => {
           </TabPane>
         </Tabs>
       </Sider>
-      <Layout>
+      <Layout style={{ padding: 24 }}>
         <Content>
           <Tabs defaultActiveKey={1}>
             <TabPane
@@ -140,12 +144,12 @@ const Home = () => {
             </TabPane>
           </Tabs>
         </Content>
-        <Sider theme="light" collapsible={false}>
-          <Preview dataSource={rowRecord} displayNum={5} />
-          <Divider style={{ height: "20" }} />
-          <Metadata dataSource={rowRecord} />
-        </Sider>
       </Layout>
+      <Sider theme="light" collapsible={false} style={{ padding: 10 }}>
+        <Preview dataSource={rowRecord} displayNum={5} />
+        <Divider style={{ height: "20" }} />
+        <Metadata dataSource={rowRecord} />
+      </Sider>
     </Layout>
   );
 };

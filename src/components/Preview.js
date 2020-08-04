@@ -33,9 +33,7 @@ const Preview = (props) => {
   return (
     <Space direction="vertical" style={{ width: "100%" }}>
       <div align="center">
-        <div className="ant-descriptions-title">
-          Preview First at most {props.displayNum} Media
-        </div>
+        <div className="ant-descriptions-title">Preview</div>
         <Carousel autoplay>
           {loading ? (
             <Spin />

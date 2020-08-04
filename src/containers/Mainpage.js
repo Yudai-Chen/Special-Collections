@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { Layout, Menu } from "antd";
 import { MainpageRouter } from "../route/Routers";
 import { withRouter } from "react-router-dom";
-import { FolderOutlined, FolderAddOutlined } from "@ant-design/icons";
+import {
+  FolderOutlined,
+  FolderAddOutlined,
+  LinkOutlined,
+} from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { PATH_PREFIX, Logo } from "../utils/Utils";
 import { Link } from "react-router-dom";
@@ -14,31 +18,55 @@ const MainPage = () => {
 
   return (
     <Layout>
-      <Header style={{ background: "#EEE", height: "auto" }}>
+      <Header
+        style={{ background: "#FFF", height: "13vh", position: "relative" }}
+      >
         <div className="logo">
           <div
             style={{
               float: "left",
+              position: "absolute",
+              bottom: 10,
             }}
           >
             <img src={Logo} alt="logo.png" width="100" height="100" />
           </div>
           <div
             style={{
+              left: "180px",
+              position: "absolute",
+              bottom: 24,
+            }}
+          >
+            <h1
+              style={{
+                "font-size": "36px",
+                "font-family": "Georgia",
+                "font-style": "italic",
+                "font-weight": 700,
+                "line-height": "35.2px",
+                "font-variant": "small-caps",
+                color: "#093eba",
+              }}
+            >
+              Special Collections
+            </h1>
+          </div>
+          <div
+            style={{
               float: "right",
             }}
           >
-            <li>
-              <a
-                href="https://github.com/Yudai-Chen/Special-Collections/"
-                target="_blank"
-              >
-                Learn More
-              </a>
-            </li>
+            <a
+              href="https://github.com/Yudai-Chen/Special-Collections/"
+              target="_blank"
+            >
+              <LinkOutlined /> Learn More
+            </a>
           </div>
         </div>
       </Header>
+      <div style={{ height: "1px" }} />
       <Menu
         onClick={(e) => {
           setCurrent(e.key);

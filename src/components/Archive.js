@@ -104,9 +104,16 @@ const Archive = (props) => {
           setRootId(value);
         }}
       />
-      <Button type="primary" onClick={onConfirm}>
-        Confirm
-      </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <Button type="primary" size="small" onClick={onConfirm}>
+          <span style={{ "font-size": "12px" }}>Confirm</span>
+        </Button>
+      </div>
     </Space>
   ) : (
     <DirectoryTree

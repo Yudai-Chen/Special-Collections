@@ -51,7 +51,7 @@ const ItemView = (props) => {
   return loading ? (
     <Spin />
   ) : (
-    <>
+    <div style={{ padding: 20 }}>
       <ItemBreadcrumb
         baseAddress={cookies.userInfo.host}
         itemId={itemId}
@@ -207,7 +207,7 @@ const ItemView = (props) => {
           </Affix>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
