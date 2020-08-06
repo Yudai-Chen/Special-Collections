@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Layout, Tabs, Divider } from "antd";
+import React, { useState, useEffect } from "react";
+import { Layout, Tabs, Divider, Space } from "antd";
 import Preview from "../components/Preview";
 import Datalist from "../components/DataList";
 import Filmstrip from "../components/Filmstrip";
@@ -7,6 +7,7 @@ import Metadata from "../components/Metadata";
 import Archive from "../components/Archive";
 import ItemSearchForm from "../components/ItemSearchForm";
 import MediumSearchForm from "../components/MediumSearchForm";
+import TemplateDropdown from "../components/TemplateDropdown";
 
 import {
   TableOutlined,
@@ -16,7 +17,11 @@ import {
 } from "@ant-design/icons";
 import { useCookies } from "react-cookie";
 import axios from "axios";
-import { getItems } from "../utils/Utils";
+import {
+  getItems,
+  getPropertyList,
+  getPropertiesInResourceTemplate,
+} from "../utils/Utils";
 
 const { Sider, Content } = Layout;
 const { TabPane } = Tabs;
@@ -28,6 +33,9 @@ const Home = () => {
   const [dataLoading, setDataLoading] = useState(false);
   const [hasMediaData, setHasMediaData] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState([]);
+  const [templateId, setTemplateId] = useState(0);
+  const [propertyList, setPropertyList] = useState([]);
+  const [propertyLoading, setPropertyLoading] = useState(false);
 
   const onArchiveCheck = (keys) => {
     if (keys.length > 0) {
@@ -48,6 +56,45 @@ const Home = () => {
     }
   };
 
+  useEffect(() => {
+    setPropertyLoading(true);
+    if (templateId === 0) {
+      getPropertyList(cookies.userInfo.host)
+        .then((response) => {
+          let classes = response.data.map((each) => ({
+            id: each["o:id"],
+            title: each["o:label"],
+          }));
+          setPropertyList(classes);
+          let propertyData = response.data.map((each) => ({
+            "o:term": each["o:term"],
+            "o:label": each["o:label"],
+          }));
+          setSelectedProperties(propertyData);
+        })
+        .then(() => setPropertyLoading(false));
+    } else {
+      getPropertiesInResourceTemplate(cookies.userInfo.host, templateId)
+        .then(
+          axios.spread((...responses) => {
+            let properties = responses.map((each) => ({
+              id: each.data["o:id"],
+              title: each.data["o:label"],
+            }));
+            setPropertyList(properties);
+            let propertyData = responses.map((each) => ({
+              "o:term": each.data["o:term"],
+              "o:label": each.data["o:label"],
+            }));
+            setSelectedProperties(propertyData);
+          })
+        )
+        .then(() => {
+          setPropertyLoading(false);
+        });
+    }
+  }, [templateId, cookies.userInfo]);
+
   return (
     <Layout
       style={{
@@ -64,6 +111,14 @@ const Home = () => {
         width="280"
         theme="light"
       >
+        <Space direction="vertical" size="middle">
+          I only want to use properties in:
+          <TemplateDropdown
+            onMenuSelect={(templateId) => {
+              setTemplateId(templateId);
+            }}
+          />
+        </Space>
         <Tabs defaultActiveKey={1}>
           <TabPane
             tab={
@@ -96,9 +151,8 @@ const Home = () => {
                 setSelectedItems(items);
                 setHasMediaData(false);
               }}
-              handleSelectProperties={(properties) => {
-                setSelectedProperties(properties);
-              }}
+              propertyList={propertyList}
+              propertyLoading={propertyLoading}
             />
             <MediumSearchForm
               handleSearchResults={(items) => {

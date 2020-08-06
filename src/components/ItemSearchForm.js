@@ -2,32 +2,25 @@ import React, { useState, useEffect } from "react";
 import { Form, Spin, Input, Select, Space, Button } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCookies } from "react-cookie";
-import TemplateDropdown from "./TemplateDropdown";
-import axios from "axios";
 import {
   getItemSetList,
-  getPropertyList,
   getResourceClassList,
   searchItems,
-  getPropertiesInResourceTemplate,
 } from "../utils/Utils";
 
 const { Option } = Select;
 
 const layout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 10 },
+  wrapperCol: { span: 14 },
 };
 
-// handleSearchResults, handleSelectProperties
+// handleSearchResults, propertyList, propertyLoading
 const ItemSearchForm = (props) => {
-  const [propertyList, setPropertyList] = useState([]);
   const [classList, setClassList] = useState([]);
   const [projectList, setProjectList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cookies] = useCookies(["userInfo"]);
-  const [templateId, setTemplateId] = useState(0);
-  const [propertyLoading, setPropertyLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -39,13 +32,7 @@ const ItemSearchForm = (props) => {
         }));
         setProjectList(classes);
       }),
-      getPropertyList(cookies.userInfo.host).then((response) => {
-        let classes = response.data.map((each) => ({
-          id: each["o:id"],
-          title: each["o:label"],
-        }));
-        setPropertyList(classes);
-      }),
+
       getResourceClassList(cookies.userInfo.host).then((response) => {
         let classes = response.data.map((each) => ({
           id: each["o:id"],
@@ -56,45 +43,6 @@ const ItemSearchForm = (props) => {
     ];
     Promise.all(requests).then(() => setLoading(false));
   }, [cookies.userInfo]);
-
-  useEffect(() => {
-    setPropertyLoading(true);
-    if (templateId === 0) {
-      getPropertyList(cookies.userInfo.host)
-        .then((response) => {
-          let classes = response.data.map((each) => ({
-            id: each["o:id"],
-            title: each["o:label"],
-          }));
-          setPropertyList(classes);
-          let propertyData = response.data.map((each) => ({
-            "o:term": each["o:term"],
-            "o:label": each["o:label"],
-          }));
-          props.handleSelectProperties(propertyData);
-        })
-        .then(() => setPropertyLoading(false));
-    } else {
-      getPropertiesInResourceTemplate(cookies.userInfo.host, templateId)
-        .then(
-          axios.spread((...responses) => {
-            let properties = responses.map((each) => ({
-              id: each.data["o:id"],
-              title: each.data["o:label"],
-            }));
-            setPropertyList(properties);
-            let propertyData = responses.map((each) => ({
-              "o:term": each.data["o:term"],
-              "o:label": each.data["o:label"],
-            }));
-            props.handleSelectProperties(propertyData);
-          })
-        )
-        .then(() => {
-          setPropertyLoading(false);
-        });
-    }
-  }, [templateId, cookies.userInfo]);
 
   const formRef = React.createRef();
   const onReset = () => {
@@ -143,12 +91,6 @@ const ItemSearchForm = (props) => {
     <Spin />
   ) : (
     <Space direction="vertical" size="middle">
-      I only want to use properties in:
-      <TemplateDropdown
-        onMenuSelect={(templateId) => {
-          setTemplateId(templateId);
-        }}
-      />
       <Form
         {...layout}
         name="search-form"
@@ -171,80 +113,80 @@ const ItemSearchForm = (props) => {
                   >
                     <Form.Item {...field} label={"Property " + index}>
                       <Input.Group compact>
-                        <Form.Item
-                          {...field}
-                          name={[field.name, "joiner"]}
-                          fieldKey={[field.fieldKey, "joiner"]}
-                          noStyle
-                          initialValue="and"
-                        >
-                          <Select placeholder="joiner">
-                            <Option value="and">AND</Option>
-                            {index > 0 ? <Option value="or">OR</Option> : null}
-                          </Select>
-                        </Form.Item>
-
-                        <Form.Item
-                          {...field}
-                          name={[field.name, "property"]}
-                          fieldKey={[field.fieldKey, "property"]}
-                          noStyle
-                          initialValue={1}
-                        >
-                          <Select
-                            placeholder="[Any property]"
-                            onChange={null}
-                            allowClear
+                        <Space direction="vertical" size="small">
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "joiner"]}
+                            fieldKey={[field.fieldKey, "joiner"]}
+                            noStyle
+                            initialValue="and"
                           >
-                            {propertyLoading ? (
-                              <Spin />
-                            ) : (
-                              propertyList.map((each) => (
-                                <Option value={each["id"]}>
-                                  {each["title"]}
-                                </Option>
-                              ))
-                            )}
-                          </Select>
-                        </Form.Item>
+                            <Select placeholder="joiner">
+                              <Option value="and">AND</Option>
+                              {index > 0 ? (
+                                <Option value="or">OR</Option>
+                              ) : null}
+                            </Select>
+                          </Form.Item>
 
-                        <Form.Item
-                          {...field}
-                          name={[field.name, "type"]}
-                          fieldKey={[field.fieldKey, "type"]}
-                          noStyle
-                          initialValue="in"
-                        >
-                          <Select
-                            placeholder="[Any relation]"
-                            onChange={null}
-                            allowClear
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "property"]}
+                            fieldKey={[field.fieldKey, "property"]}
+                            noStyle
+                            initialValue={1}
                           >
-                            <Option value="eq">is exactly</Option>
-                            <Option value="neq">is not exactly</Option>
-                            <Option value="in">contains</Option>
-                            <Option value="nin">does not contain</Option>
-                            <Option value="ex">has any value</Option>
-                            <Option value="nex">has no value</Option>
-                          </Select>
-                        </Form.Item>
-                        <Form.Item
-                          {...field}
-                          name={[field.name, "key"]}
-                          fieldKey={[field.fieldKey, "key"]}
-                          noStyle
-                        >
-                          <Input placeholder="key" />
-                        </Form.Item>
+                            <Select
+                              placeholder="[Any property]"
+                              onChange={null}
+                            >
+                              {props.propertyLoading ? (
+                                <Spin />
+                              ) : (
+                                props.propertyList.map((each) => (
+                                  <Option value={each["id"]}>
+                                    {each["title"]}
+                                  </Option>
+                                ))
+                              )}
+                            </Select>
+                          </Form.Item>
+
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "type"]}
+                            fieldKey={[field.fieldKey, "type"]}
+                            noStyle
+                            initialValue="in"
+                          >
+                            <Select
+                              placeholder="[Any relation]"
+                              onChange={null}
+                            >
+                              <Option value="eq">is exactly</Option>
+                              <Option value="neq">is not exactly</Option>
+                              <Option value="in">contains</Option>
+                              <Option value="nin">does not contain</Option>
+                              <Option value="ex">has any value</Option>
+                              <Option value="nex">has no value</Option>
+                            </Select>
+                          </Form.Item>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "key"]}
+                            fieldKey={[field.fieldKey, "key"]}
+                            noStyle
+                          >
+                            <Input placeholder="key" />
+                          </Form.Item>
+                        </Space>
                       </Input.Group>
                     </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        onClick={() => {
-                          remove(field.name);
-                        }}
-                      />
-                    ) : null}
+                    <MinusCircleOutlined
+                      onClick={() => {
+                        remove(field.name);
+                      }}
+                    />
                   </Space>
                 ))}
 
@@ -269,25 +211,17 @@ const ItemSearchForm = (props) => {
                 {fields.map((field, index) => (
                   <Form.Item label={"Class " + index} key={field.key}>
                     <Form.Item {...field} noStyle>
-                      <Select
-                        placeholder="Select a class"
-                        onChange={null}
-                        allowClear
-                      >
+                      <Select placeholder="Select a class" onChange={null}>
                         {classList.map((each) => (
                           <Option value={each["id"]}>{each["title"]}</Option>
                         ))}
                       </Select>
                     </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        style={{ margin: "0 8px" }}
-                        onClick={() => {
-                          remove(field.name);
-                        }}
-                      />
-                    ) : null}
+                    <MinusCircleOutlined
+                      onClick={() => {
+                        remove(field.name);
+                      }}
+                    />
                   </Form.Item>
                 ))}
                 <Form.Item>
@@ -296,7 +230,6 @@ const ItemSearchForm = (props) => {
                     onClick={() => {
                       add();
                     }}
-                    style={{ width: "60%" }}
                   >
                     <PlusOutlined /> Add class
                   </Button>
@@ -312,25 +245,17 @@ const ItemSearchForm = (props) => {
                 {fields.map((field, index) => (
                   <Form.Item label={"Project " + index} key={field.key}>
                     <Form.Item {...field} noStyle>
-                      <Select
-                        placeholder="Select a project"
-                        onChange={null}
-                        allowClear
-                      >
+                      <Select placeholder="Select a project" onChange={null}>
                         {projectList.map((each) => (
                           <Option value={each["id"]}>{each["title"]}</Option>
                         ))}
                       </Select>
                     </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        style={{ margin: "0 8px" }}
-                        onClick={() => {
-                          remove(field.name);
-                        }}
-                      />
-                    ) : null}
+                    <MinusCircleOutlined
+                      onClick={() => {
+                        remove(field.name);
+                      }}
+                    />
                   </Form.Item>
                 ))}
                 <Form.Item>
@@ -339,7 +264,6 @@ const ItemSearchForm = (props) => {
                     onClick={() => {
                       add();
                     }}
-                    style={{ width: "60%" }}
                   >
                     <PlusOutlined /> Add project
                   </Button>

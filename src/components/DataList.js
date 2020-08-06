@@ -82,6 +82,35 @@ const titleColumn = {
   width: 200,
 };
 
+const recordYearProperty = {
+  "o:label": "Record Year(s)",
+  "o:term": "acm5:year",
+};
+
+const recordYearColumn = {
+  title: "Record Year(s)",
+  dataIndex: "acm5:year",
+  render: (text, record) =>
+    record["acm5:year"] ? <PropertyValue values={record["acm5:year"]} /> : null,
+  sorter: {
+    compare: (a, b) => {
+      if (
+        a["acm5:year"] &&
+        a["acm5:year"][0] &&
+        a["acm5:year"][0].type === "literal" &&
+        b["acm5:year"] &&
+        b["acm5:year"][0] &&
+        b["acm5:year"][0].type === "literal"
+      )
+        return a["acm5:year"][0]["@value"].localeCompare(
+          b["acm5:year"][0]["@value"]
+        );
+      else return 0;
+    },
+  },
+  width: 200,
+};
+
 const itemSetProperty = {
   "o:label": "Projects",
   "o:term": "o:item_set",
@@ -168,12 +197,17 @@ const DataList = (props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [modalsVisible, setModalsVisible] = useState(0);
   const defaultProperties = [
-    idProperty,
     titleProperty,
     typeProperty,
+    recordYearProperty,
     viewProperty,
   ];
-  const defaultColumns = [idColumn, titleColumn, typeColumn, viewColumn];
+  const defaultColumns = [
+    titleColumn,
+    typeColumn,
+    recordYearColumn,
+    viewColumn,
+  ];
   const extraProperties = [
     idProperty,
     titleProperty,
