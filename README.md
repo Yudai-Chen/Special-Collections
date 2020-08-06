@@ -6,15 +6,19 @@
 
 ![](https://img.shields.io/npm/v/npm) ![](https://img.shields.io/npm/v/antd?color=green&label=antd) ![](https://img.shields.io/npm/v/react?label=react)  ![](https://img.shields.io/npm/v/react-router?color=green&label=react-router) ![](https://img.shields.io/npm/v/react-cookie?label=react-cookie)
 
-> Special Collections is a data display website, which talks to APIs provided by Omeka S .
+> Special Collections is a tiny data display website.
 >
-> To run this app, an Omeka S back-end should be deployed on an accessible machine.
+> It provides a researcher with a personal, flexible digital archive, enabling them to import, edit, inter-link, and custom mark-up their digital media. They can act as their own librarian, accelerating their research, without artificially limiting the scale or complexity of their collection.
 >
-> For more information, please have a look at  https://omeka.org/s/ 
+> It can handle hierarchical (folder-tree-like) data but guides users towards elaborating more complex relations within their collections. In other words, it can bring us from a beginner's work to a professor's work, as a complexly internally-related digital archive.
 
 ## Background
 
 The famous Omeka S platform has provided us with a pretty interface. However, it is not as convenient in some instances. This application offers a gentle way to display data already stored in Omeka S, basically for Rice University lecture use.
+
+To run this app, an Omeka S back-end should be deployed on an accessible machine.
+
+For more information, please have a look at  https://omeka.org/s/ 
 
 ## Install
 
@@ -146,6 +150,36 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 + If you are trying to transcript all media in an item, you can press left/right arrow keys on your keyboard to transcript the previous/next image.
 + Do not forget to `Submit` your change when you're done with **each image**.
 + Note: use property `bibo:transcriptOf` to indicate the transcript of media.
+
+## Preview
+
+Overview
+
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/overview.png )
+
+Tree View
+
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/treeview.png )
+
+Search View
+
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/searchview.png )
+
+Item View
+
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/itemview.png )
+
+Project View
+
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/projectview.png )
+
+Transcribing View
+
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/transcribingview.png )
+
+Annotating View
+
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/annotatingview.png )
 
 ## Maintainer
 
