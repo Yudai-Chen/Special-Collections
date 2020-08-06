@@ -153,33 +153,33 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Preview
 
-Overview
+#### Overview
 
-![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/overview.png )
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/screenshots/overview.png )
 
-Tree View
+#### Tree View
 
-![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/treeview.png )
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/screenshots/treeview.png )
 
-Search View
+#### Search View
 
-![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/searchview.png )
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/screenshots/searchview.png )
 
-Item View
+#### Item View
 
-![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/itemview.png )
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/screenshots/itemview.png )
 
-Project View
+#### Project View
 
-![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/projectview.png )
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/screenshots/projectview.png )
 
-Transcribing View
+#### Transcribing View
 
-![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/transcribingview.png )
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/screenshots/transcribingview.png )
 
-Annotating View
+#### Annotating View
 
-![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/src/screenshots/annotatingview.png )
+![]( https://raw.githubusercontent.com/Yudai-Chen/Special-Collections/master/screenshots/annotatingview.png )
 
 ## Maintainer
 
