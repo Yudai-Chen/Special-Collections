@@ -47,6 +47,13 @@ const NoteInput = (props) => {
   }, [noteClassId, notePropertyId, notePropertyTerm]);
 
   const onSubmit = () => {
+    if (props.targets.length === 0) {
+      Modal.error({
+        title: "Fail to create note!",
+        content: "You did not set any item to be a target for the note.",
+      });
+      return;
+    }
     if (text.length === 0) {
       Modal.error({
         title: "Fail to create note!",

@@ -33,12 +33,12 @@ const LogoHeader = () => {
           <Link to={PATH_PREFIX + "/admin/home"}>
             <h1
               style={{
-                "font-family": "Goudy Old Style",
-                "font-style": "italic",
-                "font-weight": "bolder",
-                "line-height": "26.4px",
+                fontFamily: "Goudy Old Style",
+                fontStyle: "italic",
+                fontWeight: "bolder",
+                lineHeight: "26.4px",
                 color: "#093eba",
-                "font-size": "36px",
+                fontSize: "36px",
               }}
             >
               SPECIAL COLLECTIONS
