@@ -12,6 +12,7 @@ import Welcome from "../containers/Welcome";
 import Home from "../containers/Home";
 import ProjectsPage from "../containers/ProjectsPage";
 import ItemView from "../containers/ItemView";
+import RelationGraph from "../components/RelationGraph";
 import { useCookies } from "react-cookie";
 import { PATH_PREFIX } from "../utils/Utils";
 
@@ -62,6 +63,9 @@ export const MainRouter = () => {
         </PrivateRoute>
         <PrivateRoute path={PATH_PREFIX + "/items/:itemId"}>
           <ItemView />
+        </PrivateRoute>
+        <PrivateRoute path={PATH_PREFIX + "/network/:itemId"}>
+          <RelationGraph />
         </PrivateRoute>
         <PrivateRoute path={PATH_PREFIX + "/admin"}>
           <MainPage />

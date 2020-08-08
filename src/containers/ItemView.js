@@ -125,6 +125,16 @@ const ItemView = (props) => {
                     Transcript All
                   </Button>
                 </Col>
+                <Col flex="auto">
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      window.open(PATH_PREFIX + "/network/" + itemId);
+                    }}
+                  >
+                    Open Network Graph
+                  </Button>
+                </Col>
               </Row>
             </Row>
           </Col>
