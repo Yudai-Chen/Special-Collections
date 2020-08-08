@@ -125,16 +125,6 @@ const ItemView = (props) => {
                     Transcript All
                   </Button>
                 </Col>
-                <Col flex="auto">
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      window.open(PATH_PREFIX + "/network/" + itemId);
-                    }}
-                  >
-                    Open Network Graph
-                  </Button>
-                </Col>
               </Row>
             </Row>
           </Col>
@@ -156,6 +146,16 @@ const ItemView = (props) => {
           justifyContent: "flex-end",
         }}
       >
+        <div style={{ margin: "5px" }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              window.open(PATH_PREFIX + "/network/" + itemId);
+            }}
+          >
+            Open Network Graph
+          </Button>
+        </div>
         <div style={{ margin: "5px" }}>
           <Button
             onClick={() => {
