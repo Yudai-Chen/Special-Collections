@@ -10,7 +10,7 @@ import PropertyValue from "./PropertyValue";
 import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
 import "./DataList.css";
 import { connect } from "react-redux";
-import { fetch } from "../utils/OmekaS";
+import { fetch, fetchSize } from "../utils/OmekaS";
 import { useCookies } from "react-cookie";
 
 const ResizableTitle = (props) => {
@@ -356,6 +356,7 @@ const DataList = (props) => {
   const [cookies] = useCookies(["userInfo"]);
 
   useEffect(() => {
+    console.log(props.query);
     const fetchInitial = async () => {
       const data = await fetch(
         cookies.userInfo.host,
@@ -369,8 +370,8 @@ const DataList = (props) => {
         ...tabelState,
         data,
         pagination: {
-          ...tabelState.pagination,
-          current: tabelState.pagination.current + 1,
+          current: 1,
+          pageSize: 10,
           total: props.query.size,
         },
       });

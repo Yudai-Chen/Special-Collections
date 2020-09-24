@@ -3,7 +3,7 @@ import { SET_QUERY } from "../actionTypes";
 const initialState = {
   endpoint: "items",
   params: {},
-  size: 0,
+  size: 99999, // big number
 };
 
 export default (state = initialState, action) => {
