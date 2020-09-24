@@ -10,10 +10,7 @@ const NewProjectModal = (props) => {
   const [cookies] = useCookies(["userInfo"]);
 
   const onCreateProject = () => {
-    if (
-      projectName === undefined ||
-      projectName.length === 0
-    ) {
+    if (projectName === undefined || projectName.length === 0) {
       Modal.error({
         title: "Fail to create project!",
         content: "The project name cannot be null.",

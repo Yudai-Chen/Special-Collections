@@ -8,6 +8,10 @@ import {
   searchItems,
 } from "../utils/Utils";
 
+import { connect } from "react-redux";
+import { setQuery } from "../redux/actions";
+import { fetchSize } from "../utils/OmekaS";
+
 const { Option } = Select;
 
 const layout = {
@@ -78,13 +82,20 @@ const ItemSearchForm = (props) => {
           return each;
         });
     }
-    searchItems(cookies.userInfo.host, params).then((response) => {
-      let data = response.data.map((each) => ({
-        ...each,
-        key: each["o:id"],
-      }));
-      props.handleSearchResults(data);
-    });
+
+    // START: cool zone
+    fetchSize(cookies.userInfo.host, "items", params).then((count) =>
+      props.setQuery("items", params, count)
+    );
+    // END: cool zone
+
+    // searchItems(cookies.userInfo.host, params).then((response) => {
+    //   let data = response.data.map((each) => ({
+    //     ...each,
+    //     key: each["o:id"],
+    //   }));
+    //   props.handleSearchResults(data);
+    // });
   };
 
   return loading ? (
@@ -285,4 +296,4 @@ const ItemSearchForm = (props) => {
   );
 };
 
-export default ItemSearchForm;
+export default connect(null, { setQuery })(ItemSearchForm);

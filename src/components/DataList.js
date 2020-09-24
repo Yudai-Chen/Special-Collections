@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Table, Space, Pagination, Tag } from "antd";
 import { Resizable } from "react-resizable";
 import { withRouter, Link } from "react-router-dom";
@@ -9,6 +9,8 @@ import PropertyListMenu from "./PropertyListMenu";
 import PropertyValue from "./PropertyValue";
 import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
 import "./DataList.css";
+import { connect } from "react-redux";
+import { fetch } from "../utils/OmekaS";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -340,6 +342,63 @@ const DataList = (props) => {
     }),
   }));
 
+  // START: cool zone
+  const [tabelState, setTableState] = useState({
+    data: [],
+    pagination: {
+      current: 1,
+      pageSize: 10,
+      total: props.query.size,
+    },
+    loading: false,
+  });
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      const data = await fetch(
+        "10.134.196.105/omeka",
+        props.query.endpoint,
+        props.query.params,
+        0,
+        10
+      );
+
+      setTableState({
+        ...tabelState,
+        data,
+        pagination: {
+          ...tabelState.pagination,
+          current: tabelState.pagination.current + 1,
+          total: props.query.size,
+        },
+      });
+    };
+    fetchInitial();
+  }, [props.query]);
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableState({
+      ...tabelState,
+      loading: true,
+    });
+
+    fetch(
+      "10.134.196.105/omeka",
+      props.query.endpoint,
+      props.query.params,
+      pagination.current * pagination.pageSize,
+      pagination.pageSize
+    ).then((res) => {
+      setTableState({
+        ...tabelState,
+        pagination,
+        loading: false,
+        data: res,
+      });
+    });
+  };
+  // END: cool zone
+
   return (
     <div>
       <Space direction="vertical" style={{ width: "100%" }}>
@@ -349,9 +408,10 @@ const DataList = (props) => {
           handleChange={onPropertyChange}
           defaultProperties={defaultProperties}
         />
+
         <Table
           bordered
-          loading={props.loading}
+          loading={tabelState.loading}
           onRow={(record) => {
             return {
               onClick: (event) => {
@@ -362,11 +422,13 @@ const DataList = (props) => {
           rowSelection={rowSelection}
           components={components}
           columns={resizableColumns}
-          dataSource={props.dataSource}
+          dataSource={tabelState.data}
           expandable={{
             expandedRowRender:
               props.hasMediaData === true ? expandedRowRender : null,
           }}
+          onChange={handleTableChange}
+          pagination={tabelState.pagination}
         />
         <div
           style={{
@@ -401,4 +463,11 @@ const DataList = (props) => {
   );
 };
 
-export default withRouter(DataList);
+const mapStateToProps = (state, props) => {
+  return {
+    ...props,
+    query: state.query,
+  };
+};
+
+export default connect(mapStateToProps)(withRouter(DataList));
