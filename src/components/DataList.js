@@ -356,8 +356,12 @@ const DataList = (props) => {
   const [cookies] = useCookies(["userInfo"]);
 
   useEffect(() => {
-    console.log(props.query);
     const fetchInitial = async () => {
+      setTableState({
+        ...tabelState,
+        loading: true,
+      });
+
       const data = await fetch(
         cookies.userInfo.host,
         props.query.endpoint,
@@ -369,6 +373,7 @@ const DataList = (props) => {
       setTableState({
         ...tabelState,
         data,
+        loading: false,
         pagination: {
           current: 1,
           pageSize: 10,
