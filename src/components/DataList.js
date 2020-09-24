@@ -11,6 +11,7 @@ import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
 import "./DataList.css";
 import { connect } from "react-redux";
 import { fetch } from "../utils/OmekaS";
+import { useCookies } from "react-cookie";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -352,11 +353,12 @@ const DataList = (props) => {
     },
     loading: false,
   });
+  const [cookies] = useCookies(["userInfo"]);
 
   useEffect(() => {
     const fetchInitial = async () => {
       const data = await fetch(
-        "10.134.196.105/omeka",
+        cookies.userInfo.host,
         props.query.endpoint,
         props.query.params,
         0,
@@ -383,7 +385,7 @@ const DataList = (props) => {
     });
 
     fetch(
-      "10.134.196.105/omeka",
+      cookies.userInfo.host,
       props.query.endpoint,
       props.query.params,
       pagination.current * pagination.pageSize,
