@@ -3,7 +3,7 @@ import axios from "axios";
 const bufferSize = 10;
 
 export const fetch = async (baseAddress, endpoint, params, start, limit) => {
-  const page = Math.floor(start / bufferSize) + 1;
+  const page = Math.floor(start / bufferSize);
   const offset = start % bufferSize;
 
   const res = await axios.get(`http://${baseAddress}/api/${endpoint}`, {
