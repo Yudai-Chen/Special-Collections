@@ -10,7 +10,7 @@ import PropertyValue from "./PropertyValue";
 import { PATH_PREFIX, PlaceHolder } from "../utils/Utils";
 import "./DataList.css";
 import { connect } from "react-redux";
-import { fetch, fetchSize } from "../utils/OmekaS";
+import { fetch } from "../utils/OmekaS";
 import { useCookies } from "react-cookie";
 
 const ResizableTitle = (props) => {

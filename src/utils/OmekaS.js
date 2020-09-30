@@ -1,16 +1,15 @@
 import axios from "axios";
 
-const bufferSize = 10;
-
 export const fetch = async (baseAddress, endpoint, params, start, limit) => {
-  const page = Math.floor(start / bufferSize);
-  const offset = start % bufferSize;
+  const perPage = limit + start % limit;
+  const page = Math.ceil(start / perPage) + 1;
+
 
   const res = await axios.get(`http://${baseAddress}/api/${endpoint}`, {
     params: {
       ...params,
       page,
-      per_page: bufferSize,
+      per_page: perPage,
     },
   });
 
@@ -19,7 +18,7 @@ export const fetch = async (baseAddress, endpoint, params, start, limit) => {
     key: each["o:id"],
   }));
 
-  return data.slice(offset, offset + limit); // TODO will not fetch more than pagesize
+  return data.slice(0, limit);
 };
 
 export const fetchSize = async (baseAddress, endpoint, params) => {
