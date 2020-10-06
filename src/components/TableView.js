@@ -5,6 +5,8 @@ import { fetch } from "../utils/OmekaS";
 import { useCookies } from "react-cookie";
 
 const TableView = (props) => {
+    const [cookies] = useCookies(["userInfo"]);
+
   const [tabelState, setTableState] = useState({
     data: [],
     pagination: {
@@ -14,8 +16,6 @@ const TableView = (props) => {
     },
     loading: false,
   });
-
-  const [cookies] = useCookies(["userInfo"]);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -48,6 +48,7 @@ const TableView = (props) => {
   }, [props.query, cookies.userInfo.host]);
 
   const handleTableChange = (pagination, filters, sorter) => {
+      console.log(sorter);
     setTableState({
       ...tabelState,
       loading: true,
@@ -57,12 +58,15 @@ const TableView = (props) => {
       cookies.userInfo.host,
       props.query.endpoint,
       props.query.params,
-      pagination.current * pagination.pageSize,
-      pagination.pageSize
+      (pagination.current - 1) * pagination.pageSize,
+      pagination.pageSize,
+      sorter.field ? sorter.field.slice(2) : "id",    // remove leading 'o:'
+      sorter.order === "descend"  ? "desc" : "asc",
     ).then((res) => {
       setTableState({
         ...tabelState,
         pagination,
+        sorter,
         loading: false,
         data: res,
       });

@@ -1,12 +1,15 @@
 import axios from "axios";
+import { sort } from "semver";
 
-export const fetch = async (baseAddress, endpoint, params, start, limit) => {
+export const fetch = async (baseAddress, endpoint, params, start, limit, sortBy="id", sortOrder="asc") => {
   const perPage = limit + (start % limit);
   const page = Math.ceil(start / perPage) + 1;
 
   const res = await axios.get(`http://${baseAddress}/api/${endpoint}`, {
     params: {
       ...params,
+      sort_by: sortBy,
+      sort_order: sortOrder,
       page,
       per_page: perPage,
     },

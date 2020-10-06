@@ -41,7 +41,7 @@ const Explorer = (props) => {
           tab={
             <span>
               <TableOutlined />
-              List
+              Table
             </span>
           }
           key={1}
