@@ -8,15 +8,31 @@ import {
   SearchOutlined,
   ApartmentOutlined,
 } from "@ant-design/icons";
+import TableView from "../components/TableView";
 
 const { TabPane } = Tabs;
 
 const Explorer = (props) => {
-  // Tag bar
-  // Filterer
-  // Tabs
-  // -- Table
-  // -- Cards
+  const tempTableColumns = [
+    {
+      title: "Id",
+      dataIndex: "o:id",
+      sorter: {
+        compare: (a, b) => a["o:id"] - b["o:id"],
+      },
+      width: 100,
+    },
+    {
+      title: "Title",
+      dataIndex: "o:title",
+      sorter: {
+        compare: (a, b) => a["o:title"].localeCompare(b["o:title"]),
+      },
+      ellipsis: true,
+      width: 200,
+    },
+  ];
+
   return (
     <div>
       <QueryBuilder />
@@ -30,7 +46,7 @@ const Explorer = (props) => {
           }
           key={1}
         >
-          <h1>Table</h1>
+          <TableView columns={tempTableColumns} />
         </TabPane>
         <TabPane
           tab={
