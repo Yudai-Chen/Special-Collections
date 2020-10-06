@@ -72,13 +72,8 @@ const TableView = (props) => {
   return (
     <Table
       bordered
-      //   rowSelection={rowSelection}
-      //   components={components}
+      rowSelection
       columns={props.columns}
-      //   expandable={{
-      //     expandedRowRender:
-      //       props.hasMediaData === true ? expandedRowRender : null,
-      //   }}
       loading={tabelState.loading}
       dataSource={tabelState.data}
       onChange={handleTableChange}
