@@ -22,6 +22,7 @@ import {
   getPropertyList,
   getPropertiesInResourceTemplate,
 } from "../utils/Utils";
+import Explorer from "./Explorer";
 
 const { Sider, Content } = Layout;
 const { TabPane } = Tabs;
@@ -101,109 +102,11 @@ const Home = () => {
         background: "#FFF",
       }}
     >
-      <Sider
-        style={{
-          overflow: "auto",
-          height: "100vh",
-          width: "280",
-          padding: 24,
-        }}
-        width="280"
-        theme="light"
-      >
-        <Space direction="vertical" size="middle">
-          I only want to use properties in:
-          <TemplateDropdown
-            onMenuSelect={(templateId) => {
-              setTemplateId(templateId);
-            }}
-          />
-        </Space>
-        <Tabs defaultActiveKey={1}>
-          <TabPane
-            tab={
-              <span>
-                <ApartmentOutlined />
-                Tree
-              </span>
-            }
-            key={1}
-          >
-            <div>
-              <Archive
-                updateSelectedItems={(keys) => {
-                  onArchiveCheck(keys);
-                }}
-              />
-            </div>
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <SearchOutlined />
-                Search
-              </span>
-            }
-            key={2}
-          >
-            <ItemSearchForm
-              handleSearchResults={(items) => {
-                setSelectedItems(items);
-                setHasMediaData(false);
-              }}
-              propertyList={propertyList}
-              propertyLoading={propertyLoading}
-            />
-            <MediumSearchForm
-              handleSearchResults={(items) => {
-                setSelectedItems(items);
-                setHasMediaData(true);
-              }}
-            />
-          </TabPane>
-        </Tabs>
-      </Sider>
       <Layout style={{ padding: 24 }}>
         <Content>
-          <Tabs defaultActiveKey={1}>
-            <TabPane
-              tab={
-                <span>
-                  <TableOutlined />
-                  List
-                </span>
-              }
-              key={1}
-            >
-              <Datalist
-                selectedProperties={selectedProperties}
-                hasMediaData={hasMediaData}
-                dataSource={selectedItems}
-                handleRowClick={(record) => {
-                  setRowRecord(record);
-                }}
-                loading={dataLoading}
-              />
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <VideoCameraAddOutlined />
-                  Card
-                </span>
-              }
-              key={2}
-            >
-              <Filmstrip dataSource={selectedItems} />
-            </TabPane>
-          </Tabs>
+          <Explorer />
         </Content>
       </Layout>
-      <Sider theme="light" collapsible={false} style={{ padding: 10 }}>
-        <Preview dataSource={rowRecord} displayNum={5} />
-        <Divider style={{ height: "20" }} />
-        <Metadata dataSource={rowRecord} />
-      </Sider>
     </Layout>
   );
 };

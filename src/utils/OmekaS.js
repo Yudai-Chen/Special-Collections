@@ -1,9 +1,8 @@
 import axios from "axios";
 
 export const fetch = async (baseAddress, endpoint, params, start, limit) => {
-  const perPage = limit + start % limit;
+  const perPage = limit + (start % limit);
   const page = Math.ceil(start / perPage) + 1;
-
 
   const res = await axios.get(`http://${baseAddress}/api/${endpoint}`, {
     params: {
