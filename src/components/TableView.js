@@ -63,6 +63,7 @@ const TableView = (props) => {
       sorter.field ? sorter.field.slice(2) : "id", // remove leading 'o:'
       sorter.order === "descend" ? "desc" : "asc"
     ).then((res) => {
+      console.log(res)
       setTableState({
         ...tabelState,
         pagination,

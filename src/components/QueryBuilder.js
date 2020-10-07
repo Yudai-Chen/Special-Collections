@@ -9,6 +9,7 @@ const QueryBuilder = (props) => {
   const [filters, setFilters] = useState([]);
 
   useEffect(() => {
+    console.log("here");
     setFilters(
       props.tableColumns
         .filter((column) => column.active === true)
@@ -17,7 +18,11 @@ const QueryBuilder = (props) => {
             key={column.title}
             placeholder="press Enter to query"
             addonBefore={column.title}
-            onPressEnter={(e) => console.log(e.target.value)}
+            onPressEnter={(e) => {
+              console.log(column.title + ": " + e.target.value);
+
+              // change store "params" given title, e.target.value
+            }}
           />
         ))
     );
@@ -32,13 +37,14 @@ const QueryBuilder = (props) => {
       defaultValue={props.tableColumns
         .filter((column) => column.active === true)
         .map((column) => column.title)}
-      onChange={(values) =>
+      onChange={(values) => {
+        console.log(values);
         props.setTableColumns(
           props.tableColumns.map((column) => ({
             ...column,
             active: values.includes(column.title),
           }))
-        )
+        )}
       }
     >
       {options}
