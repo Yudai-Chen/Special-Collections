@@ -1,7 +1,14 @@
 import axios from "axios";
-import { sort } from "semver";
 
-export const fetch = async (baseAddress, endpoint, params, start, limit, sortBy="id", sortOrder="asc") => {
+export const fetch = async (
+  baseAddress,
+  endpoint,
+  params,
+  start,
+  limit,
+  sortBy = "id",
+  sortOrder = "asc"
+) => {
   const perPage = limit + (start % limit);
   const page = Math.ceil(start / perPage) + 1;
 

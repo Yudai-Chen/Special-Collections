@@ -1,41 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import QueryBuilder from "../components/QueryBuilder";
 import { Layout, Tabs, Divider, Space } from "antd";
 
-import {
-  TableOutlined,
-  VideoCameraAddOutlined,
-  SearchOutlined,
-  ApartmentOutlined,
-} from "@ant-design/icons";
+import { TableOutlined, VideoCameraAddOutlined } from "@ant-design/icons";
 import TableView from "../components/TableView";
 
 const { TabPane } = Tabs;
 
 const Explorer = (props) => {
-  const tempTableColumns = [
+  const [tableColumns, setTableColumns] = useState([
     {
-      title: "Id",
+      title: "ID",
       dataIndex: "o:id",
       sorter: {
-        compare: (a, b) => a["o:id"] - b["o:id"],
+        compare: (a, b) => (a["o:id"] ?? 0) - (b["o:id"] ?? 0),
       },
       width: 100,
+      active: true,
     },
     {
       title: "Title",
       dataIndex: "o:title",
       sorter: {
-        compare: (a, b) => a["o:title"].localeCompare(b["o:title"]),
+        compare: (a, b) =>
+          (a["o:title"] ?? "").localeCompare(b["o:title"] ?? ""),
       },
       ellipsis: true,
       width: 200,
+      active: true,
     },
-  ];
+  ]);
 
   return (
-    <div>
-      <QueryBuilder />
+    <>
+      <QueryBuilder
+        tableColumns={tableColumns}
+        setTableColumns={setTableColumns}
+      />
       <Tabs defaultActiveKey={1}>
         <TabPane
           tab={
@@ -46,7 +47,9 @@ const Explorer = (props) => {
           }
           key={1}
         >
-          <TableView columns={tempTableColumns} />
+          <TableView
+            columns={tableColumns.filter((col) => col.active === true)}
+          />
         </TabPane>
         <TabPane
           tab={
@@ -60,7 +63,7 @@ const Explorer = (props) => {
           <h1>Cards</h1>
         </TabPane>
       </Tabs>
-    </div>
+    </>
   );
 };
 
