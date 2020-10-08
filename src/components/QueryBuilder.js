@@ -55,13 +55,13 @@ const QueryBuilder = (props) => {
       console.log("params: ", search)
 
       //Seems jank, do not like this solution
-      props.query["params"] = search
+      //props.query["params"] = search
       console.log(props.query)
 
       //TODO: props.query gives an error THIS would be a way better solution than above
-      /* fetchSize(cookies.userInfo.host, "items", search).then((count) =>
-      setQuery("items", search, count)
-    ); */
+      fetchSize(cookies.userInfo.host, "items", search).then((count) =>
+      props.setQuery("items", search, count)
+    );
     }
     
     
@@ -148,4 +148,4 @@ const QueryBuilder = (props) => {
 };
 
 //export default QueryBuilder;
-export default connect(mapStateToProps)(QueryBuilder)
+export default connect(mapStateToProps, {setQuery })(QueryBuilder)
