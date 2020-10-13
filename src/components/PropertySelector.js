@@ -10,7 +10,7 @@ const PropertySelector = (props) => {
     if (props.availableProperties) {
       setOptions(
         props.availableProperties.map((property) => (
-          <Option key={property["o:id"]} value={property["o:id"]}>
+          <Option key={property["o:id"]} value={property["o:label"]}>
             {property["o:label"]}
           </Option>
         ))
@@ -25,7 +25,7 @@ const PropertySelector = (props) => {
 
     props.setActiveProperties(
       props.availableProperties.filter((property) =>
-        value.includes(property["o:id"])
+        value.includes(property["o:label"])
       )
     );
   };
