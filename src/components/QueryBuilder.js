@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { Select, Input } from "antd";
 
@@ -8,6 +9,10 @@ import { fetchSize } from "../utils/OmekaS";
 import { useCookies } from "react-cookie";
 
 const { Option } = Select;
+=======
+import React from "react";
+import { Input } from "antd";
+>>>>>>> a8eda1e802a529ef8a34672c2e6b031efb9b27b7
 
 const mapStateToProps = (state, props) => {
   return{
@@ -141,8 +146,7 @@ const QueryBuilder = (props) => {
 
   return (
     <>
-      {select}
-      {filters}
+      <h1>Builder</h1>
     </>
   );
 };
