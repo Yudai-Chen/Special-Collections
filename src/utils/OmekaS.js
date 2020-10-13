@@ -40,3 +40,9 @@ export const fetchSize = async (baseAddress, endpoint, params) => {
 
   return res.data.length;
 };
+
+export const fetchTemplates = async (baseAddress) => {
+  return await axios.get(
+    "http://" + baseAddress + "/api/resource_templates?per_page=1000"
+  );
+};
