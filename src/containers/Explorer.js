@@ -11,9 +11,9 @@ const Explorer = (props) => {
 
   return (
     <>
-      <TemplateSelector setAvailibleProperties={setAvailableProperties} />
+      <TemplateSelector setAvailableProperties={setAvailableProperties} />
       <PropertySelector
-        availibleProperties={availableProperties}
+        availableProperties={availableProperties}
         setActiveProperties={setActiveProperties}
       />
       <QueryBuilder activeProperties={activeProperties} />
