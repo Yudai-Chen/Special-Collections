@@ -3,7 +3,6 @@ import { useCookies } from "react-cookie";
 import { Select } from "antd";
 
 import { fetchTemplates } from "../utils/OmekaS";
-import { template } from "@babel/core";
 import Axios from "axios";
 
 const { Option } = Select;

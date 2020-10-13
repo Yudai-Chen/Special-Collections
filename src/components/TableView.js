@@ -7,7 +7,7 @@ import { useCookies } from "react-cookie";
 const TableView = (props) => {
   const [cookies] = useCookies(["userInfo"]);
 
-  const [tabelState, setTableState] = useState({
+  const [tableState, setTableState] = useState({
     data: [],
     pagination: {
       current: 1,
@@ -46,11 +46,20 @@ const TableView = (props) => {
 
     fetchInitial();
   }, [props.query, cookies.userInfo.host]);
+  const [columns, setColumns] = useState([]);
+
+  useEffect(() => {
+    const cols = props.activeProperties.map((property) => ({
+      title: property["o:label"],
+      dataIndex: "o:" + property["o:local_name"],
+      key: "o:" + property["o:local_name"],
+    }));
+    setColumns(cols);
+  }, [props.activeProperties]);
 
   const handleTableChange = (pagination, filters, sorter) => {
-    console.log(sorter);
     setTableState({
-      ...tabelState,
+      ...tableState,
       loading: true,
     });
 
@@ -63,9 +72,8 @@ const TableView = (props) => {
       sorter.field ? sorter.field.slice(2) : "id", // remove leading 'o:'
       sorter.order === "descend" ? "desc" : "asc"
     ).then((res) => {
-      console.log(res);
       setTableState({
-        ...tabelState,
+        ...tableState,
         pagination,
         sorter,
         loading: false,
@@ -74,15 +82,21 @@ const TableView = (props) => {
     });
   };
 
+  const idColumn = {
+    title: "ID",
+    dataIndex: "o:id",
+    key: "id",
+  };
+
   return (
     <Table
       bordered
       rowSelection
-      columns={props.columns}
-      loading={tabelState.loading}
-      dataSource={tabelState.data}
+      columns={[idColumn].concat(columns)}
+      loading={tableState.loading}
+      dataSource={tableState.data}
       onChange={handleTableChange}
-      pagination={tabelState.pagination}
+      pagination={tableState.pagination}
     />
   );
 };

@@ -18,7 +18,7 @@ const Visualizer = (props) => {
         }
         key={1}
       >
-        <h1>Table</h1>
+        <TableView activeProperties={props.activeProperties} />
       </TabPane>
       <TabPane
         tab={

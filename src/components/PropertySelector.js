@@ -23,7 +23,11 @@ const PropertySelector = (props) => {
   const handleChange = (value) => {
     setValue(value);
 
-    props.setActiveProperties(props.availableProperties.filter(property => value.includes(property["o:id"])));
+    props.setActiveProperties(
+      props.availableProperties.filter((property) =>
+        value.includes(property["o:id"])
+      )
+    );
   };
 
   return (
