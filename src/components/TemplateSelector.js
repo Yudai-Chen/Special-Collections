@@ -3,26 +3,24 @@ import { useCookies } from "react-cookie";
 import { Select } from "antd";
 
 import { fetchTemplates } from "../utils/OmekaS";
-import { template } from "@babel/core";
+import Axios from "axios";
 
 const { Option } = Select;
 
 const TemplateSelector = (props) => {
   const [options, setOptions] = useState([]);
+  const [templates, setTemplates] = useState([]);
 
   const [cookies] = useCookies(["userInfo"]);
 
   useEffect(() => {
-    // get templates options
-    console.log("Getting templates");
-
+    // get templates options on load
     const fetchOptions = async () => {
-      const templates = await fetchTemplates(cookies.userInfo.host);
-
-      console.log(templates)
+      const res = await fetchTemplates(cookies.userInfo.host);
+      setTemplates(res.data);
 
       setOptions(
-        templates.data.map((template) => (
+        res.data.map((template) => (
           <Option key={template["o:id"]} value={template["o:id"]}>
             {template["o:label"]}
           </Option>
@@ -33,11 +31,25 @@ const TemplateSelector = (props) => {
     fetchOptions();
   }, [cookies]);
 
-  const onChange = () => {
+  const handleChange = async (value) => {
+    const template = templates.filter(
+      (template) => template["o:id"] === value
+    )[0];
 
-  }
+    const requests = template["o:resource_template_property"].map((property) =>
+      Axios.get(property["o:property"]["@id"])
+    );
+    const res = await Axios.all(requests);
+    const properties = res.map((inner) => inner.data);
 
-  return <Select placeholder="Please select template">{options}</Select>;
+    props.setAvailableProperties(properties);
+  };
+
+  return (
+    <Select placeholder="Please select template" onChange={handleChange}>
+      {options}
+    </Select>
+  );
 };
 
 export default TemplateSelector;
