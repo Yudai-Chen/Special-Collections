@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
-import { Select, Input } from "antd";
+import { Select, Input, Table } from "antd";
 
 import { setQuery } from "../redux/actions";
 
@@ -9,10 +8,6 @@ import { fetchSize } from "../utils/OmekaS";
 import { useCookies } from "react-cookie";
 
 const { Option } = Select;
-=======
-import React from "react";
-import { Input } from "antd";
->>>>>>> a8eda1e802a529ef8a34672c2e6b031efb9b27b7
 
 const mapStateToProps = (state, props) => {
   return{
@@ -22,15 +17,33 @@ const mapStateToProps = (state, props) => {
 }
 
 const QueryBuilder = (props) => {
-  const options = props.tableColumns.map((column) => (
+  const options = props.activeProperties.map((column) => (
     <Option value={column.title}>{column.title}</Option>
   ));
+  
   const [filters, setFilters] = useState([]);
   const [cookies] = useCookies(["userInfo"]);
+  
+  const [rows, setRows] = useState([]);
+
+  const columns = [
+    {
+      title: 'Property',
+      dataIndex: 'property',
+      key: 'property',
+      width: '15%'
+    },
+    {
+      title:'Filter',
+      dataIndex: 'filter',
+      key: 'filter',
+      width: '15%',
+    }
+  ]
 
   useEffect(() => {
     setFilters(
-      props.tableColumns
+      props.activeProperties
         .filter((column) => column.active === true)
         .map((column) => (
           <Input
@@ -44,7 +57,25 @@ const QueryBuilder = (props) => {
           />
         ))
     );
-  }, [props.tableColumns]);
+    
+    setRows(
+      props.activeProperties.map((element) => ({
+        'property': element["o:label"],
+        'title': element["o:label"],
+        'dataIndex': "o:" + element["o:local_name"],
+        'key': "o:" + element["o:local_name"],
+        'filter': <Input 
+                  key={"o:" + element["o:local_name"]}
+                  placeholder = "press Enter to Query"
+                  onPressEnter={(e) => {
+                    handleEnter(e, element["o:id"])
+                  }}
+                  />,
+        // render: title => <a>{title}</a>
+    })));
+    
+
+  }, [props.activeProperties]);
 
   const handleEnter = (e, property_index) => {
     //property_list[property_index] will give us name of field
@@ -56,70 +87,11 @@ const QueryBuilder = (props) => {
       search["property[" + property_index + "][type]"] = "in";
       search["property[" + property_index + "][text]"] = e.target.value;
 
-
-      console.log("params: ", search)
-
-      //Seems jank, do not like this solution
-      //props.query["params"] = search
-      console.log(props.query)
-
-      //TODO: props.query gives an error THIS would be a way better solution than above
       fetchSize(cookies.userInfo.host, "items", search).then((count) =>
       props.setQuery("items", search, count)
     );
     }
-    
-    
-    
-
-
-
   }
-
-  /* const onFinish = (values) => {
-    let params = { fulltext_search: "" };
-    if (values["property-list"]) {
-      values["property-list"]
-        .filter((each) => each !== undefined)
-        .map((each, index) => {
-          params["property[" + index + "][joiner]"] = each["joiner"];
-          params["property[" + index + "][property]"] = each["property"];
-          params["property[" + index + "][type]"] = each["type"];
-          params["property[" + index + "][text]"] = each["key"];
-          return each;
-        });
-    }
-    if (values["project"]) {
-      values["project"]
-        .filter((each) => each !== undefined)
-        .map((each, index) => {
-          params["item_set_id[" + index + "]"] = each;
-          return each;
-        });
-    }
-    if (values["class"]) {
-      values["class"]
-        .filter((each) => each !== undefined)
-        .map((each, index) => {
-          params["resource_class_id[" + index + "]"] = each;
-          return each;
-        });
-    }
-
-    // START: cool zone
-    fetchSize(cookies.userInfo.host, "items", params).then((count) =>
-      props.setQuery("items", params, count)
-    );
-    // END: cool zone
-
-    // searchItems(cookies.userInfo.host, params).then((response) => {
-    //   let data = response.data.map((each) => ({
-    //     ...each,
-    //     key: each["o:id"],
-    //   }));
-    //   props.handleSearchResults(data);
-    // });
-  }; */
 
   const select = (
     <Select
@@ -127,13 +99,12 @@ const QueryBuilder = (props) => {
       allowClear
       style={{ width: "100%" }}
       placeholder="Please select"
-      defaultValue={props.tableColumns
+      defaultValue={props.activeProperties
         .filter((column) => column.active === true)
         .map((column) => column.title)}
       onChange={(values) => {
-        console.log(values);
-        props.setTableColumns(
-          props.tableColumns.map((column) => ({
+        props.setActiveProperties(
+          props.activeProperties.map((column) => ({
             ...column,
             active: values.includes(column.title),
           }))
@@ -144,9 +115,15 @@ const QueryBuilder = (props) => {
     </Select>
   );
 
+  //Return a table object where each row is a field, the first column is the name
+  // of the field and the second column is the value being queried
   return (
     <>
-      <h1>Builder</h1>
+      <Table 
+      dataSource = {rows}
+      columns = {columns}
+      />
+      
     </>
   );
 };
