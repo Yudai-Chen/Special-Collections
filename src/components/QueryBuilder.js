@@ -26,6 +26,8 @@ const QueryBuilder = (props) => {
 
   const [rows, setRows] = useState([]);
 
+  const query = {}
+
   const columns = [
     {
       title: "Property",
@@ -68,30 +70,56 @@ const QueryBuilder = (props) => {
           <Input
             key={"o:" + element["o:local_name"]}
             placeholder="press Enter to Query"
+            onChange={(e) => {
+              handleFilterChange(e, element["o:id"])
+            }}
             onPressEnter={(e) => {
               handleEnter(e, element["o:id"]);
             }}
           />
         ),
-        // render: title => <a>{title}</a>
       }))
     );
   }, [props.activeProperties]);
 
+  const handleFilterChange = (e, property_index) => {
+    query[property_index] = e.target.value
+  }
+
   const handleEnter = (e, property_index) => {
     //property_list[property_index] will give us name of field
-    let search = { fulltext_search: "" };
-    //if there is a value to query based on
-    if (e.target.value) {
-      search["property[" + property_index + "][joiner]"] = "and";
-      search["property[" + property_index + "][property]"] = property_index;
-      search["property[" + property_index + "][type]"] = "in";
-      search["property[" + property_index + "][text]"] = e.target.value;
 
-      fetchSize(cookies.userInfo.host, "items", search).then((count) =>
+    let search = { fulltext_search: "" };
+    let counter = 0
+
+    props.activeProperties.map((element) => {
+      if (query[element["o:id"]]) {
+        console.log("Element metadata: ", element, element["o:id"])
+        search["property[" + counter + "][joiner]"] = "and";
+        search["property[" + counter + "][property]"] = element["o:id"];
+        search["property[" + counter + "][type]"] = "in";
+        search["property[" + counter + "][text]"] = e.target.value;
+
+        counter += 1
+      }
+    })
+    console.log("search: ", search)
+    fetchSize(cookies.userInfo.host, "items", search).then((count) =>
         props.setQuery("items", search, count)
-      );
-    }
+    );
+        
+    //if there is a value to query based on
+    // if (e.target.value) {
+
+    //   search["property[" + property_index + "][joiner]"] = "and";
+    //   search["property[" + property_index + "][property]"] = property_index;
+    //   search["property[" + property_index + "][type]"] = "in";
+    //   search["property[" + property_index + "][text]"] = e.target.value;
+
+    //   fetchSize(cookies.userInfo.host, "items", search).then((count) =>
+    //     props.setQuery("items", search, count)
+    //   );
+    // }
   };
 
   const select = (
