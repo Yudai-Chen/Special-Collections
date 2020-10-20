@@ -63,7 +63,7 @@ const ItemSearchForm = (props) => {
           params["property[" + index + "][property]"] = each["property"];
           params["property[" + index + "][type]"] = each["type"];
           params["property[" + index + "][text]"] = each["key"];
-          console.log(params)
+          console.log(params);
           return each;
         });
     }
