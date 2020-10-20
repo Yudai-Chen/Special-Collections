@@ -46,6 +46,7 @@ const TableView = (props) => {
 
     fetchInitial();
   }, [props.query, cookies.userInfo.host]);
+
   const [columns, setColumns] = useState([]);
 
   useEffect(() => {
@@ -53,6 +54,9 @@ const TableView = (props) => {
       title: property["o:label"],
       dataIndex: "o:" + property["o:local_name"],
       key: "o:" + property["o:local_name"],
+      sorter: {
+        compare: (a, b) => a > b, // TODO: May need to change for different data types
+      },
     }));
     setColumns(cols);
   }, [props.activeProperties]);
