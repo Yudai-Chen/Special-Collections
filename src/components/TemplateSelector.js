@@ -46,7 +46,11 @@ const TemplateSelector = (props) => {
   };
 
   return (
-    <Select placeholder="Please select template" onChange={handleChange}>
+    <Select
+      style={{ width: "100%" }}
+      placeholder="Please select template"
+      onChange={handleChange}
+    >
       {options}
     </Select>
   );

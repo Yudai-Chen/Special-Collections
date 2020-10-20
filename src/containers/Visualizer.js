@@ -8,7 +8,7 @@ const { TabPane } = Tabs;
 
 const Visualizer = (props) => {
   return (
-    <Tabs defaultActiveKey={1}>
+    <Tabs defaultActiveKey={1} tabPosition="right">
       <TabPane
         tab={
           <span>
