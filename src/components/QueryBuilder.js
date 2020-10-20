@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Select, Input, Table } from "antd";
+import { Select, Input, Table, Row, Col } from "antd";
 
 import { setQuery } from "../redux/actions";
 
@@ -17,140 +17,66 @@ const mapStateToProps = (state, props) => {
 };
 
 const QueryBuilder = (props) => {
-  const options = props.activeProperties.map((column) => (
-    <Option value={column.title}>{column.title}</Option>
-  ));
-
   const [filters, setFilters] = useState([]);
   const [cookies] = useCookies(["userInfo"]);
 
   const [rows, setRows] = useState([]);
 
-  const query = {}
-
-  const columns = [
-    {
-      title: "Property",
-      dataIndex: "property",
-      key: "property",
-      width: "15%",
-    },
-    {
-      title: "Filter",
-      dataIndex: "filter",
-      key: "filter",
-      width: "15%",
-    },
-  ];
+  const query = {};
 
   useEffect(() => {
-    setFilters(
-      props.activeProperties
-        .filter((column) => column.active === true)
-        .map((column) => (
-          <Input
-            key={column.title}
-            placeholder="press Enter to query"
-            addonBefore={column.title}
-            onPressEnter={(e) => {
-              handleEnter(e, column.id);
-              // change store "params" given title, e.target.value
-            }}
-          />
-        ))
-    );
-
     setRows(
-      props.activeProperties.map((element) => ({
-        property: element["o:label"],
-        title: element["o:label"],
-        dataIndex: "o:" + element["o:local_name"],
-        key: "o:" + element["o:local_name"],
-        filter: (
-          <Input
-            key={"o:" + element["o:local_name"]}
-            placeholder="press Enter to Query"
-            onChange={(e) => {
-              handleFilterChange(e, element["o:id"])
-            }}
-            onPressEnter={(e) => {
-              handleEnter(e, element["o:id"]);
-            }}
-          />
-        ),
-      }))
+      props.activeProperties.map((element) => (
+        <Row gutter={[16, 16]}>
+          <Col span={6}>{element["o:label"]}</Col>
+          <Col span={18}>
+            <Input
+              style={{width: "100%"}}
+              key={"o:" + element["o:local_name"]}
+              placeholder="press Enter to Query"
+              onChange={(e) => {
+                handleFilterChange(e, element["o:id"]);
+              }}
+              onPressEnter={(e) => {
+                handleEnter(e, element["o:id"]);
+              }}
+            />
+          </Col>
+        </Row>
+      ))
     );
   }, [props.activeProperties]);
 
   const handleFilterChange = (e, property_index) => {
-    query[property_index] = e.target.value
-  }
+    query[property_index] = e.target.value;
+  };
 
   const handleEnter = (e, property_index) => {
     //property_list[property_index] will give us name of field
 
     let search = { fulltext_search: "" };
-    let counter = 0
+    let counter = 0;
 
     props.activeProperties.map((element) => {
       if (query[element["o:id"]]) {
-        console.log("Element metadata: ", element, element["o:id"])
+        console.log("Element metadata: ", element, element["o:id"]);
         search["property[" + counter + "][joiner]"] = "and";
         search["property[" + counter + "][property]"] = element["o:id"];
         search["property[" + counter + "][type]"] = "in";
         search["property[" + counter + "][text]"] = e.target.value;
 
-        counter += 1
+        counter += 1;
       }
-    })
-    console.log("search: ", search)
+    });
+
     fetchSize(cookies.userInfo.host, "items", search).then((count) =>
-        props.setQuery("items", search, count)
+      props.setQuery("items", search, count)
     );
-        
-    //if there is a value to query based on
-    // if (e.target.value) {
-
-    //   search["property[" + property_index + "][joiner]"] = "and";
-    //   search["property[" + property_index + "][property]"] = property_index;
-    //   search["property[" + property_index + "][type]"] = "in";
-    //   search["property[" + property_index + "][text]"] = e.target.value;
-
-    //   fetchSize(cookies.userInfo.host, "items", search).then((count) =>
-    //     props.setQuery("items", search, count)
-    //   );
-    // }
   };
-
-  const select = (
-    <Select
-      mode="multiple"
-      allowClear
-      style={{ width: "100%" }}
-      placeholder="Please select"
-      defaultValue={props.activeProperties
-        .filter((column) => column.active === true)
-        .map((column) => column.title)}
-      onChange={(values) => {
-        props.setActiveProperties(
-          props.activeProperties.map((column) => ({
-            ...column,
-            active: values.includes(column.title),
-          }))
-        );
-      }}
-    >
-      {options}
-    </Select>
-  );
 
   // Return a table object where each row is a field, the first column is the name
   // of the field and the second column is the value being queried
-  return (
-    <>
-      <Table dataSource={rows} columns={columns} />
-    </>
-  );
+  return <>{rows}</>;
 };
 
 //export default QueryBuilder;
