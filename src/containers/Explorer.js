@@ -13,9 +13,34 @@ const Explorer = (props) => {
 
   const { Header, Footer, Sider, Content } = Layout;
 
+  const HORIZONTAL_GUTTER = 48;
+  const VERTICAL_GUTTER = 8;
+  const LEFT_SPAN = 4;
+  const RIGHT_SPAN = 20;
+
   return (
     <>
-      <Layout>
+      <Row gutter={[HORIZONTAL_GUTTER, VERTICAL_GUTTER]}>
+        <Col span={LEFT_SPAN}>
+          <TemplateSelector setAvailableProperties={setAvailableProperties} />
+        </Col>
+        <Col span={RIGHT_SPAN}>
+          <PropertySelector
+            availableProperties={availableProperties}
+            setActiveProperties={setActiveProperties}
+          />
+        </Col>
+      </Row>
+
+      <Row gutter={[HORIZONTAL_GUTTER, VERTICAL_GUTTER]}>
+        <Col span={LEFT_SPAN}>
+          <QueryBuilder activeProperties={activeProperties} />{" "}
+        </Col>
+        <Col span={RIGHT_SPAN}>
+          <Visualizer activeProperties={activeProperties} />
+        </Col>
+      </Row>
+      {/* <Layout>
         <Sider width={500}>
           <TemplateSelector setAvailableProperties={setAvailableProperties} />
           <QueryBuilder activeProperties={activeProperties} />
@@ -31,7 +56,7 @@ const Explorer = (props) => {
             <Visualizer activeProperties={activeProperties} />
           </Content>
         </Layout>
-      </Layout>
+      </Layout> */}
     </>
   );
 };

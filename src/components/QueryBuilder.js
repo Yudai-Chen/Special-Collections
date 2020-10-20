@@ -116,7 +116,7 @@ const QueryBuilder = (props) => {
     </Select>
   );
 
-  //Return a table object where each row is a field, the first column is the name
+  // Return a table object where each row is a field, the first column is the name
   // of the field and the second column is the value being queried
   return (
     <>
