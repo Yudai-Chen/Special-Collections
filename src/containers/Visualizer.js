@@ -3,6 +3,7 @@ import { Tabs } from "antd";
 
 import { TableOutlined, VideoCameraAddOutlined } from "@ant-design/icons";
 import TableView from "../components/TableView";
+import CardView from "../components/CardView";
 
 const { TabPane } = Tabs;
 
@@ -29,7 +30,7 @@ const Visualizer = (props) => {
         }
         key={2}
       >
-        <h1>Cards</h1>
+        <CardView activeProperties={props.activeProperties} />
       </TabPane>
     </Tabs>
   );

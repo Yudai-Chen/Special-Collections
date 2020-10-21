@@ -40,23 +40,6 @@ const Explorer = (props) => {
           <Visualizer activeProperties={activeProperties} />
         </Col>
       </Row>
-      {/* <Layout>
-        <Sider width={500}>
-          <TemplateSelector setAvailableProperties={setAvailableProperties} />
-          <QueryBuilder activeProperties={activeProperties} />
-        </Sider>
-        <Layout>
-          <Header>
-            <PropertySelector
-              availableProperties={availableProperties}
-              setActiveProperties={setActiveProperties}
-            />
-          </Header>
-          <Content>
-            <Visualizer activeProperties={activeProperties} />
-          </Content>
-        </Layout>
-      </Layout> */}
     </>
   );
 };

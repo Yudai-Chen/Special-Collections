@@ -31,7 +31,7 @@ const QueryBuilder = (props) => {
           <Col span={6}>{element["o:label"]}</Col>
           <Col span={18}>
             <Input
-              style={{width: "100%"}}
+              style={{ width: "100%" }}
               key={"o:" + element["o:local_name"]}
               placeholder="press Enter to Query"
               onChange={(e) => {
