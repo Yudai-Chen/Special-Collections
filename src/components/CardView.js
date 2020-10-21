@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Row } from "antd";
+import { Card, Col, Row, Pagination } from "antd";
 import { connect } from "react-redux";
 import { fetch } from "../utils/OmekaS";
 import { useCookies } from "react-cookie";
@@ -19,6 +19,7 @@ const CardView = (props) => {
   const [items, setItems] = useState([]);
   const [cards, setCards] = useState([]);
   const [cardGrid, setCardGrid] = useState(<></>);
+  const [total, setTotal] = useState(0);
 
   const PAGESIZE = 20;
 
@@ -50,7 +51,7 @@ const CardView = (props) => {
             <p>
               <b>{property["o:label"]}: </b>
               {item["o:" + property["o:local_name"]] ??
-                `no property '${property["o:label"]}' found`}
+                `no property '${property["o:local_name"]}' found`}
             </p>
           ))}
         </Card>
@@ -73,7 +74,26 @@ const CardView = (props) => {
     setCardGrid(rows);
   }, [cards]);
 
-  return <>{cardGrid}</>;
+  const handleChange = (page, pageSize) => {
+    fetch(
+      cookies.userInfo.host,
+      props.query.endpoint,
+      props.query.params,
+      (page - 1) * pageSize,
+      PAGESIZE
+    ).then((data) => setItems(data));
+  };
+
+  return (
+    <>
+      {cardGrid}
+      <Pagination
+        defaultCurrent={1}
+        total={props.query.size}
+        onChange={handleChange}
+      />
+    </>
+  );
 };
 
 const mapStateToProps = (state, props) => {
