@@ -57,20 +57,23 @@ const QueryBuilder = (props) => {
     let search = { fulltext_search: "" };
     let counter = 0;
 
+    console.log("Active Properties: " + props.activeProperties)
     props.activeProperties.map((element) => {
+      console.log("Filter: ", query[element["o:id"]])
       if (query[element["o:id"]]) {
-        console.log("Element metadata: ", element, element["o:id"]);
+        
         search["property[" + counter + "][joiner]"] = "and";
         search["property[" + counter + "][property]"] = element["o:id"];
         search["property[" + counter + "][type]"] = "in";
-        search["property[" + counter + "][text]"] = e.target.value;
+        search["property[" + counter + "][text]"] = query[element["o:id"]];
 
         counter += 1;
       }
     });
 
     fetchSize(cookies.userInfo.host, "items", search).then((count) =>
-      props.setQuery("items", search, count)
+      props.setQuery("items", search, count),
+      console.log(search)
     );
   };
 
