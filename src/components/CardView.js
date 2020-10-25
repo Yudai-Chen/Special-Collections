@@ -47,13 +47,21 @@ const CardView = (props) => {
           title={item["o:title"] ?? "(no 'title' found)"}
           bordered={false}
         >
-          {props.activeProperties.map((property) => (
-            <p>
-              <b>{property["o:label"]}: </b>
-              {item["o:" + property["o:local_name"]] ??
-                `no property '${property["o:local_name"]}' found`}
-            </p>
-          ))}
+          {props.activeProperties.map((property) => {
+            const label = property["o:label"];
+            const value = item[property["o:term"]];
+
+            const line =
+              value && value.length > 0 && value[0].type === "literal" ? (
+                <p>
+                  <b>{label}: </b> {value[0]["@value"]}
+                </p>
+              ) : (
+                ""
+              );
+
+            return line;
+          })}
         </Card>
       ))
     );
