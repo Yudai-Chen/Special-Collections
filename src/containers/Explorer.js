@@ -6,12 +6,11 @@ import { Layout, Row, Col, Divider } from "antd";
 import Visualizer from "./Visualizer";
 import PropertySelector from "../components/PropertySelector";
 import TemplateSelector from "../components/TemplateSelector";
+import ItemSetSelector from "../components/ItemSetSelector";
 
 const Explorer = (props) => {
   const [availableProperties, setAvailableProperties] = useState();
   const [activeProperties, setActiveProperties] = useState([]);
-
-  const { Header, Footer, Sider, Content } = Layout;
 
   const HORIZONTAL_GUTTER = 48;
   const VERTICAL_GUTTER = 8;
@@ -22,6 +21,7 @@ const Explorer = (props) => {
     <>
       <Row gutter={[HORIZONTAL_GUTTER, VERTICAL_GUTTER]}>
         <Col span={LEFT_SPAN}>
+          <ItemSetSelector />
           <TemplateSelector setAvailableProperties={setAvailableProperties} />
         </Col>
         <Col span={RIGHT_SPAN}>

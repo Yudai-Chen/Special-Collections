@@ -1,4 +1,4 @@
-import { SET_QUERY } from "./actionTypes";
+import { ADD_QUERY_PARAM, SET_QUERY } from "./actionTypes";
 
 export const setQuery = (endpoint, params, size) => {
   return {
@@ -7,6 +7,16 @@ export const setQuery = (endpoint, params, size) => {
       endpoint,
       params,
       size,
+    },
+  };
+};
+
+export const addQueryParam = (key, value) => {
+  return {
+    type: ADD_QUERY_PARAM,
+    payload: {
+      key,
+      value,
     },
   };
 };

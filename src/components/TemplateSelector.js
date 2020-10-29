@@ -17,10 +17,10 @@ const TemplateSelector = (props) => {
     // get templates options on load
     const fetchOptions = async () => {
       const res = await fetchTemplates(cookies.userInfo.host);
-      setTemplates(res.data);
+      setTemplates(res);
 
       setOptions(
-        res.data.map((template) => (
+        res.map((template) => (
           <Option key={template["o:id"]} value={template["o:id"]}>
             {template["o:label"]}
           </Option>

@@ -68,8 +68,8 @@ const QueryBuilder = (props) => {
       }
     });
 
-    fetchSize(cookies.userInfo.host, "items", search).then(
-      (count) => props.setQuery("items", search, count),
+    fetchSize(cookies.userInfo.host, "items", search).then((count) =>
+      props.setQuery("items", search, count)
     );
   };
 

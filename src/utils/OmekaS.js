@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const PER_PAGE = 9999;
+
 export const fetch = async (
   baseAddress,
   endpoint,
@@ -42,13 +44,21 @@ export const fetchSize = async (baseAddress, endpoint, params) => {
 };
 
 export const fetchTemplates = async (baseAddress) => {
-  return await axios.get(
-    "http://" + baseAddress + "/api/resource_templates?per_page=1000"
+  const res = await axios.get(
+    `http://${baseAddress}/api/resource_templates?per_page=${PER_PAGE}`
   );
+
+  return res.data;
+};
+
+export const fetchItemSets = async (baseAddress) => {
+  const res = await axios.get(
+    `http://${baseAddress}/api/item_sets?per_page=${PER_PAGE}`
+  );
+  return res.data;
 };
 
 export const fetchOne = async (baseAddress, endpoint, id) => {
   const res = await axios.get(`http://${baseAddress}/api/${endpoint}/${id}`);
-
   return res.data;
 };

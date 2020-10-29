@@ -1,4 +1,4 @@
-import { SET_QUERY } from "../actionTypes";
+import { ADD_QUERY_PARAM, SET_QUERY } from "../actionTypes";
 
 const initialState = {
   endpoint: "items",
@@ -17,6 +17,21 @@ export default (state = initialState, action) => {
         endpoint,
         params,
         size,
+      };
+    }
+
+    case ADD_QUERY_PARAM: {
+      const { key, value } = action.payload;
+
+      const params = {
+        ...state.params,
+      };
+
+      params[key] = value;
+
+      return {
+        ...state,
+        params,
       };
     }
 
