@@ -96,7 +96,7 @@ const TableView = (props) => {
     <Table
       bordered
       rowSelection
-      columns={[idColumn].concat(columns)}
+      columns={columns}
       loading={tableState.loading}
       dataSource={tableState.data}
       onChange={handleTableChange}
