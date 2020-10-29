@@ -57,9 +57,7 @@ const QueryBuilder = (props) => {
     let search = { fulltext_search: "" };
     let counter = 0;
 
-    console.log("Active Properties: " + props.activeProperties);
     props.activeProperties.map((element) => {
-      console.log("Filter: ", query[element["o:id"]]);
       if (query[element["o:id"]]) {
         search["property[" + counter + "][joiner]"] = "and";
         search["property[" + counter + "][property]"] = element["o:id"];
@@ -72,7 +70,6 @@ const QueryBuilder = (props) => {
 
     fetchSize(cookies.userInfo.host, "items", search).then(
       (count) => props.setQuery("items", search, count),
-      console.log(search)
     );
   };
 
