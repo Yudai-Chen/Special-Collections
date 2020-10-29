@@ -37,7 +37,7 @@ const TemplateDropdown = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    
+
     getResourceTemplateList(cookies.userInfo.host).then((response) => {
       setTemplateList([
         { "o:label": "ALL Properties", "o:id": 0 },

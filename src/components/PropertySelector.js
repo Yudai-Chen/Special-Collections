@@ -3,7 +3,6 @@ import { Select } from "antd";
 const { Option } = Select;
 
 const PropertySelector = (props) => {
-
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
 
@@ -25,32 +24,32 @@ const PropertySelector = (props) => {
   }, [props.availableProperties]);
 
   useEffect(() => {
-    if(!props.activeProperties && props.availableProperties){
-      console.log(props.availableProperties)
+    if (!props.activeProperties && props.availableProperties) {
+      console.log(props.availableProperties);
       props.setActiveProperties(
-        props.availableProperties.filter((property) => 
-        property["o:label"] === "Title"
+        props.availableProperties.filter(
+          (property) => property["o:label"] === "Title"
         )
-      )
+      );
     }
-  }, [props.availableProperties])
+  }, [props.availableProperties]);
 
   useEffect(() => {
     if (value === []) {
-      setValue(["Title"])
+      setValue(["Title"]);
     }
-  }, [value])
+  }, [value]);
 
   const handleChange = (value) => {
     setInitialRender(1);
     setValue(value);
     props.setActiveProperties(
-      props.availableProperties.filter((property) =>
-        value.includes(property["o:label"]) || (property["o:label"] === "Title")
+      props.availableProperties.filter(
+        (property) =>
+          value.includes(property["o:label"]) || property["o:label"] === "Title"
       )
     );
   };
-
 
   return (
     <Select
@@ -59,7 +58,7 @@ const PropertySelector = (props) => {
       style={{ width: "100%" }}
       placeholder="Please select fields"
       value={value}
-       onChange={handleChange}
+      onChange={handleChange}
     >
       {options}
     </Select>
