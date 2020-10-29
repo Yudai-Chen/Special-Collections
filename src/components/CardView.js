@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Pagination } from "antd";
 import { connect } from "react-redux";
-import { fetch } from "../utils/OmekaS";
+import { fetch, fetchOne } from "../utils/OmekaS";
 import { useCookies } from "react-cookie";
 
 const chunk = (array, size) => {
@@ -19,7 +19,6 @@ const CardView = (props) => {
   const [items, setItems] = useState([]);
   const [cards, setCards] = useState([]);
   const [cardGrid, setCardGrid] = useState(<></>);
-  const [total, setTotal] = useState(0);
 
   const PAGESIZE = 20;
 
@@ -40,32 +39,54 @@ const CardView = (props) => {
   }, [props.query, cookies.userInfo.host]);
 
   useEffect(() => {
-    setCards(
-      items.map((item) => (
-        <Card
-          key={item["o:id"]}
-          title={item["o:title"] ?? "(no 'title' found)"}
-          bordered={false}
-        >
-          {props.activeProperties.map((property) => {
-            const label = property["o:label"];
-            const value = item[property["o:term"]];
+    const genCards = async (items) => {
+      const cardPromises = items.map(async (item) => {
+        let thumbnailUrl = "";
+        if (item["o:media"].length !== 0) {
+          const media = await fetchOne(
+            cookies.userInfo.host,
+            "media",
+            item["o:media"][0]["o:id"]
+          );
 
-            const line =
-              value && value.length > 0 && value[0].type === "literal" ? (
-                <p>
-                  <b>{label}: </b> {value[0]["@value"]}
-                </p>
-              ) : (
-                ""
-              );
+          thumbnailUrl = media["o:thumbnail_urls"].square;
+        }
 
-            return line;
-          })}
-        </Card>
-      ))
-    );
-  }, [props.activeProperties, items]);
+        const body = props.activeProperties.map((property) => {
+          const label = property["o:label"];
+          const value = item[property["o:term"]];
+
+          const line =
+            value && value.length > 0 && value[0].type === "literal" ? (
+              <p>
+                <b>{label}: </b> {value[0]["@value"]}
+              </p>
+            ) : (
+              ""
+            );
+
+          return line;
+        });
+
+        return (
+          <Card
+            key={item["o:id"]}
+            title={item["o:title"] ?? "(no 'title' found)"}
+            bordered={false}
+            cover={
+              thumbnailUrl ? <img alt="example" src={thumbnailUrl} /> : null
+            }
+          >
+            {body}
+          </Card>
+        );
+      });
+
+      Promise.all(cardPromises).then((cards) => setCards(cards));
+    };
+
+    genCards(items);
+  }, [props.activeProperties, items, cookies.userInfo.host]);
 
   useEffect(() => {
     const cardCols = cards.map((card, i) => (

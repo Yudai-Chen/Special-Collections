@@ -46,3 +46,9 @@ export const fetchTemplates = async (baseAddress) => {
     "http://" + baseAddress + "/api/resource_templates?per_page=1000"
   );
 };
+
+export const fetchOne = async (baseAddress, endpoint, id) => {
+  const res = await axios.get(`http://${baseAddress}/api/${endpoint}/${id}`);
+
+  return res.data;
+};
