@@ -52,10 +52,17 @@ const TableView = (props) => {
   useEffect(() => {
     const cols = props.activeProperties.map((property) => ({
       title: property["o:label"],
-      dataIndex: "o:" + property["o:local_name"],
-      key: "o:" + property["o:local_name"],
+      dataIndex: property["o:term"],
+      key: property["o:term"],
       sorter: {
         compare: (a, b) => a > b, // TODO: May need to change for different data types
+      },
+      render: (value, _row, _index) => {
+        if (value && value.length > 0 && value[0].type === "literal") {
+          return value[0]["@value"];
+        }
+
+        return "";
       },
     }));
     setColumns(cols);
